@@ -1,10 +1,16 @@
 import { Module } from '@nestjs/common';
-import { ControllersController } from './user/controllers/user.controller';
-import { UserModule } from './user/user.module';
+import { UserController } from './api/user/user.controller';
+import { UserModule } from './api/user/user.module';
+import { StripeService } from './api/stripe/stripe.config';
+import { StripeModule } from './api/stripe/stripe.module';
+import { getEnvPath } from './common/helper/env.helper';
+import { ConfigModule } from '@nestjs/config';
+
+const envFilePath: string = getEnvPath(`${process.cwd()}`);
 
 @Module({
-  imports: [UserModule],
-  controllers: [ControllersController],
-  providers: [],
+  imports: [ ConfigModule.forRoot({ envFilePath, isGlobal: true }), UserModule, StripeModule],
+  controllers: [UserController],
+  providers: [StripeService],
 })
 export class AppModule {}
