@@ -22,7 +22,7 @@ export class InvoiceService {
     });
   }
 
-  async generatePdf(name: string, amount: number, date: string): Promise<Buffer> {
+  async generatePdf(name: string, amount: number, date: string, last4:string): Promise<Buffer> {
     if (!name || !amount) {
       throw new HttpException('Missing parameters', HttpStatus.BAD_REQUEST);
     }
@@ -86,7 +86,7 @@ export class InvoiceService {
                 widths: ['*', '*'],
                 body: [
                     ['Type de carte', 'Visa'],
-                    ['Numéro de carte', '**** **** **** 4242'],
+                    ['Numéro de carte', `**** **** **** ${last4}`],
                 ],
             },
         },

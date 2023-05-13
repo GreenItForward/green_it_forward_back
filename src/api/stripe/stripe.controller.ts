@@ -1,5 +1,6 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Param, Post, Get } from '@nestjs/common';
 import { StripeService } from './stripe.config';
+import { Address, PaymentMethod } from '@stripe/stripe-js';
 
 @Controller('payments')
 export class StripeController {
@@ -16,6 +17,16 @@ export class StripeController {
       currency: 'eur',
     });
     return { clientSecret: paymentIntent.client_secret };
+  }
+
+  @Get('payment-method/:id')
+  async getPaymentMethod(@Param('id') id: string): Promise<{ last4: string, name: string, address: Address | null }> {
+    return await this.stripeService.getPaymentMethod(id);
+  }
+
+  @Get('payment-intent/:id')
+  async getPaymentIntent(@Param('id') id: string): Promise<{amount: number, currency: string, status: string}> {
+    return await this.stripeService.getPaymentIntent(id);
   }
 
 }
