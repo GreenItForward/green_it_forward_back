@@ -18,13 +18,14 @@ export class StripeService {
   }
 
 
-  async getPaymentMethod(id: string): Promise<{ last4: string, name: string, address: Address | null }> {
+  async getPaymentMethod(id: string): Promise<{ last4: string, name: string, address: Address, brand: string } | null> {
     const paymentMethod = await this.stripe.paymentMethods.retrieve(id);
     const last4 = paymentMethod.card ? paymentMethod.card.last4 : '';
     const name = paymentMethod.billing_details.name;
     const address = paymentMethod.billing_details.address;
+    const brand = paymentMethod.card ? paymentMethod.card.brand : '';
   
-    return { last4, name, address };
+    return { last4, name, address, brand };
   }
 
   async getPaymentIntent(id: string): Promise<{amount: number, currency: string, status: string}> {

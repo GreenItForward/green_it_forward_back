@@ -22,10 +22,12 @@ export class InvoiceService {
     });
   }
 
-  async generatePdf(name: string, amount: number, date: string, last4:string): Promise<Buffer> {
-    if (!name || !amount) {
+  async generatePdf(name: string, amount: number, date: string, last4:string, brandCard:string): Promise<Buffer> {
+    if (!name || !amount || !date || !last4 || !brandCard) {      
       throw new HttpException('Missing parameters', HttpStatus.BAD_REQUEST);
     }
+
+
 
     const logoImagePath = path.join(process.cwd(),'src', 'assets', 'logo.png');
     const logoImageBase64 = await this.getImageBase64(logoImagePath);
@@ -85,7 +87,7 @@ export class InvoiceService {
             table: {
                 widths: ['*', '*'],
                 body: [
-                    ['Type de carte', 'Visa'],
+                    ['Type de carte', brandCard.charAt(0).toUpperCase() + brandCard.slice(1)],
                     ['Numéro de carte', `**** **** **** ${last4}`],
                 ],
             },

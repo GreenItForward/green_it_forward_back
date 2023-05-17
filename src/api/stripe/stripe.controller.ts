@@ -20,7 +20,7 @@ export class StripeController {
   }
 
   @Get('payment-method/:id')
-  async getPaymentMethod(@Param('id') id: string): Promise<{ last4: string, name: string, address: Address | null }> {
+  async getPaymentMethod(@Param('id') id: string): Promise<{ last4: string, name: string, address: Address, brand: string } | null> {
     return await this.stripeService.getPaymentMethod(id);
   }
 
