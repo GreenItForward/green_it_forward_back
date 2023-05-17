@@ -70,7 +70,7 @@ export class InvoiceService {
           style: 'header',
         },
         {
-          text: `Nom sur la carte : ${name}`,
+          text: `Nom sur la carte : ${name.split(' ').map((word) => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}`,
         },
         {
           text: `Montant : ${amount} €`,
