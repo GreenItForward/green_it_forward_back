@@ -13,37 +13,16 @@ import { MailService } from './api/mailer/mail.service';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 import { join } from 'path';
+import { MailModule } from './api/mailer/mail.module';
 
 const envFilePath: string = getEnvPath(`${process.cwd()}`);
 
 @Module({
   imports: [ 
     ConfigModule.forRoot({ envFilePath, isGlobal: true }), 
-    UserModule, StripeModule, InvoiceModule, 
-    MailerModule.forRootAsync({
-      imports: [ConfigModule],
-      useFactory: async (config: ConfigService) => ({
-        transport: {
-          host: config.get('EMAIL_HOST'),
-          secure: false,
-          auth: {
-            user: config.get('EMAIL_ADDRESS'),
-            pass: config.get('EMAIL_PASSWORD'),
-          },
-        },
-        defaults: {
-          from: `"No Reply" <${config.get('EMAIL_ADDRESS')}>`,
-        },
-        template: {
-          dir: join(__dirname, './templates'),
-          adapter: new HandlebarsAdapter(),
-          options: {
-            strict: true,
-          }
-        }
-      }),
-      inject: [ConfigService],
-    }), ConfigModule.forRoot()],
+    UserModule, StripeModule, InvoiceModule, MailModule, AppModule,
+    MailerModule
+  ],
   controllers: [UserController, InvoiceController, MailController],
   providers: [StripeService, InvoiceService, MailService],
 })
