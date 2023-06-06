@@ -6,7 +6,7 @@ import { Logger } from '@nestjs/common';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const config: ConfigService = app.get(ConfigService);
-  const port: number = Number.parseInt(process.env.npm_config_port) || config.get<number>('PORT')  || 3000;
+  const port: number = Number.parseInt(process.env.PORT) || config.get<number>('PORT') || 3000;
 
   app.enableCors();
   app.enableVersioning();
@@ -15,5 +15,6 @@ async function bootstrap() {
   await app.listen(port, () => {
     new Logger('NestApplication').log(`Server is running on : http://localhost:` + port);
   });
+  
 }
 bootstrap();
