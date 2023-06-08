@@ -1,4 +1,4 @@
-import { Body, Controller, Param, Post, Req } from "@nestjs/common";
+import { Body, Controller, Get, Param, Post, Req } from "@nestjs/common";
 import { Request } from "express";
 import { MailService } from "./mail.service";
 
@@ -11,14 +11,14 @@ export class MailController {
         return await this.mailService.sendMail(body);
     } 
     
-    @Post('send/reset-password')
-    async sendResetPasswordEmail(@Body() body: { email: string, name: string }, @Req() req: Request) {
-        return await this.mailService.sendResetPasswordEmail(body, req.headers.authorization);
+    @Get('send/reset-password/:email')
+    async sendResetPasswordEmail(@Param('email') email:string, @Req() req: Request) {
+        return await this.mailService.sendResetPasswordEmail(email, req.headers.authorization); 
     }
 
     @Post('send/confirmation')
-    async sendUserConfirmation(@Body() body: { email: string, name: string }, @Req() req: Request) {
+    async sendUserConfirmation(@Body() body: { email: string,  name: string }, @Req() req: Request) {
         return await this.mailService.sendUserConfirmation(body, req.headers.authorization);
-    }
+    }  
 
 }   
