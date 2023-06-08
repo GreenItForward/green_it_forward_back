@@ -1,6 +1,6 @@
-import { Body, Controller, Get, Param, Post, Req } from "@nestjs/common";
-import { Request } from "express";
+import { Body, Controller, Get, Param, Post, Req, Res } from "@nestjs/common";
 import { MailService } from "./mail.service";
+import { Request, Response } from 'express';
 
 @Controller('mail')
 export class MailController {
@@ -12,8 +12,9 @@ export class MailController {
     } 
     
     @Get('send/reset-password/:email')
-    async sendResetPasswordEmail(@Param('email') email:string, @Req() req: Request) {
-        return await this.mailService.sendResetPasswordEmail(email, req.headers.authorization); 
+    async sendResetPasswordEmail(@Param('email') email:string, @Req() req: Request, @Res() res: Response) {
+        return await this.mailService.sendResetPasswordEmail(email, req.headers.authorization, res);
+        
     }
 
     @Post('send/confirmation')
