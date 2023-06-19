@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { UserController } from './api/user/user.controller';
+import { UserService } from "@/api/user/user.service";
 import { UserModule } from './api/user/user.module';
 import { StripeService } from './api/stripe/stripe.config';
 import { StripeModule } from './api/stripe/stripe.module';
@@ -23,10 +24,9 @@ const envFilePath: string = getEnvPath(`${process.cwd()}`);
   imports: [ 
     ConfigModule.forRoot({ envFilePath, isGlobal: true }),
     TypeOrmModule.forRootAsync({ useClass: TypeOrmService }),
-    UserModule, StripeModule, InvoiceModule, MailModule, AppModule,
-    MailerModule
+    UserModule, StripeModule, InvoiceModule, MailModule, MailerModule
   ],
   controllers: [UserController, InvoiceController, MailController],
-  providers: [StripeService, InvoiceService, MailService],
+  providers: [UserService, StripeService, InvoiceService, MailService],
 })
 export class AppModule {}
