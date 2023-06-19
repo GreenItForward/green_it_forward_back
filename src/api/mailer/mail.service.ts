@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { MailerService } from '@nestjs-modules/mailer';
 import { ConfigService } from '@nestjs/config';
 import { Response } from 'express';
+import { SendResetPasswordDto } from './mail.dto';
 
 @Injectable()
 export class MailService {
@@ -15,7 +16,7 @@ export class MailService {
             to: user.email,
             from: `No Reply - GreenItForward <${this.configService.get<string>("EMAIL_FROM")}>`,
             subject: 'Greeting from GreenItForward',
-            template: 'email',
+            template: 'email', 
             context: {
                 name: user.name,
             }
@@ -32,33 +33,28 @@ export class MailService {
           subject: 'Welcome to GreenItForward ! Confirm your Email',
           template: './confirmation', 
           context: {
-            name: user.name,
+            name: user.name, 
             url,
           },
         });
       }  
 
-    async sendResetPasswordEmail(email:string, token: string, res:Response) {
+    async sendResetPasswordEmail(user:SendResetPasswordDto, token: string, res:Response) {
         token = Math.random().toString(36).slice(-8); // TODO: remove this and replace it by a common service func
         const ourMailAdress = this.configService.get<string>("EMAIL_ADDRESS");
         const url = `${this.configService.get<string>("FRONT_URL")}/auth/reset-password?token=${token}`;
-        try {
-          await this.mailerService.sendMail({
-          to: email,
-          from: `Password Reset - GreenItForward <${this.configService.get<string>("EMAIL_FROM")}>`,
-          subject: 'Reset your password',
-          template: './reset-password', 
-          context: {
-            ourMailAdress,
-            url,
-          },
-        });
-      } catch (error) {
-        console.log(error);
-        res.status(500).json({ message: 'Bug' });
+        await this.mailerService.sendMail({
+        to: user.email,
+        from: `Password Reset - GreenItForward <${this.configService.get<string>("EMAIL_FROM")}>`,
+        subject: 'Reset your password',
+        template: './reset-password', 
+        context: {
+          ourMailAdress,
+          url,
+        },
+      });
 
-        // TODO: handle error when '535 - Error: authentication failed'
-      }
+      res.status(200).json({ message: 'Email sent' });
 
     }
 }

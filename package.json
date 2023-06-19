@@ -27,6 +27,7 @@
     "@nestjs/platform-express": "^9.0.0",
     "@stripe/stripe-js": "^1.52.1",
     "@types/nodemailer": "^6.4.8",
+    "class-transformer": "^0.5.1",
     "handlebars": "^4.7.7",
     "moment": "^2.29.4",
     "nest": "^0.1.6",
