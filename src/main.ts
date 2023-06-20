@@ -1,10 +1,10 @@
 import packageJson from '../package.json'
 import { NestFactory } from '@nestjs/core';
+import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 import { AppModule } from './app.module';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { ConfigService } from '@nestjs/config';
 import { Logger, ValidationPipe } from "@nestjs/common";
-import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 
 async function bootstrap() {
   const app: NestExpressApplication = await NestFactory.create(AppModule);
