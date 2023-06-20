@@ -1,26 +1,36 @@
-import { Body, Controller, Get, Param, Post, Req, Res } from "@nestjs/common";
+import { Body, ClassSerializerInterceptor, Controller, Post, Req, UseGuards, UseInterceptors } from "@nestjs/common";
+import { Request } from "express";
 import { MailService } from "./mail.service";
-import { Request, Response } from 'express';
-import { SendConfirmationDto, SendHiDto, SendResetPasswordDto } from "./mail.dto";
+import { ApiBody, ApiTags } from "@nestjs/swagger";
+import { JwtAuthGuard } from "@/api/user/auth/auth.guard";
+import { EmailDto } from "@/api/mailer/email.dto";
 
+@ApiTags('Mailer')
 @Controller('mail')
 export class MailController {
     constructor(private readonly mailService: MailService) {}
 
     @Post('send/hi')
-    async sendHiEmail(@Body() body: SendHiDto) {
+    @UseGuards(JwtAuthGuard)
+    @UseInterceptors(ClassSerializerInterceptor)
+    @ApiBody({ type: EmailDto })
+    async sendHiEmail(@Body() body: EmailDto) {
         return await this.mailService.sendMail(body);
     } 
     
-    @Get('send/reset-password/:email')
-    async sendResetPasswordEmail(@Param('email') email: SendResetPasswordDto, @Req() req: Request, @Res() res: Response) {
-        return await this.mailService.sendResetPasswordEmail(email, req.headers.authorization, res);
-        
+    @Post('send/reset-password')
+    @UseGuards(JwtAuthGuard)
+    @UseInterceptors(ClassSerializerInterceptor)
+    @ApiBody({ type: EmailDto })
+    async sendResetPasswordEmail(@Body() body: EmailDto, @Req() req: Request) {
+        return await this.mailService.sendResetPasswordEmail(body, req.headers.authorization);
     }
 
     @Post('send/confirmation')
-    async sendUserConfirmation(@Body() body: SendConfirmationDto, @Req() req: Request) {
+    @UseGuards(JwtAuthGuard)
+    @UseInterceptors(ClassSerializerInterceptor)
+    @ApiBody({ type: EmailDto })
+    async sendUserConfirmation(@Body() body: EmailDto, @Req() req: Request) {
         return await this.mailService.sendUserConfirmation(body, req.headers.authorization);
-    }  
-
-}   
+    }
+}

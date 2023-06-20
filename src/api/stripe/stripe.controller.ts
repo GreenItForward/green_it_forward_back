@@ -1,16 +1,30 @@
-import { Body, Controller, Param, Post, Get } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Param,
+  Post,
+  Get,
+  UseGuards,
+  UseInterceptors,
+  ClassSerializerInterceptor
+} from "@nestjs/common";
 import { StripeService } from './stripe.config';
-import { Address, PaymentMethod } from '@stripe/stripe-js';
+import { ApiBody, ApiTags } from "@nestjs/swagger";
+import { JwtAuthGuard } from "@/api/user/auth/auth.guard";
+import { CreatePaymentDto, PaymentIntentDto, PaymentMethodDto } from "@/api/stripe/stripe.dto";
 
+@ApiTags('Payments')
 @Controller('payments')
 export class StripeController {
   constructor(private readonly stripeService: StripeService) {}
 
   @Post('create-payment-intent')
-  async createPaymentIntent(@Body() body: { amount : number}) {
+  @UseGuards(JwtAuthGuard)
+  @UseInterceptors(ClassSerializerInterceptor)
+  @ApiBody({ type: CreatePaymentDto })
+  async createPaymentIntent(@Body() body: CreatePaymentDto) {
     const stripe = this.stripeService.getStripeInstance();
-    const { amount } = body;
-    const convertedAmount = Math.round(amount * 100); 
+    const convertedAmount = Math.round(body.amount * 100);
 
     const paymentIntent = await stripe.paymentIntents.create({
       amount: convertedAmount,
@@ -20,13 +34,16 @@ export class StripeController {
   }
 
   @Get('payment-method/:id')
-  async getPaymentMethod(@Param('id') id: string): Promise<{ last4: string, name: string, address: Address, brand: string } | null> {
+  @UseGuards(JwtAuthGuard)
+  @UseInterceptors(ClassSerializerInterceptor)
+  async getPaymentMethod(@Param('id') id: string): Promise<PaymentMethodDto | null> {
     return await this.stripeService.getPaymentMethod(id);
   }
 
   @Get('payment-intent/:id')
-  async getPaymentIntent(@Param('id') id: string): Promise<{amount: number, currency: string, status: string}> {
+  @UseGuards(JwtAuthGuard)
+  @UseInterceptors(ClassSerializerInterceptor)
+  async getPaymentIntent(@Param('id') id: string): Promise<PaymentIntentDto> {
     return await this.stripeService.getPaymentIntent(id);
   }
-
 }
