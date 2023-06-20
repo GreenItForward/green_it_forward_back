@@ -1,6 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { MailerService } from '@nestjs-modules/mailer';
 import { ConfigService } from '@nestjs/config';
+import { Response } from 'express';
+import { SendResetPasswordDto } from './mail.dto';
 
 @Injectable()
 export class MailService {
@@ -14,7 +16,7 @@ export class MailService {
             to: user.email,
             from: `No Reply - GreenItForward <${this.configService.get<string>("EMAIL_FROM")}>`,
             subject: 'Greeting from GreenItForward',
-            template: 'email',
+            template: 'email', 
             context: {
                 name: user.name,
             }
@@ -22,7 +24,8 @@ export class MailService {
     }
 
     async sendUserConfirmation(user: { name: string, email: string}, token: string ) {
-        const url = `example.com/auth/confirm?token=${token}`;
+        token = Math.random().toString(36).slice(-8); // TODO: remove this and replace it by a common service func
+        const url = `${this.configService.get<string>("FRONT_URL")}/auth/confirm?token=${token}`;
     
         await this.mailerService.sendMail({
           to: user.email,
@@ -30,24 +33,29 @@ export class MailService {
           subject: 'Welcome to GreenItForward ! Confirm your Email',
           template: './confirmation', 
           context: {
-            name: user.name,
+            name: user.name, 
             url,
           },
         });
       }  
 
-    async sendResetPasswordEmail(user: { name: string, email: string}, token: string ) {
-        const url = `example.com/auth/reset-password?token=${token}`;
+    async sendResetPasswordEmail(user:SendResetPasswordDto, token: string, res:Response) {
+        token = Math.random().toString(36).slice(-8); // TODO: remove this and replace it by a common service func
+        const ourMailAdress = this.configService.get<string>("EMAIL_ADDRESS");
+        const url = `${this.configService.get<string>("FRONT_URL")}/auth/reset-password?token=${token}`;
         await this.mailerService.sendMail({
-          to: user.email,
-          from: `Password Reset - GreenItForward <${this.configService.get<string>("EMAIL_FROM")}>`,
-          subject: 'Reset your password',
-          template: './reset-password', 
-          context: {
-            name: user.name,
-            url,
-          },
-        });
-      }
+        to: user.email,
+        from: `Password Reset - GreenItForward <${this.configService.get<string>("EMAIL_FROM")}>`,
+        subject: 'Reset your password',
+        template: './reset-password', 
+        context: {
+          ourMailAdress,
+          url,
+        },
+      });
+
+      res.status(200).json({ message: 'Email sent' });
+
+    }
 }
  
