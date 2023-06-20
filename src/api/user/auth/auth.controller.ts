@@ -1,5 +1,4 @@
 import { Body, Controller, Inject, Post, ClassSerializerInterceptor, UseInterceptors } from '@nestjs/common';
-import { User } from '@/api/user/user.entity';
 import { RegisterDto, LoginDto } from './auth.dto';
 import { AuthService } from './auth.service';
 import { ApiBadRequestResponse, ApiBody, ApiOkResponse, ApiTags } from "@nestjs/swagger";
@@ -15,10 +14,9 @@ export class AuthController {
   @ApiBody({ type: RegisterDto })
   @ApiOkResponse({
     description: 'User successfully registered',
-    type: User,
   })
   @ApiBadRequestResponse({ description: 'Bad Request' })
-  private register(@Body() body: RegisterDto): Promise<User | never> {
+  private register(@Body() body: RegisterDto): Promise<string | never> {
     return this.service.register(body);
   }
 

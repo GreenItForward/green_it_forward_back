@@ -13,7 +13,7 @@ export class AuthService {
   @Inject(AuthHelper)
   private readonly helper: AuthHelper;
 
-  public async register(body: RegisterDto): Promise<User | never> {
+  public async register(body: RegisterDto): Promise<string | never> {
     const { name, email, password }: RegisterDto = body;
     let user: User = await this.repository.findOne({ where: { email } });
 
@@ -27,7 +27,8 @@ export class AuthService {
     user.email = email;
     user.password = this.helper.encodePassword(password);
 
-    return this.repository.save(user);
+    await this.repository.save(user);
+    return this.helper.generateToken(user);
   }
 
   public async login(body: LoginDto): Promise<string | never> {
