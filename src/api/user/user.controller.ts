@@ -4,7 +4,9 @@ import { JwtAuthGuard } from '@/api/user/auth/auth.guard';
 import { UpdateNameDto } from './user.dto';
 import { User } from './user.entity';
 import { UserService } from './user.service';
+import { ApiTags } from "@nestjs/swagger";
 
+@ApiTags('User')
 @Controller('user')
 export class UserController {
   @Inject(UserService)

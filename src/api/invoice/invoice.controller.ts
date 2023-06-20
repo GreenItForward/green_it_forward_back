@@ -1,12 +1,28 @@
-import { Controller, Get, HttpException, HttpStatus, Param, Query, Req, Res } from '@nestjs/common';
+import {
+  ClassSerializerInterceptor,
+  Controller,
+  Get,
+  HttpException,
+  HttpStatus,
+  Param,
+  Query,
+  Res,
+  UseGuards,
+  UseInterceptors
+} from "@nestjs/common";
 import { Response } from 'express';
 import { InvoiceService } from './invoice.service';
+import { ApiTags } from "@nestjs/swagger";
+import { JwtAuthGuard } from "@/api/user/auth/auth.guard";
 
+@ApiTags('Invoice')
 @Controller('invoice')
 export class InvoiceController {
   constructor(private readonly invoiceService: InvoiceService) {}
 
   @Get(':name/:amount')
+  @UseGuards(JwtAuthGuard)
+  @UseInterceptors(ClassSerializerInterceptor)
   async downloadPdf(
     @Param('name') name: string,
     @Param('amount') amount: number,
