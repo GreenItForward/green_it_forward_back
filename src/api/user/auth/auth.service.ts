@@ -4,6 +4,7 @@ import { User } from '@/api/user/user.entity';
 import { Repository } from 'typeorm';
 import { RegisterDto, LoginDto } from './auth.dto';
 import { AuthHelper } from './auth.helper';
+import { log } from 'console';
 
 @Injectable()
 export class AuthService {
@@ -14,7 +15,7 @@ export class AuthService {
   private readonly helper: AuthHelper;
 
   public async register(body: RegisterDto): Promise<string | never> {
-    const { name, email, password }: RegisterDto = body;
+    const { firstName, lastName, email, password }: RegisterDto = body;
     let user: User = await this.repository.findOneBy({ email });
 
     if (user) {
@@ -23,7 +24,8 @@ export class AuthService {
 
     user = new User();
 
-    user.name = name;
+    user.firstName = firstName;
+    user.lastName = lastName;
     user.email = email;
     user.password = this.helper.encodePassword(password);
 
@@ -46,6 +48,8 @@ export class AuthService {
     }
 
     await this.repository.update(user.id, {lastLoginAt: new Date()});
+
+
 
     return this.helper.generateToken(user);
   }

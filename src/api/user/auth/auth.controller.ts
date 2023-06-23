@@ -26,6 +26,11 @@ export class AuthController {
 
   @Post('login')
   @ApiBody({ type: LoginDto })
+  @ApiOkResponse({
+    description: 'User successfully logged in',
+    type: User,
+  })
+  @ApiBadRequestResponse({ description: 'Bad Request' })
   private login(@Body() body: LoginDto): Promise<string | never> {
     return this.service.login(body);
   }

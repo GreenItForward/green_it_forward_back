@@ -16,7 +16,12 @@ export class RegisterDto {
   @IsString()
   @IsOptional()
   @ApiProperty()
-  public readonly name?: string;
+  public readonly firstName?: string;
+
+  @IsString()
+  @IsOptional()
+  @ApiProperty()
+  public readonly lastName?: string;
 }
 
 export class LoginDto {

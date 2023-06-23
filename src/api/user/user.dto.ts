@@ -5,5 +5,5 @@ export class UpdateNameDto {
   @IsString()
   @IsOptional()
   @ApiProperty()
-  public readonly name?: string;
+  public readonly firstName?: string;
 }
