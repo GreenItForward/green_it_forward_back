@@ -15,7 +15,6 @@ async function bootstrap() {
 
   app.enableCors();
   app.enableVersioning();
-  app.useGlobalPipes(new ValidationPipe());
   app.setGlobalPrefix('api');
 
   const configSwagger = new DocumentBuilder()

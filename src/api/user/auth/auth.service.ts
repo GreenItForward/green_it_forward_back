@@ -15,7 +15,7 @@ export class AuthService {
 
   public async register(body: RegisterDto): Promise<string | never> {
     const { name, email, password }: RegisterDto = body;
-    let user: User = await this.repository.findOne({ where: { email } });
+    let user: User = await this.repository.findOneBy({ email });
 
     if (user) {
       throw new HttpException('Conflict', HttpStatus.CONFLICT);
@@ -33,17 +33,25 @@ export class AuthService {
 
   public async login(body: LoginDto): Promise<string | never> {
     const { email, password }: LoginDto = body;
-    const user: User = await this.repository.findOne({ where: { email } });
+    const user: User = await this.repository.findOneBy({ email });
 
     if (!user) {
-      throw new HttpException('No user found', HttpStatus.NOT_FOUND);
+      throw new HttpException('That email/username and password combination didn\'t work', HttpStatus.NOT_FOUND);
     }
 
     const isPasswordValid: boolean = this.helper.isPasswordValid(password, user.password);
 
     if (!isPasswordValid) {
-      throw new HttpException('No user found', HttpStatus.NOT_FOUND);
+      throw new HttpException('That email/username and password combination didn\'t work', HttpStatus.NOT_FOUND);
     }
+
+    await this.repository.update(user.id, {lastLoginAt: new Date()});
+
+    return this.helper.generateToken(user);
+  }
+
+  public async refresh(user: User): Promise<string> {
+    this.repository.update(user.id, { lastLoginAt: new Date() });
 
     return this.helper.generateToken(user);
   }

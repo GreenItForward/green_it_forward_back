@@ -20,4 +20,8 @@ export class User extends BaseEntity {
   @Column({ type: 'varchar', nullable: true })
   @ApiProperty()
   public name: string | null;
+
+  @Column({ type: 'timestamp', nullable: true, default: null })
+  @ApiProperty()
+  public lastLoginAt: Date | null;
 }
