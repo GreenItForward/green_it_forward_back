@@ -8,7 +8,7 @@ import {
   UseInterceptors,
   ClassSerializerInterceptor
 } from "@nestjs/common";
-import { StripeService } from './stripe.config';
+import { StripeService } from './stripe.service';
 import { ApiBody, ApiTags } from "@nestjs/swagger";
 import { JwtAuthGuard } from "@/api/user/auth/auth.guard";
 import { CreatePaymentDto, PaymentIntentDto, PaymentMethodDto } from "@/api/stripe/stripe.dto";
