@@ -19,9 +19,16 @@ export class ProjectService {
     return this.projectRepository.findOneBy({ id });
   }
 
+  getRandomProjects(): Promise<Project[]> {
+    return this.projectRepository
+      .createQueryBuilder()
+      .orderBy('RANDOM()')
+      .limit(5)
+      .getMany();
+  }
+
   async createProject(project: CreateProjectDto): Promise<Project> {
     const newProject = this.projectRepository.create(project);
     return await this.projectRepository.save(newProject);
   }
-  
 }
