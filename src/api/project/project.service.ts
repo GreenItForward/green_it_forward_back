@@ -1,8 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Project } from './project.entity';
 import { CreateProjectDto } from './project.dto';
+import { convertToDate } from '@/common/helper/date.helper';
 
 @Injectable()
 export class ProjectService {
@@ -15,9 +16,15 @@ export class ProjectService {
     return this.projectRepository.find();
   }
 
-  getProjectById(id: string): Promise<Project> {
-    return this.projectRepository.findOneBy({ id });
-  }
+  async getProjectById(id: string): Promise<Project> {
+    const project = await this.projectRepository.findOneBy({ id });
+    
+    if (!project) {
+      throw new HttpException('No Content', HttpStatus.NO_CONTENT);
+    }
+    
+    return project;
+}
 
   getRandomProjects(): Promise<Project[]> {
     return this.projectRepository
@@ -28,7 +35,13 @@ export class ProjectService {
   }
 
   async createProject(project: CreateProjectDto): Promise<Project> {
-    const newProject = this.projectRepository.create(project);
+    const correctDate = convertToDate(project.startDate);
+    const newProject = this.projectRepository.create({
+      ...project,
+      startDate: correctDate,
+    });
+  
     return await this.projectRepository.save(newProject);
   }
+  
 }

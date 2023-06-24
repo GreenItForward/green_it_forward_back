@@ -20,12 +20,12 @@ export class Project {
   @Column('decimal')
   totalAmount: number;
 
-  @Column('timestamp')
+  @Column('date')
   startDate: Date;
-
-  @Column('timestamp')
+  
+  @Column('date')
   endDate: Date;
-
+  
   @Column()
   createdBy: string;
 }
