@@ -22,8 +22,8 @@ export class InvoiceService {
     });
   }
 
-  async generatePdf(name: string, amount: number, date: string, last4:string, brandCard:string): Promise<Buffer> {
-    if (!name || !amount || !date || !last4 || !brandCard) {      
+  async generatePdf(name: string, amount: number, date: string, last4:string, brandCard:string, project:string): Promise<Buffer> {
+    if (!name || !amount || !date || !last4 || !brandCard || !project) {    
       throw new HttpException('Missing parameters', HttpStatus.BAD_REQUEST);
     }
 
@@ -42,7 +42,7 @@ export class InvoiceService {
                   margin: [40, 20, 0, 0],
                 },
                 {
-                  text: 'WWF',
+                  text: `${project.toUpperCase()}`,
                   width: '50%',
                   alignment: 'right',
                   margin: [0, 20, 40, 0],

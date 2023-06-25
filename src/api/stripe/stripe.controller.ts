@@ -8,7 +8,7 @@ import {
   UseInterceptors,
   ClassSerializerInterceptor
 } from "@nestjs/common";
-import { StripeService } from './stripe.service';
+import { StripeService } from './stripe.config';
 import { ApiBody, ApiTags } from "@nestjs/swagger";
 import { JwtAuthGuard } from "@/api/user/auth/auth.guard";
 import { CreatePaymentDto, PaymentIntentDto, PaymentMethodDto } from "@/api/stripe/stripe.dto";
@@ -25,7 +25,6 @@ export class StripeController {
   async createPaymentIntent(@Body() body: CreatePaymentDto) {
     const stripe = this.stripeService.getStripeInstance();
     const convertedAmount = Math.round(body.amount * 100);
-
     const paymentIntent = await stripe.paymentIntents.create({
       amount: convertedAmount,
       currency: 'eur',

@@ -29,10 +29,11 @@ export class InvoiceController {
     @Query('date') date: string,
     @Query('last4') last4: string,
     @Query('brand') brandCard: string,
+    @Query('project') project: string,
     @Res() res: Response,
   ) {
     try {
-      const pdfBuffer = await this.invoiceService.generatePdf(name, amount, date, last4, brandCard);
+      const pdfBuffer = await this.invoiceService.generatePdf(name, amount, date, last4, brandCard, project);
 
       res.setHeader('Content-Type', 'application/pdf');
       res.setHeader('Content-Disposition', `attachment; filename=invoice.pdf`);
