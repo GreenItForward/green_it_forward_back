@@ -20,7 +20,7 @@ import { JwtAuthGuard } from "@/api/user/auth/auth.guard";
 export class InvoiceController {
   constructor(private readonly invoiceService: InvoiceService) {}
 
-  @Get(':name/:amount')
+  @Get('generate-pdf/:name/:amount')
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(ClassSerializerInterceptor)
   async downloadPdf(
@@ -38,7 +38,7 @@ export class InvoiceController {
       res.setHeader('Content-Type', 'application/pdf');
       res.setHeader('Content-Disposition', `attachment; filename=invoice.pdf`);
       res.setHeader('Content-Length', pdfBuffer.length);
-      res.end(pdfBuffer);
+      res.end(pdfBuffer); 
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
     }

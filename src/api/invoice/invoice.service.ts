@@ -27,8 +27,6 @@ export class InvoiceService {
       throw new HttpException('Missing parameters', HttpStatus.BAD_REQUEST);
     }
 
-
-
     const logoImagePath = path.join(process.cwd(),'src', 'assets', 'logo.png');
     const logoImageBase64 = await this.getImageBase64(logoImagePath);
 
@@ -57,7 +55,7 @@ export class InvoiceService {
           margin: [0, 0, 0, 20],
         },
         {
-          text: 'Merci pour votre don à l\'association WWF !',
+          text: `Merci pour votre don à l\'association ${project} !`,
           style: 'header',
           alignment: 'center',
           bold: true,
