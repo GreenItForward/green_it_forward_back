@@ -26,11 +26,11 @@ export class ProjectService {
     return project;
 }
 
-  getRandomProjects(): Promise<Project[]> {
+  getRandomProjects(count:number): Promise<Project[]> {
     return this.projectRepository
       .createQueryBuilder()
       .orderBy('RANDOM()')
-      .limit(5)
+      .limit(count)
       .getMany();
   }
 
