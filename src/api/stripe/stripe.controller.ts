@@ -25,7 +25,6 @@ export class StripeController {
   async createPaymentIntent(@Body() body: CreatePaymentDto) {
     const stripe = this.stripeService.getStripeInstance();
     const convertedAmount = Math.round(body.amount * 100);
-
     const paymentIntent = await stripe.paymentIntents.create({
       amount: convertedAmount,
       currency: 'eur',

@@ -4,6 +4,7 @@ import { AuthModule } from "@/api/user/auth/auth.module";
 import { StripeModule } from "@/api/stripe/stripe.module";
 import { MailModule } from "@/api/mailer/mail.module";
 import { InvoiceModule } from "@/api/invoice/invoice.module";
+import { ProjectModule } from './project/project.module';
 
 @Module({
   imports: [
@@ -11,7 +12,9 @@ import { InvoiceModule } from "@/api/invoice/invoice.module";
     AuthModule,
     StripeModule,
     MailModule,
-    InvoiceModule
-  ]
+    InvoiceModule,
+    ProjectModule
+  ],
+  controllers: []
 })
-export class ApiModule {}
+export class ApiModule {} 
