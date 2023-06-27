@@ -31,14 +31,12 @@ import { StatsService } from "./stats.service";
         }
     }
 
-    // total projects
     @Get('total-projects')
     @UseGuards(JwtAuthGuard)
     @UseInterceptors(ClassSerializerInterceptor)
     async getTotalProjects(): Promise<number> {
         try {
-            throw new HttpException("Not implemented yet", HttpStatus.INTERNAL_SERVER_ERROR)
-            //return await this.statsService.getTotalProjects();
+            return await this.statsService.getTotalProjects();
         } catch (error) {
             throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
         }
