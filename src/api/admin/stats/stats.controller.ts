@@ -42,7 +42,6 @@ import { StatsService } from "./stats.service";
         }
     }
 
-    // total donations
     @Get('total-donations')
     @UseGuards(JwtAuthGuard)
     @UseInterceptors(ClassSerializerInterceptor)
@@ -55,14 +54,12 @@ import { StatsService } from "./stats.service";
         }
     }
 
-    // nb of registered users per month
     @Get('users-per-month')
     @UseGuards(JwtAuthGuard)
     @UseInterceptors(ClassSerializerInterceptor)
-    async getUsersPerMonth(): Promise<number[]> {
+    async getUsersPerMonth(): Promise<{[key: string]: number}> {
         try {
-            throw new HttpException("Not implemented yet", HttpStatus.INTERNAL_SERVER_ERROR)
-            //return await this.statsService.getUsersPerMonth();
+            return await this.statsService.getUsersPerMonth();
         } catch (error) {
             throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
         }

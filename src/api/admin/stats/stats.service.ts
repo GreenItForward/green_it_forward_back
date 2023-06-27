@@ -22,4 +22,28 @@ export class StatsService {
         return this.projectRepository.count();
     }
 
+    async getTotalDonations() {
+        // TODO : implement this method
+        return 0;
+    }
+
+    async getUsersPerMonth() : Promise<{[key: string]: number}> {
+        const users = await this.userRepository.find();
+        const usersPerMonth = {};
+    
+        users.forEach(user => {
+            if (user.firstLoginAt !== null) {
+                const month = user.firstLoginAt.toLocaleString('default', { month: 'long' });
+    
+                if (usersPerMonth[month]) {
+                    usersPerMonth[month]++;
+                } else {
+                    usersPerMonth[month] = 1;
+                }
+            }
+        });
+    
+        return usersPerMonth;
+    }
+    
 }
