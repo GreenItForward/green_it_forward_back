@@ -5,8 +5,7 @@ import {
     HttpException,
     HttpStatus,
     Param,
-    Query,
-    Res,
+    ParseIntPipe,
     UseGuards,
     UseInterceptors
   } from "@nestjs/common";
@@ -54,12 +53,12 @@ import { StatsService } from "./stats.service";
         }
     }
 
-    @Get('users-per-month')
+    @Get('users-per-month/:year')
     @UseGuards(JwtAuthGuard)
     @UseInterceptors(ClassSerializerInterceptor)
-    async getUsersPerMonth(): Promise<{[key: string]: number}> {
+    async getUsersPerMonth(@Param('year', new ParseIntPipe()) year: number): Promise<{[key: string]: number}> {
         try {
-            return await this.statsService.getUsersPerMonth();
+            return await this.statsService.getUsersPerMonth(year);
         } catch (error) {
             throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
         }

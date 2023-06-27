@@ -27,22 +27,25 @@ export class StatsService {
         return 0;
     }
 
-    async getUsersPerMonth() : Promise<{[key: string]: number}> {
+    async getUsersPerMonth(year: number): Promise<{[key: string]: number}> {
         const users = await this.userRepository.find();
         const usersPerMonth = {};
     
         users.forEach(user => {
             if (user.firstLoginAt !== null) {
+                const dateYear = user.firstLoginAt.getFullYear();
                 const month = user.firstLoginAt.toLocaleString('default', { month: 'long' });
     
-                if (usersPerMonth[month]) {
-                    usersPerMonth[month]++;
-                } else {
-                    usersPerMonth[month] = 1;
+                if (year === dateYear) {
+                    if (usersPerMonth[month]) {
+                        usersPerMonth[month]++;
+                    } else {
+                        usersPerMonth[month] = 1;
+                    }
                 }
             }
         });
-    
+
         return usersPerMonth;
     }
     
