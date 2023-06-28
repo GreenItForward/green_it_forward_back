@@ -9,7 +9,6 @@ import {
     UseGuards,
     UseInterceptors
   } from "@nestjs/common";
-  import { Response } from 'express';
   import { ApiTags } from "@nestjs/swagger";
   import { JwtAuthGuard } from "@/api/user/auth/auth.guard";
 import { StatsService } from "./stats.service";
@@ -20,8 +19,6 @@ import { StatsService } from "./stats.service";
     constructor(private readonly statsService: StatsService) {}
 
     @Get('total-users')
-    @UseGuards(JwtAuthGuard)
-    @UseInterceptors(ClassSerializerInterceptor)
     async getTotalUsers(): Promise<number> {
         try {
             return await this.statsService.getTotalUsers();
@@ -31,8 +28,6 @@ import { StatsService } from "./stats.service";
     }
 
     @Get('total-projects')
-    @UseGuards(JwtAuthGuard)
-    @UseInterceptors(ClassSerializerInterceptor)
     async getTotalProjects(): Promise<number> {
         try {
             return await this.statsService.getTotalProjects();
@@ -54,8 +49,6 @@ import { StatsService } from "./stats.service";
     }
 
     @Get('users-per-month/:year')
-    @UseGuards(JwtAuthGuard)
-    @UseInterceptors(ClassSerializerInterceptor)
     async getUsersPerMonth(@Param('year', new ParseIntPipe()) year: number): Promise<{[key: string]: number}> {
         try {
             return await this.statsService.getUsersPerMonth(year);

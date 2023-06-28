@@ -31,6 +31,8 @@ export class StatsService {
         const users = await this.userRepository.find();
         const usersPerMonth = {};
     
+        const monthOrder = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre","novembre", "décembre"];
+    
         users.forEach(user => {
             if (user.firstLoginAt !== null) {
                 const dateYear = user.firstLoginAt.getFullYear();
@@ -45,8 +47,16 @@ export class StatsService {
                 }
             }
         });
-
-        return usersPerMonth;
+    
+        const orderedUsersPerMonth = {};
+        monthOrder.forEach(key => {
+            if(usersPerMonth[key]) {
+                orderedUsersPerMonth[key] = usersPerMonth[key];
+            }
+        });
+    
+        return orderedUsersPerMonth;
     }
+    
     
 }
