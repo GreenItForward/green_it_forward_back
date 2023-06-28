@@ -28,6 +28,7 @@ export class AuthService {
     user.lastName = lastName;
     user.email = email;
     user.password = this.helper.encodePassword(password);
+    user.firstLoginAt = new Date();
 
     await this.repository.save(user);
     return this.helper.generateToken(user);
