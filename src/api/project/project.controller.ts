@@ -1,6 +1,6 @@
-import { Controller, Get, Param, Post, Body, UseGuards, UseInterceptors, ClassSerializerInterceptor, ParseUUIDPipe } from '@nestjs/common';
+import { Controller, Get, Param, Post, Body, UseGuards, UseInterceptors, ClassSerializerInterceptor, ParseUUIDPipe, HttpException } from '@nestjs/common';
 import { ProjectService } from './project.service';
-import { CreateProjectDto, GetProjectById } from './project.dto';
+import { CreateProjectDto } from './project.dto';
 import { ApiBearerAuth, ApiBody, ApiTags } from '@nestjs/swagger';
 import { Project } from './project.entity';
 import { JwtAuthGuard } from '../user/auth/auth.guard';
@@ -35,10 +35,12 @@ export class ProjectController {
     return await this.projectService.createProject(createProjectDto);
   }
 
-  @Get('random')
+  @Get('random/:count')
   @ApiBearerAuth()
-  async getRandomProjects(): Promise<Project[]> {
-    return await this.projectService.getRandomProjects();
+  @UseGuards(JwtAuthGuard)
+  @UseInterceptors(ClassSerializerInterceptor)
+  async getRandomProjects(@Param('count') count: number): Promise<Project[]> {
+     return await this.projectService.getRandomProjects(count);
   }
 }
    
