@@ -1,6 +1,8 @@
 import { Exclude } from 'class-transformer';
 import { BaseEntity, Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 import { ApiProperty } from "@nestjs/swagger";
+import { RoleEnum } from "@/common/enums/role.enum";
+import { IsEnum } from "class-validator";
 
 @Entity()
 export class User extends BaseEntity {
@@ -29,7 +31,8 @@ export class User extends BaseEntity {
   @ApiProperty()
   public lastLoginAt: Date | null;
 
-  @Column({ type: 'timestamp', nullable: true, default: null })
+  @Column({ type: 'enum', enum: RoleEnum, default: RoleEnum.MEMBRE })
+  @IsEnum(RoleEnum)
   @ApiProperty()
-  public firstLoginAt: Date | null;
+  public role: RoleEnum
 }
