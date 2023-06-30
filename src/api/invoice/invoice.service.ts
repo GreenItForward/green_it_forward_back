@@ -108,14 +108,18 @@ export class InvoiceService {
         },
       },
     };
-
-    const pdfDoc = pdfMake.createPdf(docDefinition);
-    return new Promise<Buffer>((resolve, reject) => {
-      pdfDoc.getBuffer((buffer: Buffer) => {
-        resolve(buffer);
-      }, (error: any) => {
-        reject(error);
+ 
+    try {
+      const pdfDoc = pdfMake.createPdf(docDefinition);
+      return new Promise<Buffer>((resolve, reject) => {
+        pdfDoc.getBuffer((buffer: Buffer) => {
+          resolve(buffer);
+        }, (error: any) => {
+          reject(error);
+        });
       });
-    });
+    } catch (error) {
+      console.error('Error creating PDF:', error);
+    }
   }
 }
