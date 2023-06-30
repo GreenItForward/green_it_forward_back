@@ -1,7 +1,7 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { Address, PaymentIntent, PaymentMethod } from '@stripe/stripe-js';
 import { Stripe } from 'stripe';
+import { PaymentIntentDto, PaymentMethodDto } from "@/api/stripe/stripe.dto";
 
 @Injectable()
 export class StripeService {
@@ -18,7 +18,7 @@ export class StripeService {
   }
 
 
-  async getPaymentMethod(id: string): Promise<{ last4: string, name: string, address: Address, brand: string } | null> {
+  async getPaymentMethod(id: string): Promise<PaymentMethodDto | null> {
     const paymentMethod = await this.stripe.paymentMethods.retrieve(id);
     const last4 = paymentMethod.card ? paymentMethod.card.last4 : '';
     const name = paymentMethod.billing_details.name;
@@ -28,7 +28,7 @@ export class StripeService {
     return { last4, name, address, brand };
   }
 
-  async getPaymentIntent(id: string): Promise<{amount: number, currency: string, status: string}> {
+  async getPaymentIntent(id: string): Promise<PaymentIntentDto> {
     const paymentIntent = await this.stripe.paymentIntents.retrieve(id);
     const amount = paymentIntent.amount;
     const currency = paymentIntent.currency;
@@ -36,6 +36,4 @@ export class StripeService {
     
     return { amount, currency, status };
   }
-  
 }
- 

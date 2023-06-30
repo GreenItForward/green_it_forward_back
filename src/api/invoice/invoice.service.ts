@@ -22,12 +22,10 @@ export class InvoiceService {
     });
   }
 
-  async generatePdf(name: string, amount: number, date: string, last4:string, brandCard:string): Promise<Buffer> {
-    if (!name || !amount || !date || !last4 || !brandCard) {      
+  async generatePdf(name: string, amount: number, date: string, last4:string, brandCard:string, project:string): Promise<Buffer> {
+    if (!name || !amount || !date || !last4 || !brandCard || !project) {    
       throw new HttpException('Missing parameters', HttpStatus.BAD_REQUEST);
     }
-
-
 
     const logoImagePath = path.join(process.cwd(),'src', 'assets', 'logo.png');
     const logoImageBase64 = await this.getImageBase64(logoImagePath);
@@ -42,7 +40,7 @@ export class InvoiceService {
                   margin: [40, 20, 0, 0],
                 },
                 {
-                  text: 'WWF',
+                  text: `${project.toUpperCase()}`,
                   width: '50%',
                   alignment: 'right',
                   margin: [0, 20, 40, 0],
@@ -57,7 +55,7 @@ export class InvoiceService {
           margin: [0, 0, 0, 20],
         },
         {
-          text: 'Merci pour votre don à l\'association WWF !',
+          text: `Merci pour votre don à l\'association ${project} !`,
           style: 'header',
           alignment: 'center',
           bold: true,
@@ -110,14 +108,18 @@ export class InvoiceService {
         },
       },
     };
-
-    const pdfDoc = pdfMake.createPdf(docDefinition);
-    return new Promise<Buffer>((resolve, reject) => {
-      pdfDoc.getBuffer((buffer: Buffer) => {
-        resolve(buffer);
-      }, (error: any) => {
-        reject(error);
+ 
+    try {
+      const pdfDoc = pdfMake.createPdf(docDefinition);
+      return new Promise<Buffer>((resolve, reject) => {
+        pdfDoc.getBuffer((buffer: Buffer) => {
+          resolve(buffer);
+        }, (error: any) => {
+          reject(error);
+        });
       });
-    });
+    } catch (error) {
+      console.error('Error creating PDF:', error);
+    }
   }
 }
