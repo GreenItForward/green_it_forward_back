@@ -31,8 +31,12 @@ export class User extends BaseEntity {
   @ApiProperty()
   public lastLoginAt: Date | null;
 
+  @Column({ type: 'timestamp', nullable: true, default: null })
+  @ApiProperty()
+  public firstLoginAt: Date | null;
+
   @Column({ type: 'enum', enum: RoleEnum, default: RoleEnum.MEMBRE })
   @IsEnum(RoleEnum)
   @ApiProperty()
-  public role: RoleEnum
+  public role: RoleEnum 
 }
