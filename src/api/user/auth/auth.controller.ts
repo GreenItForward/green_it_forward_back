@@ -5,6 +5,7 @@ import { JwtAuthGuard } from './auth.guard';
 import { AuthService } from './auth.service';
 import { ApiBadRequestResponse, ApiBody, ApiOkResponse, ApiTags } from "@nestjs/swagger";
 import { User } from '../user.entity';
+import { TokenResponse } from '@/common/types/token-response.interface';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -20,7 +21,7 @@ export class AuthController {
     type: User,
   })
   @ApiBadRequestResponse({ description: 'Bad Request' })
-  private register(@Body() body: RegisterDto): Promise<string | never> {
+  private register(@Body() body: RegisterDto): Promise<TokenResponse> {
     return this.service.register(body);
   }
 
@@ -31,9 +32,9 @@ export class AuthController {
     type: User,
   })
   @ApiBadRequestResponse({ description: 'Bad Request' })
-  private login(@Body() body: LoginDto): Promise<string | never> {
+  private login(@Body() body: LoginDto): Promise<TokenResponse | never> {
     return this.service.login(body);
-  }
+  } 
 
   @Post('refresh')
   @UseGuards(JwtAuthGuard)

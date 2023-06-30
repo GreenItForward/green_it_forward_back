@@ -5,6 +5,7 @@ import { Repository } from 'typeorm';
 import { RegisterDto, LoginDto } from './auth.dto';
 import { AuthHelper } from './auth.helper';
 import { log } from 'console';
+import { TokenResponse } from '@/common/types/token-response.interface';
 
 @Injectable()
 export class AuthService {
@@ -14,7 +15,7 @@ export class AuthService {
   @Inject(AuthHelper)
   private readonly helper: AuthHelper;
 
-  public async register(body: RegisterDto): Promise<string | never> {
+  public async register(body: RegisterDto): Promise<TokenResponse> {
     const { firstName, lastName, email, password }: RegisterDto = body;
     let user: User = await this.repository.findOneBy({ email });
 
@@ -28,12 +29,13 @@ export class AuthService {
     user.lastName = lastName;
     user.email = email;
     user.password = this.helper.encodePassword(password);
+    user.firstLoginAt = new Date();
 
     await this.repository.save(user);
-    return this.helper.generateToken(user);
+    return {token: this.helper.generateToken(user)};
   }
 
-  public async login(body: LoginDto): Promise<string | never> {
+  public async login(body: LoginDto): Promise<TokenResponse> {
     const { email, password }: LoginDto = body;
     const user: User = await this.repository.findOneBy({ email });
 
@@ -49,9 +51,7 @@ export class AuthService {
 
     await this.repository.update(user.id, {lastLoginAt: new Date()});
 
-
-
-    return this.helper.generateToken(user);
+    return {token: this.helper.generateToken(user)};
   }
 
   public async refresh(user: User): Promise<string> {

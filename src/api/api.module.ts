@@ -5,15 +5,19 @@ import { StripeModule } from "@/api/stripe/stripe.module";
 import { MailModule } from "@/api/mailer/mail.module";
 import { InvoiceModule } from "@/api/invoice/invoice.module";
 import { ProjectModule } from './project/project.module';
+import { StatsModule } from "./admin/stats/stats.module";
+import { RoleModule } from "./user/role/role.module";
 
 @Module({
   imports: [
     UserModule,
     AuthModule,
+    RoleModule,
     StripeModule,
     MailModule,
     InvoiceModule,
-    ProjectModule
+    ProjectModule,
+    StatsModule
   ],
   controllers: []
 })
