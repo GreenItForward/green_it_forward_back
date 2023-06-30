@@ -9,6 +9,8 @@ import { MailModule } from './api/mailer/mail.module';
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { TypeOrmConfigService } from './shared/typeorm/typeorm.service';
 import { ProjectModule } from './api/project/project.module';
+import { StatsModule } from './api/admin/stats/stats.module';
+import { ApiModule } from './api/api.module';
 
 const envFilePath: string = getEnvPath(`${process.cwd()}`);
 
@@ -16,7 +18,7 @@ const envFilePath: string = getEnvPath(`${process.cwd()}`);
   imports: [ 
     ConfigModule.forRoot({ envFilePath, isGlobal: true }),
     TypeOrmModule.forRootAsync({ useClass: TypeOrmConfigService }),
-    UserModule, StripeModule, InvoiceModule, MailModule, MailerModule, ProjectModule
+    ApiModule
   ],
 })
 export class AppModule {}
