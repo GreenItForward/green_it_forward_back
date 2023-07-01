@@ -53,6 +53,7 @@ export class UserService {
     }
 
     user.isVerified = true;
+    user.confirmationToken = null;
     await this.repository.save(user);
 
     return { status: 'success', message: 'User verified successfully' };
