@@ -4,6 +4,7 @@ import { MailService } from "./mail.service";
 import { ApiBearerAuth, ApiBody, ApiTags } from "@nestjs/swagger";
 import { JwtAuthGuard } from "@/api/user/auth/auth.guard";
 import { EmailDto } from "@/api/mailer/email.dto";
+import { User } from "../user/user.entity";
 
 @ApiTags('Mailer')
 @Controller('mail')
@@ -34,7 +35,7 @@ export class MailController {
     @UseInterceptors(ClassSerializerInterceptor)
     @ApiBody({ type: EmailDto })
     async sendUserConfirmation(@Body() body: EmailDto, @Req() req: Request) {
-        return await this.mailService.sendUserConfirmation(body, req.headers.authorization);
+        return await this.mailService.sendUserConfirmation(<User>req.user);
     }
 
 }

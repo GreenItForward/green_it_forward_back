@@ -20,3 +20,10 @@ export class ChangeRoleDto {
   @ApiProperty({ required: true })
   role: RoleEnum;
 }
+
+export class VerifyUserDto {
+  @IsNotEmpty()
+  @IsString()
+  @ApiProperty({ required: true })
+  token: string;
+}

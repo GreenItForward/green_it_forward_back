@@ -21,7 +21,7 @@ export class AuthController {
     type: User,
   })
   @ApiBadRequestResponse({ description: 'Bad Request' })
-  private register(@Body() body: RegisterDto): Promise<TokenResponse> {
+  private register(@Body() body: RegisterDto): Promise<User> {
     return this.service.register(body);
   }
 
