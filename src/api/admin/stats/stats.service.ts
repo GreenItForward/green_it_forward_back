@@ -54,6 +54,10 @@ export class StatsService {
                 orderedUsersPerMonth[key] = usersPerMonth[key];
             }
         });
+
+        if (Object.keys(orderedUsersPerMonth).length === 0) {
+            orderedUsersPerMonth["Aucune donnée"] = 0;
+        }
     
         return orderedUsersPerMonth;
     }
