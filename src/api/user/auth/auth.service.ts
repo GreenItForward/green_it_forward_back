@@ -56,6 +56,10 @@ export class AuthService {
       throw new HttpException('That email/username and password combination didn\'t work', HttpStatus.NOT_FOUND);
     }
 
+    if (!user.isVerified) {
+      throw new HttpException('Please confirm your email address', HttpStatus.FORBIDDEN);
+    }
+
     await this.repository.update(user.id, {lastLoginAt: new Date()});
 
     return {token: this.helper.generateToken(user)};

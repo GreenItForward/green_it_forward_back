@@ -39,15 +39,17 @@ export class UserService {
 
   async verifyUserByToken(token: string): Promise<User | null> {
     const user = await this.repository.findOne({ where: { confirmationToken: token } });
-
     return user || null;
   }
 
   async verifyUser(token: string): Promise<{ status: string; message: string }> {
     const user = await this.verifyUserByToken(token);
-
     if (!user) {
-      throw new HttpException('Invalid token', HttpStatus.BAD_REQUEST);
+      throw new HttpException('le token est invalide.', HttpStatus.BAD_REQUEST);
+    }
+
+    if (user.isVerified) {
+      throw new HttpException(`l'utilisateur a déja été vérifié.`, HttpStatus.BAD_REQUEST);
     }
 
     user.isVerified = true;

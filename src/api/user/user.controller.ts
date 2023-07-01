@@ -47,11 +47,9 @@ export class UserController {
 
   @Post('verify')
   @ApiBearerAuth()
-  @UseGuards(JwtAuthGuard)
-  @UseInterceptors(ClassSerializerInterceptor)
   async verifyUser(@Body() body: VerifyUserDto) {
     return this.service.verifyUser(body.token);
   }
-
+ 
 
 }
