@@ -7,6 +7,7 @@ import { InvoiceModule } from "@/api/invoice/invoice.module";
 import { ProjectModule } from './project/project.module';
 import { StatsModule } from "./admin/stats/stats.module";
 import { RoleModule } from "./user/role/role.module";
+import {CommunityModule} from "@/api/community/community.module";
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { RoleModule } from "./user/role/role.module";
     MailModule,
     InvoiceModule,
     ProjectModule,
+    CommunityModule,
     StatsModule
   ],
   controllers: []

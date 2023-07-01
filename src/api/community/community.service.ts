@@ -2,6 +2,8 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Community } from './community.entity';
+import {User} from "@/api/user/user.entity";
+import {CreateCommunityDto} from "@/api/community/community.dto";
 
 @Injectable()
 export class CommunityService {

@@ -7,21 +7,27 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import { User } from '../user/user.entity';
+import {ApiProperty} from "@nestjs/swagger";
 
 @Entity()
 export class Community extends BaseEntity {
+  @ApiProperty()
   @PrimaryGeneratedColumn()
   id: number;
 
+  @ApiProperty()
   @Column()
   nom: string;
 
+  @ApiProperty()
   @Column()
   description: string;
 
-  @ManyToOne(() => User, (user) => user.projects)
+  @ApiProperty()
+  @ManyToOne(() => User, (user) => user.communities)
   user: User;
 
-  @OneToMany(() => Community, (project) => project.user)
-  projects: Community[];
+  @ApiProperty()
+  @OneToMany(() => Community, (community) => community.user)
+  communities: Community[];
 }

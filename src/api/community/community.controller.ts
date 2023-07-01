@@ -15,13 +15,15 @@ import { CommunityService } from './community.service';
 import { UserService } from '../user/user.service';
 import { Community } from './community.entity';
 import { CreateCommunityDto } from './community.dto';
+import {ApiBearerAuth, ApiBody} from "@nestjs/swagger";
+import {JwtAuthGuard} from "@/api/user/auth/auth.guard";
+import {User} from "@/api/user/user.entity";
 
 @Controller('communities')
 export class CommunityController {
   @Inject(CommunityService)
   private readonly service: CommunityService;
 
-  @Inject(UserService)
   private readonly userService: UserService;
 
   @Get('user')
