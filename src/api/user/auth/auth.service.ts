@@ -4,8 +4,8 @@ import { User } from '@/api/user/user.entity';
 import { Repository } from 'typeorm';
 import { RegisterDto, LoginDto } from './auth.dto';
 import { AuthHelper } from './auth.helper';
-import { log } from 'console';
 import { TokenResponse } from '@/common/types/token-response.interface';
+import { MailService } from '@/api/mailer/mail.service';
 
 @Injectable()
 export class AuthService {
@@ -15,7 +15,11 @@ export class AuthService {
   @Inject(AuthHelper)
   private readonly helper: AuthHelper;
 
-  public async register(body: RegisterDto): Promise<TokenResponse> {
+  constructor(
+    private readonly mailService: MailService,
+  ) {}
+
+  public async register(body: RegisterDto): Promise<User> {
     const { firstName, lastName, email, password }: RegisterDto = body;
     let user: User = await this.repository.findOneBy({ email });
 
@@ -32,13 +36,16 @@ export class AuthService {
     user.firstLoginAt = new Date();
 
     await this.repository.save(user);
-    return {token: this.helper.generateToken(user)};
+
+    this.mailService.sendUserConfirmation(user);
+
+    return user;
   }
 
   public async login(body: LoginDto): Promise<TokenResponse> {
     const { email, password }: LoginDto = body;
     const user: User = await this.repository.findOneBy({ email });
-
+ 
     if (!user) {
       throw new HttpException('That email/username and password combination didn\'t work', HttpStatus.NOT_FOUND);
     }

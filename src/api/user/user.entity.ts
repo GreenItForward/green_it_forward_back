@@ -39,4 +39,13 @@ export class User extends BaseEntity {
   @IsEnum(RoleEnum)
   @ApiProperty()
   public role: RoleEnum 
+
+  @Column({ type: 'boolean', default: false })
+  @ApiProperty()
+  public isVerified: boolean;
+
+  @Column({ type: 'varchar', nullable: true })
+  @ApiProperty()
+  public confirmationToken: string | null;
+
 }

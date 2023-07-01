@@ -5,7 +5,7 @@ import { Repository } from "typeorm";
 import { RoleEnum } from "@/common/enums/role.enum";
 import { UserService } from "../user.service";
 import { Request } from "express";
-import { ChangeRoleDto } from "./user.dto";
+import { ChangeRoleDto } from "../user.dto";
 
 @Injectable()
 export class RoleService {  
