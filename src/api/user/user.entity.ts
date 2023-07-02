@@ -40,9 +40,9 @@ export class User extends BaseEntity {
   @ApiProperty()
   public role: RoleEnum;
 
-  @Column({ type: 'varchar' })
+  @Column({ type: 'varchar', nullable: true, default: null })
   @ApiProperty()
-  public ipAddress: string;
+  public ipAddress: string | null;
 
   @Column({ type: 'boolean', default: false })
   @ApiProperty()
