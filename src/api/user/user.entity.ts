@@ -38,7 +38,7 @@ export class User extends BaseEntity {
   @Column({ type: 'enum', enum: RoleEnum, default: RoleEnum.MEMBRE })
   @IsEnum(RoleEnum)
   @ApiProperty()
-  public role: RoleEnum 
+  public role: RoleEnum;
 
   @Column({ type: 'boolean', default: false })
   @ApiProperty()
