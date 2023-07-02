@@ -4,6 +4,8 @@ import { Module } from '@nestjs/common';
 import { MailService } from './mail.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MailController } from "@/api/mailer/mail.controller";
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { User } from '../user/user.entity';
 
 @Module({
   imports: [
@@ -32,6 +34,7 @@ import { MailController } from "@/api/mailer/mail.controller";
         },
       }),
     }),
+  TypeOrmModule.forFeature([User])
   ],
   controllers: [MailController],
   providers: [MailService],

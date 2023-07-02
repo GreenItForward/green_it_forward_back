@@ -6,7 +6,7 @@ import { JwtAuthGuard } from "../auth/auth.guard";
 import { RolesGuard } from "./role.guard";
 import { Roles } from "./role.decorator";
 import { RoleEnum } from "@/common/enums/role.enum";
-import { ChangeRoleDto } from "./user.dto";
+import { ChangeRoleDto } from "../user.dto";
 import { User } from "../user.entity";
 
 @ApiTags('Roles')

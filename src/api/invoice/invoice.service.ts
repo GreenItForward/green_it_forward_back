@@ -20,7 +20,7 @@ export class InvoiceService {
         }
       });
     });
-  }
+  } 
 
   async generatePdf(name: string, amount: number, date: string, last4:string, brandCard:string, project:string): Promise<Buffer> {
     if (!name || !amount || !date || !last4 || !brandCard || !project) {    
