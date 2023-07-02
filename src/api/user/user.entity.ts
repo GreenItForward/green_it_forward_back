@@ -40,6 +40,10 @@ export class User extends BaseEntity {
   @ApiProperty()
   public role: RoleEnum;
 
+  @Column({ type: 'varchar' })
+  @ApiProperty()
+  public ipAddress: string;
+
   @Column({ type: 'boolean', default: false })
   @ApiProperty()
   public isVerified: boolean;
@@ -47,5 +51,4 @@ export class User extends BaseEntity {
   @Column({ type: 'varchar', nullable: true })
   @ApiProperty()
   public confirmationToken: string | null;
-
 }

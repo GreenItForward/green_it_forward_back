@@ -59,4 +59,9 @@ export class AuthHelper {
 
     return true;
   }
+
+  public async isUserBanIp(ip: string): Promise<boolean> {
+    const user = await this.repository.findOne({ where: { ipAddress : ip } });
+    return user ? true : false;
+  }
 }
