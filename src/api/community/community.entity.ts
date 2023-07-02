@@ -1,15 +1,16 @@
 import {
   BaseEntity,
   Column,
-  Entity,
+  Entity, JoinTable, ManyToMany,
   ManyToOne,
   OneToMany,
-  PrimaryGeneratedColumn,
+  PrimaryGeneratedColumn, Unique,
 } from 'typeorm';
 import { User } from '../user/user.entity';
 import {ApiProperty} from "@nestjs/swagger";
 
 @Entity()
+@Unique(['name'])
 export class Community extends BaseEntity {
   @ApiProperty()
   @PrimaryGeneratedColumn()
@@ -17,11 +18,15 @@ export class Community extends BaseEntity {
 
   @ApiProperty()
   @Column()
-  nom: string;
+  name: string;
 
   @ApiProperty()
   @Column()
   description: string;
+
+  @ApiProperty()
+  @Column()
+  imgUrl: string;
 
   @ApiProperty()
   @ManyToOne(() => User, (user) => user.communities)
@@ -30,4 +35,9 @@ export class Community extends BaseEntity {
   @ApiProperty()
   @OneToMany(() => Community, (community) => community.user)
   communities: Community[];
+
+  @ApiProperty()
+  @ManyToMany(() => User)
+  @JoinTable()
+  followers: User[];
 }

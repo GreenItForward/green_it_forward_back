@@ -34,6 +34,22 @@ export class CommunityController {
     return this.service.getAllByUser(<User>user);
   }
 
+  @Get('community/:id')
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @UseInterceptors(ClassSerializerInterceptor)
+  public async getCommunityById(@Param('id') id: string): Promise<Community> {
+    return this.service.getCommunityById(parseInt(id));
+  }
+
+  @Get('community/:id/users')
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @UseInterceptors(ClassSerializerInterceptor)
+  public async getCommunityUsers(@Param('id') id: string): Promise<User[]> {
+    return this.service.getUsersByCommunityId(parseInt(id));
+  }
+
   @Get('all')
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)

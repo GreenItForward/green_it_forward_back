@@ -1,5 +1,5 @@
 import { Exclude } from 'class-transformer';
-import {BaseEntity, Column, Entity, OneToMany, PrimaryGeneratedColumn} from 'typeorm';
+import {BaseEntity, Column, Entity, JoinTable, ManyToMany, OneToMany, PrimaryGeneratedColumn} from 'typeorm';
 import { ApiProperty } from "@nestjs/swagger";
 import { RoleEnum } from "@/common/enums/role.enum";
 import { IsEnum } from "class-validator";
@@ -41,6 +41,8 @@ export class User extends BaseEntity {
   @ApiProperty()
   public role: RoleEnum
 
-  @OneToMany(() => Community , (community) => community.user)
+  @ApiProperty()
+  @ManyToMany(() => Community)
+  @JoinTable()
   communities: Community[];
 }

@@ -1,7 +1,7 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { Community } from './community.entity';
+import {Injectable, NotFoundException} from '@nestjs/common';
+import {InjectRepository} from '@nestjs/typeorm';
+import {Repository} from 'typeorm';
+import {Community} from './community.entity';
 import {User} from "@/api/user/user.entity";
 import {CreateCommunityDto} from "@/api/community/community.dto";
 
@@ -19,8 +19,13 @@ export class CommunityService {
     user: User,
   ): Promise<Community> {
     const community = new Community();
-    community.nom = body.nom;
+    community.name = body.name;
     community.description = body.description;
+    community.imgUrl = body.imgUrl;
+    if (body.followers && body.followers.length > 0) {
+      const followerIds = body.followers;
+      community.followers = await User.findByIds(followerIds);
+    }
     community.user = user;
 
     return this.repository.save(community);
@@ -29,6 +34,8 @@ export class CommunityService {
   public async update(community: Community): Promise<Community> {
     return this.repository.save(community);
   }
+
+
 
   public async getCommunityById(id: number): Promise<Community> {
     const community = await this.repository.findOne({
@@ -57,6 +64,16 @@ export class CommunityService {
     }
 
     return foundCommunity.id;
+  }
+
+  public async getUsersByCommunityId(communityId: number): Promise<User[]> {
+    const community = await this.repository.findOne({ where: { id: communityId }, relations: ['followers'] });
+
+    if (!community) {
+      throw new NotFoundException('Community not found');
+    }
+
+    return community.followers;
   }
 
   public async getAllByUser(user: User): Promise<Community[]> {
