@@ -18,6 +18,9 @@ import { UpdateNameDto, VerifyUserDto } from "./user.dto";
 import { User } from "./user.entity";
 import { UserService } from "./user.service";
 import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
+import { Roles } from "@/api/user/role/role.decorator";
+import { RoleEnum } from "@/common/enums/role.enum";
+import { RolesGuard } from "@/api/user/role/role.guard";
 
 @ApiTags('User')
 @Controller('user')
@@ -33,6 +36,21 @@ export class UserController {
     return this.service.updateName(body, req);
   }
 
+  @Post('verify')
+  @ApiBearerAuth()
+  async verifyUser(@Body() body: VerifyUserDto) {
+    return this.service.verifyUser(body.token);
+  }
+
+  @Get('admin')
+  @ApiBearerAuth()
+  @Roles(RoleEnum.ADMINISTRATEUR)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @UseInterceptors(ClassSerializerInterceptor)
+  async admin(): Promise<User[]> {
+    return await this.service.admin();
+  }
+
   @Get('/:id')
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
@@ -43,13 +61,5 @@ export class UserController {
       throw new BadRequestException('Invalid user ID');
     }
     return this.service.getUser(id);
-  }  
-
-  @Post('verify')
-  @ApiBearerAuth()
-  async verifyUser(@Body() body: VerifyUserDto) {
-    return this.service.verifyUser(body.token);
   }
- 
-
 }

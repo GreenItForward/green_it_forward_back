@@ -58,4 +58,8 @@ export class UserService {
 
     return { status: 'success', message: 'User verified successfully' };
   }
+
+  admin(): Promise<User[]> {
+    return this.repository.find();
+  }
 }
