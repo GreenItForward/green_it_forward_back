@@ -27,3 +27,25 @@ export class VerifyUserDto {
   @ApiProperty({ required: true })
   token: string;
 }
+
+export class MeDto {
+  @IsNotEmpty()
+  @IsString()
+  @ApiProperty({ required: true })
+  email: string;
+
+  @IsString()
+  @IsOptional()
+  @ApiProperty()
+  firstName: string | null;
+
+  @IsString()
+  @IsOptional()
+  @ApiProperty()
+  lastName: string | null;
+
+  @IsNotEmpty()
+  @IsEnum(RoleEnum)
+  @ApiProperty({ required: true })
+  role: RoleEnum;
+}

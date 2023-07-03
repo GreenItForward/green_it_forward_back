@@ -14,7 +14,7 @@ import {
 } from "@nestjs/common";
 import { Request } from "express";
 import { JwtAuthGuard } from "@/api/user/auth/auth.guard";
-import { UpdateNameDto, VerifyUserDto } from "./user.dto";
+import { MeDto, UpdateNameDto, VerifyUserDto } from "./user.dto";
 import { User } from "./user.entity";
 import { UserService } from "./user.service";
 import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
@@ -38,7 +38,7 @@ export class UserController {
 
   @Post('verify')
   @ApiBearerAuth()
-  async verifyUser(@Body() body: VerifyUserDto) {
+  private async verifyUser(@Body() body: VerifyUserDto) {
     return this.service.verifyUser(body.token);
   }
 
@@ -47,8 +47,22 @@ export class UserController {
   @Roles(RoleEnum.ADMINISTRATEUR)
   @UseGuards(JwtAuthGuard, RolesGuard)
   @UseInterceptors(ClassSerializerInterceptor)
-  async admin(): Promise<User[]> {
+  private async admin(): Promise<User[]> {
     return await this.service.admin();
+  }
+
+  @Get('me')
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @UseInterceptors(ClassSerializerInterceptor)
+  private getMe(@Req() req: Request): MeDto {
+    const user = req.user as User;
+    return {
+      email: user.email,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      role: user.role
+    };
   }
 
   @Get('/:id')
