@@ -7,6 +7,11 @@ export class UpdateNameDto {
   @IsOptional()
   @ApiProperty()
   public readonly firstName?: string;
+
+  @IsString()
+  @IsOptional()
+  @ApiProperty()
+  public readonly lastName?: string;
 }
 
 export class ChangeRoleDto {

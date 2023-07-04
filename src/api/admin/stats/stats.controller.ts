@@ -9,9 +9,12 @@ import {
     UseGuards,
     UseInterceptors
   } from "@nestjs/common";
-  import { ApiTags } from "@nestjs/swagger";
+  import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
   import { JwtAuthGuard } from "@/api/user/auth/auth.guard";
 import { StatsService } from "./stats.service";
+import { Roles } from "@/api/user/role/role.decorator";
+import { RoleEnum } from "@/common/enums/role.enum";
+import { RolesGuard } from "@/api/user/role/role.guard";
   
   @ApiTags('Stats')
   @Controller('stats')
@@ -49,6 +52,10 @@ import { StatsService } from "./stats.service";
     }
 
     @Get('users-per-month/:year')
+    @ApiBearerAuth()
+    @Roles(RoleEnum.ADMINISTRATEUR)
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @UseInterceptors(ClassSerializerInterceptor)
     async getUsersPerMonth(@Param('year', new ParseIntPipe()) year: number): Promise<{[key: string]: number}> {
         try {
             return await this.statsService.getUsersPerMonth(year);

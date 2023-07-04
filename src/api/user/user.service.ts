@@ -1,10 +1,18 @@
 import { RoleService } from './role/role.service';
-import {HttpException, HttpStatus, Inject, Injectable, NotFoundException, forwardRef } from "@nestjs/common";
+import {
+  HttpException,
+  HttpStatus,
+  Inject,
+  Injectable,
+  NotFoundException,
+  forwardRef,
+  ForbiddenException
+} from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { Request } from "express";
 import { User } from "./user.entity";
-import { UpdateNameDto } from './user.dto';
+import { MeDto, UpdateNameDto } from "./user.dto";
 
 @Injectable()
 export class UserService {
@@ -16,12 +24,21 @@ export class UserService {
     private roleService: RoleService,
   ) {}
 
-  public async updateName(body: UpdateNameDto, req: Request): Promise<User> {
-    const user: User = <User>req.user;
+  public async updateName(body: UpdateNameDto, user: User): Promise<MeDto> {
+    if (!user) {
+      throw new ForbiddenException('User is undefined');
+    }
 
     user.firstName = body.firstName;
+    user.lastName = body.lastName;
 
-    return this.repository.save(user);
+    await this.repository.save(user);
+    return {
+      email: user.email,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      role: user.role
+    }
   }
 
   public async getUser(id: number):Promise<User> {

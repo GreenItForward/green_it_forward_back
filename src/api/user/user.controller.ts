@@ -30,10 +30,11 @@ export class UserController {
  
 
   @Put('name')
+  @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(ClassSerializerInterceptor)
-  private updateName(@Body() body: UpdateNameDto, @Req() req: Request): Promise<User> {
-    return this.service.updateName(body, req);
+  private updateName(@Body() body: UpdateNameDto, @Req() { user }: Request): Promise<MeDto> {
+    return this.service.updateName(body, <User>user);
   }
 
   @Post('verify')
