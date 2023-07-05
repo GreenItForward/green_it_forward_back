@@ -14,7 +14,7 @@ import { Response } from 'express';
 import { InvoiceService } from './invoice.service';
 import { ApiTags } from "@nestjs/swagger";
 import { JwtAuthGuard } from "@/api/user/auth/auth.guard";
-import { readFileSync } from "fs";
+import { readFileSync, unlinkSync } from "fs";
 import { join } from "path";
 
 @ApiTags('Invoice')
@@ -23,9 +23,9 @@ export class InvoiceController {
   constructor(private readonly invoiceService: InvoiceService) {}
 
 
-  @Get('generate-pdf/:name/:amount')/*
+  @Get('generate-pdf/:name/:amount')
   @UseGuards(JwtAuthGuard)
-  @UseInterceptors(ClassSerializerInterceptor)*/
+  @UseInterceptors(ClassSerializerInterceptor)
   async downloadPdf(
     @Param('name') name: string,
     @Param('amount') amount: number,
@@ -38,13 +38,13 @@ export class InvoiceController {
     try {
       const fileName = 'output.pdf';
       await this.invoiceService.generatePdf(name, amount, date, last4, brandCard, project);
-
       const filePath = join(process.cwd(), fileName);
       const file = readFileSync(filePath);
       res.setHeader('Content-Type', 'application/pdf');
       res.setHeader('Content-Disposition', `attachment; filename=${fileName}`);
       res.setHeader('Content-Length', file.length);
       res.end(file); 
+      unlinkSync(filePath);
     } catch (error) {
       throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
     }
