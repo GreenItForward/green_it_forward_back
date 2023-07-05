@@ -27,7 +27,7 @@ export class Post extends BaseEntity {
 
   @ApiProperty()
   @ManyToOne(() => Community, (community) => community.posts)
-  @JoinColumn() 
+  @JoinColumn()
   community: Promise<Community>;
 
   @ApiProperty()
