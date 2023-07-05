@@ -4,6 +4,7 @@ import { ApiProperty } from "@nestjs/swagger";
 import { RoleEnum } from "@/common/enums/role.enum";
 import { IsEnum } from "class-validator";
 import {Community} from "@/api/community/community.entity";
+import {Post} from "@/api/post/post.entity";
 
 @Entity()
 export class User extends BaseEntity {
@@ -45,4 +46,9 @@ export class User extends BaseEntity {
   @ManyToMany(() => Community)
   @JoinTable()
   communities: Community[];
+
+  @ApiProperty()
+  @OneToMany(() => Post, (post) => post.author)
+  @JoinTable()
+  posts: Post[];
 }

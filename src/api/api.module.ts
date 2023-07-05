@@ -8,6 +8,7 @@ import { ProjectModule } from './project/project.module';
 import { StatsModule } from "./admin/stats/stats.module";
 import { RoleModule } from "./user/role/role.module";
 import {CommunityModule} from "@/api/community/community.module";
+import {PostModule} from "@/api/post/post.module";
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import {CommunityModule} from "@/api/community/community.module";
     AuthModule,
     RoleModule,
     StripeModule,
+    PostModule,
     MailModule,
     InvoiceModule,
     ProjectModule,
