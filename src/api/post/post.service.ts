@@ -21,7 +21,7 @@ export class PostService {
     const post = new Post();
     post.subject = body.subject;
     post.text = body.text;
-    post.communityId = body.communityId;
+    post.community = body.community;
     post.author = user;
     return this.repository.save(post);
   }
@@ -56,7 +56,8 @@ export class PostService {
 
   public async getAllByCommunity(communityId: number): Promise<Post[]> {
     const posts = await this.repository.find({
-      where: { communityId: communityId }
+      where: { community: { id: communityId } },
+      relations: ['author'],
     });
 
     if (!posts || posts.length === 0) {

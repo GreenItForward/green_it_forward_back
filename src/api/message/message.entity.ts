@@ -9,34 +9,25 @@ import {
 import { User } from '../user/user.entity';
 import {ApiProperty} from "@nestjs/swagger";
 import {Community} from "@/api/community/community.entity";
-import {Message} from "@/api/message/message.entity";
+import {Post} from "@/api/post/post.entity";
 
 @Entity()
-export class Post extends BaseEntity {
+export class Message extends BaseEntity {
   @ApiProperty()
   @PrimaryGeneratedColumn()
   id: number;
 
   @ApiProperty()
   @Column()
-  subject: string;
-
-  @ApiProperty()
-  @Column()
   text: string;
 
   @ApiProperty()
-  @ManyToOne(() => Community, (community) => community.posts)
+  @ManyToOne(() => Post, (post) => post.messages)
   @JoinTable()
-  community: Community;
+  post: Post;
 
   @ApiProperty()
   @ManyToOne(() => User, (user) => user.posts)
   @JoinTable()
   author: User;
-
-  @ApiProperty()
-  @OneToMany(() => Message, (message) => message.post)
-  @JoinTable()
-  messages: Message[];
 }
