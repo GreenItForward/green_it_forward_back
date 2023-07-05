@@ -49,6 +49,5 @@ export class User extends BaseEntity {
 
   @ApiProperty()
   @OneToMany(() => Post, (post) => post.author)
-  @JoinTable()
   posts: Post[];
 }

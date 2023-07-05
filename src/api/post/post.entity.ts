@@ -1,7 +1,7 @@
 import {
   BaseEntity,
   Column,
-  Entity, JoinTable,
+  Entity, JoinColumn, JoinTable,
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn, Unique,
@@ -27,13 +27,14 @@ export class Post extends BaseEntity {
 
   @ApiProperty()
   @ManyToOne(() => Community, (community) => community.posts)
-  @JoinTable()
-  community: Community;
+  @JoinColumn() 
+  community: Promise<Community>;
 
   @ApiProperty()
   @ManyToOne(() => User, (user) => user.posts)
-  @JoinTable()
+  @JoinColumn() 
   author: User;
+
 
   @ApiProperty()
   @OneToMany(() => Message, (message) => message.post)

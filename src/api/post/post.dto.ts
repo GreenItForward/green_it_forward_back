@@ -15,7 +15,7 @@ export class CreatePostDto {
 
   @IsNotEmpty()
   @ApiProperty()
-  public readonly community: Community;
+  public readonly community: Promise<Community>;
 
   @IsArray()
   @IsOptional()
