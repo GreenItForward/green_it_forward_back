@@ -38,7 +38,11 @@ export class User extends BaseEntity {
   @Column({ type: 'enum', enum: RoleEnum, default: RoleEnum.MEMBRE })
   @IsEnum(RoleEnum)
   @ApiProperty()
-  public role: RoleEnum 
+  public role: RoleEnum;
+
+  @Column({ type: 'varchar', nullable: true, default: null })
+  @ApiProperty()
+  public ipAddress: string | null;
 
   @Column({ type: 'boolean', default: false })
   @ApiProperty()
@@ -47,5 +51,4 @@ export class User extends BaseEntity {
   @Column({ type: 'varchar', nullable: true })
   @ApiProperty()
   public confirmationToken: string | null;
-
 }

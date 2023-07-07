@@ -21,8 +21,8 @@ export class AuthController {
     type: User,
   })
   @ApiBadRequestResponse({ description: 'Bad Request' })
-  private register(@Body() body: RegisterDto): Promise<User> {
-    return this.service.register(body);
+  private register(@Req() { ip }: Request, @Body() body: RegisterDto): Promise<User> {
+    return this.service.register(body, ip);
   }
 
   @Post('login')
@@ -32,14 +32,13 @@ export class AuthController {
     type: User,
   })
   @ApiBadRequestResponse({ description: 'Bad Request' })
-  private login(@Body() body: LoginDto): Promise<TokenResponse | never> {
-    return this.service.login(body);
+  private login(@Req() { ip }: Request, @Body() body: LoginDto): Promise<TokenResponse | never> {
+    return this.service.login(body, ip);
   } 
 
   @Post('refresh')
   @UseGuards(JwtAuthGuard)
-  private refresh(@Req() { user }: Request): Promise<string | never> {
-    return this.service.refresh(<User>user);
+  private refresh(@Req() req: Request): Promise<string | never> {
+    return this.service.refresh(<User>req.user, req.ip);
   }
-  
 }

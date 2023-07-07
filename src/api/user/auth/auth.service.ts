@@ -19,7 +19,11 @@ export class AuthService {
     private readonly mailService: MailService,
   ) {}
 
-  public async register(body: RegisterDto): Promise<User> {
+  public async register(body: RegisterDto, ip: string): Promise<User> {
+    if(await this.helper.isUserBanIp(ip)) {
+      throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
+    }
+
     const { firstName, lastName, email, password }: RegisterDto = body;
     let user: User = await this.repository.findOneBy({ email });
 
@@ -34,15 +38,20 @@ export class AuthService {
     user.email = email;
     user.password = this.helper.encodePassword(password);
     user.firstLoginAt = new Date();
+    user.ipAddress = ip;
 
     await this.repository.save(user);
 
-    this.mailService.sendUserConfirmation(user);
+    await this.mailService.sendUserConfirmation(user);
 
     return user;
   }
 
-  public async login(body: LoginDto): Promise<TokenResponse> {
+  public async login(body: LoginDto, ip: string): Promise<TokenResponse> {
+    if(await this.helper.isUserBanIp(ip)) {
+      throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
+    }
+
     const { email, password }: LoginDto = body;
     const user: User = await this.repository.findOneBy({ email });
  
@@ -60,13 +69,17 @@ export class AuthService {
       throw new HttpException('Please confirm your email address', HttpStatus.FORBIDDEN);
     }
 
-    await this.repository.update(user.id, {lastLoginAt: new Date()});
+    await this.repository.update(user.id, { lastLoginAt: new Date(), ipAddress: ip });
 
     return {token: this.helper.generateToken(user)};
   }
 
-  public async refresh(user: User): Promise<string> {
-    this.repository.update(user.id, { lastLoginAt: new Date() });
+  public async refresh(user: User, ip: string): Promise<string> {
+    if(await this.helper.isUserBanIp(ip)) {
+      throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
+    }
+
+    await this.repository.update(user.id, { lastLoginAt: new Date() });
 
     return this.helper.generateToken(user);
   }
