@@ -26,7 +26,6 @@ export class UserService {
 
   public async updateName(body: UpdateNameDto, user: User): Promise<MeDto> {
     if (!user) {
-      console.log(user);
       throw new ForbiddenException('User is undefined');
     }
 
