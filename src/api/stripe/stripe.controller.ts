@@ -6,29 +6,45 @@ import {
   Get,
   UseGuards,
   UseInterceptors,
-  ClassSerializerInterceptor
+  ClassSerializerInterceptor,
+  Req
 } from "@nestjs/common";
 import { StripeService } from './stripe.config';
 import { ApiBody, ApiTags } from "@nestjs/swagger";
 import { JwtAuthGuard } from "@/api/user/auth/auth.guard";
 import { CreatePaymentDto, PaymentIntentDto, PaymentMethodDto } from "@/api/stripe/stripe.dto";
+import { InjectRepository } from "@nestjs/typeorm";
+import { Repository } from "typeorm";
+import { Stripe } from "./stripe.entity";
 
 @ApiTags('Payments')
-@Controller('payments')
+@Controller('payments') 
 export class StripeController {
+  @InjectRepository(Stripe)
+  private readonly paymentReposiory: Repository<Stripe>;
+  
   constructor(private readonly stripeService: StripeService) {}
 
   @Post('create-payment-intent')
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(ClassSerializerInterceptor)
   @ApiBody({ type: CreatePaymentDto })
-  async createPaymentIntent(@Body() body: CreatePaymentDto) {
+  async createPaymentIntent(@Body() body: CreatePaymentDto, @Req() req) {
     const stripe = this.stripeService.getStripeInstance();
     const convertedAmount = Math.round(body.amount * 100);
+
     const paymentIntent = await stripe.paymentIntents.create({
       amount: convertedAmount,
       currency: 'eur',
+      metadata: { userId: req.user.id, projectId: body.projectId },
     });
+
+
+    await this.paymentReposiory.save({
+      paymentIntentId: paymentIntent.id,
+      user: req.user,
+    });
+
     return { clientSecret: paymentIntent.client_secret };
   }
 
@@ -45,4 +61,5 @@ export class StripeController {
   async getPaymentIntent(@Param('id') id: string): Promise<PaymentIntentDto> {
     return await this.stripeService.getPaymentIntent(id);
   }
+
 }

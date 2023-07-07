@@ -1,11 +1,15 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsNumber, IsString } from "class-validator";
+import { IsNumber, IsString, IsUUID } from "class-validator";
 import { Address } from "@stripe/stripe-js";
 
 export class CreatePaymentDto {
   @IsNumber()
   @ApiProperty()
   public readonly amount: number;
+
+  @IsUUID()
+  @ApiProperty()
+  public readonly projectId: string;
 }
 
 export class PaymentMethodDto {
@@ -26,6 +30,13 @@ export class PaymentMethodDto {
 }
 
 export class PaymentIntentDto {
+  @IsNumber()
+  @ApiProperty()
+  public readonly userId: number;
+
+  @IsUUID()
+  @ApiProperty()
+  public readonly projectId: string;
   @IsNumber()
   @ApiProperty()
   public readonly amount: number;

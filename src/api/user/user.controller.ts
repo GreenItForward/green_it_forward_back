@@ -37,8 +37,8 @@ export class UserController {
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(ClassSerializerInterceptor)
-  private async getUser(@Param('id') userId: number): Promise<User | never> {
-    const id = Number(userId); 
+  private async getUser(@Param('id') userId:number): Promise<User | never> {
+    const id =  Number(userId);
     if (isNaN(id)) {
       throw new BadRequestException('Invalid user ID');
     }

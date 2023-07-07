@@ -6,10 +6,7 @@ import * as path from 'path';
 const PDFDocument = require('pdfkit-table');
 @Injectable()
 export class InvoiceService {
-  constructor() {
-
-
-  }
+  constructor() { }
 
   async getImageBase64(imagePath: string): Promise<string> {
     return new Promise((resolve, reject) => {
