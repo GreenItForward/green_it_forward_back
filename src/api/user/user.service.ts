@@ -31,7 +31,7 @@ export class UserService {
       .getOne();
 
     if (!user) {
-      throw new NotFoundException('Aucun rôle trouvé.');
+      throw new NotFoundException('Aucun utilisateur trouvé.');
     }
 
     return user;

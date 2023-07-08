@@ -9,7 +9,7 @@ import {
   import { Project } from '../project/project.entity';
   
   @Entity()
-  export class Stripe {
+  export class Payment {
     @PrimaryGeneratedColumn('uuid')
     id: string;
   

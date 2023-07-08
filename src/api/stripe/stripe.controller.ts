@@ -15,13 +15,13 @@ import { JwtAuthGuard } from "@/api/user/auth/auth.guard";
 import { CreatePaymentDto, PaymentIntentDto, PaymentMethodDto } from "@/api/stripe/stripe.dto";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
-import { Stripe } from "./stripe.entity";
+import { Payment } from "./stripe.entity";
 
 @ApiTags('Payments')
 @Controller('payments') 
 export class StripeController {
-  @InjectRepository(Stripe)
-  private readonly paymentReposiory: Repository<Stripe>;
+  @InjectRepository(Payment)
+  private readonly paymentReposiory: Repository<Payment>;
   
   constructor(private readonly stripeService: StripeService) {}
 
@@ -60,6 +60,13 @@ export class StripeController {
   @UseInterceptors(ClassSerializerInterceptor)
   async getPaymentIntent(@Param('id') id: string): Promise<PaymentIntentDto> {
     return await this.stripeService.getPaymentIntent(id);
+  }
+
+  @Get('user')
+  @UseGuards(JwtAuthGuard)
+  @UseInterceptors(ClassSerializerInterceptor)
+  async getPaymentsIntentByUser(@Req() req) : Promise<PaymentIntentDto[]> {
+    return await this.stripeService.getPaymentsIntentByUser(req.user.id);
   }
 
 }
