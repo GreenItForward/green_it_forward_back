@@ -1,14 +1,12 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import * as pdfMake from 'pdfmake/build/pdfmake';
-import * as pdfFonts from 'pdfmake/build/vfs_fonts';
 import * as fs from 'fs';
+import imageSize from 'image-size';
 import * as path from 'path';
 
+const PDFDocument = require('pdfkit-table');
 @Injectable()
 export class InvoiceService {
-  constructor() {
-    pdfMake.vfs = pdfFonts.pdfMake.vfs;
-  }
+  constructor() { }
 
   async getImageBase64(imagePath: string): Promise<string> {
     return new Promise((resolve, reject) => {
@@ -22,104 +20,67 @@ export class InvoiceService {
     });
   } 
 
-  async generatePdf(name: string, amount: number, date: string, last4:string, brandCard:string, project:string): Promise<Buffer> {
-    if (!name || !amount || !date || !last4 || !brandCard || !project) {    
-      throw new HttpException('Missing parameters', HttpStatus.BAD_REQUEST);
+  async generatePdf(name, amount, date, last4, brandCard, project) {
+    if (!name || !amount || !date || !last4 || !brandCard || !project) {
+      throw new Error('Missing parameters');
     }
+  
+    const doc = new PDFDocument();
+  
+    const stream = doc.pipe(fs.createWriteStream('output.pdf'));
+  
+    doc.text(`N° Attestation du don : ${Math.floor(Math.random() * 100000) + 1}`, { align: 'left' })
+      .text(project.toUpperCase(), { align: 'right' })
+      .moveDown();
+  
+    const logoImagePath = path.join(process.cwd(), 'src', 'assets', 'logo.png');
 
-    const logoImagePath = path.join(process.cwd(),'src', 'assets', 'logo.png');
-    const logoImageBase64 = await this.getImageBase64(logoImagePath);
-
-    const docDefinition = {
-        header: {
-            columns: [
-                {
-                  text: `N° Attestation du don : ${Math.floor(Math.random() * 100000) + 1}`,
-                  width: '50%',
-                  alignment: 'left',
-                  margin: [40, 20, 0, 0],
-                },
-                {
-                  text: `${project.toUpperCase()}`,
-                  width: '50%',
-                  alignment: 'right',
-                  margin: [0, 20, 40, 0],
-                },
-              ],
-      },
-      content: [
-        {
-          image: `data:image/png;base64,${logoImageBase64}`,
-          width: 150,
-          alignment: 'center',
-          margin: [0, 0, 0, 20],
-        },
-        {
-          text: `Merci pour votre don à l\'association ${project} !`,
-          style: 'header',
-          alignment: 'center',
-          bold: true,
-          fontSize: 20,
-          margin: [0, 0, 0, 20],    
-        },
-        
-        {
-          text: 'Récapitulatif de paiement',
-          style: 'header',
-        },
-        {
-          text: `Nom sur la carte : ${name.split(' ').map((word) => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}`,
-        },
-        {
-          text: `Montant : ${amount} €`,
-        },
-        {
-          text: `Date : ${date || new Date().toLocaleDateString()}`,
-        },
-        {
-            text: 'Informations de la carte',
-            style: 'header',
-            margin: [0, 20, 0, 10],
-        },
-        {
-            table: {
-                widths: ['*', '*'],
-                body: [
-                    ['Type de carte', brandCard.charAt(0).toUpperCase() + brandCard.slice(1)],
-                    ['Numéro de carte', `**** **** **** ${last4}`],
-                ],
-            },
-        },
+    const logoDimensions = imageSize(logoImagePath);
+    const pageWidth = doc.page.width;
+    const pageHeight = doc.page.height;
+    
+    const scaleFactor = 150 / logoDimensions.width;
+    const imageWidth = logoDimensions.width * scaleFactor;
+    const imageHeight = logoDimensions.height * scaleFactor;
+    
+    const x = (pageWidth / 2) - (imageWidth / 2);
+    
+    doc.image(logoImagePath, x, 50, { width: imageWidth, height: imageHeight })
+      .moveDown(6);
+  
+    doc.fontSize(20)
+      .text(`Merci pour votre don à l\'association ${project} !`, { align: 'center', underline: true })
+      .moveDown();
+  
+    doc.fontSize(18)
+      .text('Récapitulatif de paiement', { underline: true })
+      .moveDown();
+  
+    doc.text(`Nom sur la carte : ${name.split(' ').map((word) => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}`)
+      .text(`Montant : ${amount} €`)
+      .text(`Date : ${date || new Date().toLocaleDateString()}`)
+      .moveDown();
+  
+    doc.text('Informations de la carte', { underline: true })
+      .moveDown();
+  
+    const table = {
+      headers: ['Type de carte', 'Numéro de carte'],
+      rows: [
+        [brandCard.charAt(0).toUpperCase() + brandCard.slice(1), `**** **** **** ${last4}`],
       ],
-      footer: {   
-            columns: [
-                {
-                    text: 'GreenItForward France - 13 rue d\'Enghien 75010 Paris - 01 80 96 96 96',
-                    alignment: 'center',
-                    margin: [0, 20, 0, 0],
-                },
-            ],
-      },
-      styles: {
-        header: {
-          fontSize: 18,
-          bold: true,
-          margin: [0, 0, 0, 10],
-        },
-      },
     };
- 
-    try {
-      const pdfDoc = pdfMake.createPdf(docDefinition);
-      return new Promise<Buffer>((resolve, reject) => {
-        pdfDoc.getBuffer((buffer: Buffer) => {
-          resolve(buffer);
-        }, (error: any) => {
-          reject(error);
-        });
+    doc.table(table, { align: 'center' });  
+    doc.fontSize(12)
+    .text('GreenItForward France - 13 rue d\'Enghien 75010 Paris - 01 80 96 96 96', {
+         align: 'center',
+    })
+    doc.end();
+    await new Promise<void>((resolve) => {
+      stream.on('finish', () => {
+        resolve();
       });
-    } catch (error) {
-      console.error('Error creating PDF:', error);
-    }
+    });
   }
+
 }

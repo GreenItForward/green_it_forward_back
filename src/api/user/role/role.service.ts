@@ -36,6 +36,7 @@ export class RoleService {
     if (body.userId == user.id) {
       throw new ForbiddenException("Vous ne pouvez pas modifier votre propre rôle");
     }
+
     // Vérifie si l'utilisateur ciblé est dans le projet
     const userToModify = await this.userService.getUser(body.userId);
     if(!userToModify) {
