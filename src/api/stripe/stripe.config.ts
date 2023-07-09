@@ -1,10 +1,18 @@
+import { UserModule } from './../user/user.module';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Stripe } from 'stripe';
 import { PaymentIntentDto, PaymentMethodDto } from "@/api/stripe/stripe.dto";
+import { FindOptionsWhere, Repository } from 'typeorm';
+import { InjectRepository } from '@nestjs/typeorm';
+import { User } from '../user/user.entity';
+import { Payment } from './stripe.entity';
 
 @Injectable()
 export class StripeService {
+  @InjectRepository(Payment)
+  private readonly paymentReposiory: Repository<Payment>;
+
   private stripe: Stripe;
   
   constructor(private readonly configService: ConfigService) {
@@ -16,7 +24,6 @@ export class StripeService {
   getStripeInstance(): Stripe {
     return this.stripe;
   }
-
 
   async getPaymentMethod(id: string): Promise<PaymentMethodDto | null> {
     const paymentMethod = await this.stripe.paymentMethods.retrieve(id);
@@ -33,7 +40,30 @@ export class StripeService {
     const amount = paymentIntent.amount;
     const currency = paymentIntent.currency;
     const status = paymentIntent.status;
+    const userId = parseInt(paymentIntent.metadata.userId);
+    const projectId = paymentIntent.metadata.projectId;
     
-    return { amount, currency, status };
+    return {userId, projectId, amount, currency, status };
   }
+
+  async getPaymentsByUser(id: number) : Promise<Payment[]> {
+    const payments = await this.paymentReposiory.createQueryBuilder('user')
+    .where('id = :id', { id: id })
+    .getMany();
+
+    return payments;
+  }
+
+
+  async getPaymentsIntentByUser(id: number) : Promise<PaymentIntentDto[]> {
+    const payments = await this.getPaymentsByUser(id);
+    const paymentIntents : PaymentIntentDto[] = [];
+    payments.forEach(async (payment) => {
+      const paymentIntent = await this.getPaymentIntent(payment.paymentIntentId);
+      paymentIntents.push(paymentIntent); 
+    });
+
+    return paymentIntents;
+  }
+  
 }

@@ -50,4 +50,16 @@ export class User extends BaseEntity {
   @ApiProperty()
   @OneToMany(() => Post, (post) => post.user)
   posts: Post[];
+
+  @Column({ type: 'varchar', nullable: true, default: null })
+  @ApiProperty()
+  public ipAddress: string | null;
+
+  @Column({ type: 'boolean', default: false })
+  @ApiProperty()
+  public isVerified: boolean;
+
+  @Column({ type: 'varchar', nullable: true })
+  @ApiProperty()
+  public confirmationToken: string | null;
 }

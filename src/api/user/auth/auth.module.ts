@@ -8,6 +8,7 @@ import { AuthHelper } from './auth.helper';
 import { AuthService } from './auth.service';
 import { JwtStrategy } from './auth.strategy';
 import { ConfigService } from '@nestjs/config';
+import { MailService } from '@/api/mailer/mail.service';
 
 @Module({
   imports: [
@@ -22,6 +23,6 @@ import { ConfigService } from '@nestjs/config';
     TypeOrmModule.forFeature([User]),
   ],
   controllers: [AuthController],
-  providers: [AuthService, AuthHelper, JwtStrategy],
+  providers: [AuthService, AuthHelper, JwtStrategy, MailService],
 })
 export class AuthModule {}

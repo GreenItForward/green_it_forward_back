@@ -4,8 +4,8 @@ import { User } from '@/api/user/user.entity';
 import { Repository } from 'typeorm';
 import { RegisterDto, LoginDto } from './auth.dto';
 import { AuthHelper } from './auth.helper';
-import { log } from 'console';
 import { TokenResponse } from '@/common/types/token-response.interface';
+import { MailService } from '@/api/mailer/mail.service';
 
 @Injectable()
 export class AuthService {
@@ -15,7 +15,15 @@ export class AuthService {
   @Inject(AuthHelper)
   private readonly helper: AuthHelper;
 
-  public async register(body: RegisterDto): Promise<TokenResponse> {
+  constructor(
+    private readonly mailService: MailService,
+  ) {}
+
+  public async register(body: RegisterDto, ip: string): Promise<User> {
+    if(await this.helper.isUserBanIp(ip)) {
+      throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
+    }
+
     const { firstName, lastName, email, password }: RegisterDto = body;
     let user: User = await this.repository.findOneBy({ email });
 
@@ -29,16 +37,25 @@ export class AuthService {
     user.lastName = lastName;
     user.email = email;
     user.password = this.helper.encodePassword(password);
-    user.firstLoginAt = new Date();
+    user.ipAddress = ip;
 
     await this.repository.save(user);
-    return {token: this.helper.generateToken(user)};
+
+
+
+    await this.mailService.sendUserConfirmation(user);
+
+    return user;
   }
 
-  public async login(body: LoginDto): Promise<TokenResponse> {
+  public async login(body: LoginDto, ip: string): Promise<TokenResponse> {;
+    if(await this.helper.isUserBanIp(ip)) {
+      throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
+    }
+
     const { email, password }: LoginDto = body;
     const user: User = await this.repository.findOneBy({ email });
-
+ 
     if (!user) {
       throw new HttpException('That email/username and password combination didn\'t work', HttpStatus.NOT_FOUND);
     }
@@ -49,13 +66,25 @@ export class AuthService {
       throw new HttpException('That email/username and password combination didn\'t work', HttpStatus.NOT_FOUND);
     }
 
-    await this.repository.update(user.id, {lastLoginAt: new Date()});
+    if (!user.isVerified) {
+      throw new HttpException('Please confirm your email address', HttpStatus.FORBIDDEN);
+    }
+
+    if (user.firstLoginAt === null) {
+        user.firstLoginAt = new Date();
+    }
+
+    await this.repository.update(user.id, { lastLoginAt: new Date(), ipAddress: ip, firstLoginAt: user.firstLoginAt });
 
     return {token: this.helper.generateToken(user)};
   }
 
-  public async refresh(user: User): Promise<string> {
-    this.repository.update(user.id, { lastLoginAt: new Date() });
+  public async refresh(user: User, ip: string): Promise<string> {
+    if(await this.helper.isUserBanIp(ip)) {
+      throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
+    }
+
+    await this.repository.update(user.id, { lastLoginAt: new Date() });
 
     return this.helper.generateToken(user);
   }
