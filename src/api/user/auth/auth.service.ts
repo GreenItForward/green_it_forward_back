@@ -37,17 +37,18 @@ export class AuthService {
     user.lastName = lastName;
     user.email = email;
     user.password = this.helper.encodePassword(password);
-    user.firstLoginAt = new Date();
     user.ipAddress = ip;
 
     await this.repository.save(user);
+
+
 
     await this.mailService.sendUserConfirmation(user);
 
     return user;
   }
 
-  public async login(body: LoginDto, ip: string): Promise<TokenResponse> {
+  public async login(body: LoginDto, ip: string): Promise<TokenResponse> {;
     if(await this.helper.isUserBanIp(ip)) {
       throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
     }
@@ -69,7 +70,11 @@ export class AuthService {
       throw new HttpException('Please confirm your email address', HttpStatus.FORBIDDEN);
     }
 
-    await this.repository.update(user.id, { lastLoginAt: new Date(), ipAddress: ip });
+    if (user.firstLoginAt === null) {
+        user.firstLoginAt = new Date();
+    }
+
+    await this.repository.update(user.id, { lastLoginAt: new Date(), ipAddress: ip, firstLoginAt: user.firstLoginAt });
 
     return {token: this.helper.generateToken(user)};
   }
