@@ -42,10 +42,9 @@ export class RoleService {
     if(!userToModify) {
       throw new NotFoundException("L'utilisateur que vous avez spécifié n'existe pas");
     }
+    userToModify.role = body.role;
+    await this.userRepository.save(userToModify);
 
-    user.role = body.role;
-    await this.userRepository.save(user);
-
-    return await this.getRole(user.id);
+    return await this.getRole(userToModify.id);
   }
 }

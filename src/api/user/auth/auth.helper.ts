@@ -1,9 +1,10 @@
-import { Injectable, HttpException, HttpStatus, UnauthorizedException } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { User } from '@/api/user/user.entity';
-import * as bcrypt from 'bcryptjs';
+import { HttpException, HttpStatus, Injectable, UnauthorizedException } from "@nestjs/common";
+import { JwtService } from "@nestjs/jwt";
+import { InjectRepository } from "@nestjs/typeorm";
+import { Repository } from "typeorm";
+import { User } from "@/api/user/user.entity";
+import * as bcrypt from "bcryptjs";
+import { RoleEnum } from "@/common/enums/role.enum";
 
 @Injectable()
 export class AuthHelper {
@@ -58,5 +59,10 @@ export class AuthHelper {
     }
 
     return true;
+  }
+
+  public async isUserBanIp(ip: string): Promise<boolean> {
+    const user = await this.repository.findOne({ where: { role: RoleEnum.BANNIS, ipAddress : ip } });
+    return user ? true : false;
   }
 }
