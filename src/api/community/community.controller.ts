@@ -42,6 +42,26 @@ export class CommunityController {
     return this.service.getCommunityById(parseInt(id));
   }
 
+  @Post('community/:id/follow')
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @UseInterceptors(ClassSerializerInterceptor)
+  private async followCommunity(
+      @Req() { user }: Request, @Param('id') id: string
+  ): Promise<Community> {
+    return this.service.followCommunity(parseInt(id),<User>user);
+  }
+
+  @Post('community/:id/unfollow')
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @UseInterceptors(ClassSerializerInterceptor)
+  private async unFollowCommunity(
+      @Req() { user }: Request, @Param('id') id: string
+  ): Promise<Community> {
+    return this.service.unFollowCommunity(parseInt(id),<User>user);
+  }
+
   @Get('community/:id/users')
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)

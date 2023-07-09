@@ -31,10 +31,51 @@ export class CommunityService {
     return this.repository.save(community);
   }
 
-  public async update(community: Community): Promise<Community> {
+  public async followCommunity(
+      id: number,
+      user: User,
+  ): Promise<Community> {
+    const community = await this.getCommunityById(id);
+    let followers = await this.getUsersByCommunityId(id)
+
+    if (!followers) {
+      followers = [];
+    }
+
+    const isUserAlreadyFollowed = followers.some((follower) => follower.id === user.id);
+    if (!isUserAlreadyFollowed) {
+      followers.push(user)
+    }
+    else{
+      console.log("L'utilisateur suit déjà cette communauté")
+    }
+
+    community.followers = followers
+
     return this.repository.save(community);
   }
 
+  public async unFollowCommunity(
+      id: number,
+      user: User,
+  ): Promise<Community> {
+    const community = await this.getCommunityById(id);
+    let followers = await this.getUsersByCommunityId(id)
+
+    if (!followers) {
+      followers = [];
+    }
+
+    const isUserAlreadyFollowed = followers.some((follower) => follower.id === user.id);
+    if (isUserAlreadyFollowed) {
+      community.followers = followers.filter((follower) => follower.id !== user.id);
+    }
+    else{
+      console.log("L'utilisateur ne suis pas cette communauté")
+    }
+
+    return this.repository.save(community);
+  }
 
 
   public async getCommunityById(id: number): Promise<Community> {
