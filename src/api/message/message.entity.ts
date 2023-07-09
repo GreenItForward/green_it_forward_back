@@ -20,6 +20,10 @@ export class Message extends BaseEntity {
   @Column()
   text: string;
 
+  @Column({ type: 'timestamp', nullable: true, default: null })
+  @ApiProperty()
+  public creationDate: Date | null;
+
   @ApiProperty()
   @ManyToOne(() => Post, (post) => post.messages)
   @JoinColumn()

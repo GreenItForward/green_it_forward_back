@@ -23,6 +23,7 @@ export class PostService {
     post.text = body.text;
     post.community = body.community;
     post.user = user;
+    post.creationDate = new Date()
     return this.repository.save(post);
   }
 

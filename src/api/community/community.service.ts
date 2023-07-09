@@ -22,6 +22,7 @@ export class CommunityService {
     community.name = body.name;
     community.description = body.description;
     community.imgUrl = body.imgUrl;
+    community.creationDate = new Date()
     if (body.followers && body.followers.length > 0) {
       const followerIds = body.followers;
       community.followers = await User.findByIds(followerIds);

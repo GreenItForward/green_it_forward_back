@@ -24,6 +24,7 @@ export class MessageService {
     message.post = body.post;
     message.text = body.text;
     message.user = user;
+    message.creationDate = new Date()
     return this.repository.save(message);
   }
 

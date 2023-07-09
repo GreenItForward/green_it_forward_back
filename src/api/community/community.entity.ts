@@ -29,6 +29,11 @@ export class Community extends BaseEntity {
   @Column()
   imgUrl: string;
 
+  @Column({ type: 'timestamp', nullable: true, default: null })
+  @ApiProperty()
+  public creationDate: Date | null;
+
+
   @ApiProperty()
   @ManyToOne(() => User, (user) => user.communities)
   @JoinTable()
