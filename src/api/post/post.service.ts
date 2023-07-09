@@ -22,14 +22,14 @@ export class PostService {
     post.subject = body.subject;
     post.text = body.text;
     post.community = body.community;
-    post.author = user;
+    post.user = user;
     return this.repository.save(post);
   }
 
   public async getPostById(id: number): Promise<Post> {
     const post = await this.repository.findOne({
       where: { id },
-      relations: ['author'],
+      relations: ['user'],
     });
 
     if (!post) {
@@ -43,12 +43,12 @@ export class PostService {
   public async getAllByUser(user: User): Promise<Post[]> {
     const userId = user.id;
     const posts = await this.repository.find({
-      where: { author: { id: userId } },
-      relations: ['author'],
+      where: { user: { id: userId } },
+      relations: ['user'],
     });
 
     if (!posts || posts.length === 0) {
-      throw new NotFoundException('No posts found');
+      return []
     }
 
     return posts;
@@ -57,11 +57,11 @@ export class PostService {
   public async getAllByCommunity(communityId: number): Promise<Post[]> {
     const posts = await this.repository.find({
       where: { community: { id: communityId } },
-      relations: ['author'],
+      relations: ['user'],
     });
 
     if (!posts || posts.length === 0) {
-      throw new NotFoundException('No posts found');
+      return []
     }
 
     return posts;

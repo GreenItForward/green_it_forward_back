@@ -23,14 +23,14 @@ export class MessageService {
     const message = new Message();
     message.post = body.post;
     message.text = body.text;
-    message.author = user;
+    message.user = user;
     return this.repository.save(message);
   }
 
   public async getMessageById(id: number): Promise<Message> {
     const message = await this.repository.findOne({
       where: { id },
-      relations: ['author'],
+      relations: ['user'],
     });
 
     if (!message) {
@@ -44,12 +44,12 @@ export class MessageService {
   public async getAllByUser(user: User): Promise<Message[]> {
     const userId = user.id;
     const messages = await this.repository.find({
-      where: { author: { id: userId } },
-      relations: ['author'],
+      where: { user: { id: userId } },
+      relations: ['user'],
     });
 
     if (!messages || messages.length === 0) {
-      throw new NotFoundException('No messages found');
+      return []
     }
 
     return messages;
@@ -62,7 +62,7 @@ export class MessageService {
     });
 
     if (!messages || messages.length === 0) {
-      throw new NotFoundException('No messages found');
+      return []
     }
 
     return messages;

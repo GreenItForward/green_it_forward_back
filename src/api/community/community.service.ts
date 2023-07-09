@@ -50,6 +50,7 @@ export class CommunityService {
     return community;
   }
 
+
   public async getIdbyCommunity(community: Community): Promise<number> {
     if (!community) {
       throw new NotFoundException('Could not find community');

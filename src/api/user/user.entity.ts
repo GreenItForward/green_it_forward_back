@@ -48,6 +48,6 @@ export class User extends BaseEntity {
   communities: Community[];
 
   @ApiProperty()
-  @OneToMany(() => Post, (post) => post.author)
+  @OneToMany(() => Post, (post) => post.user)
   posts: Post[];
 }

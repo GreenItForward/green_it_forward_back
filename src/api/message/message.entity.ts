@@ -28,5 +28,5 @@ export class Message extends BaseEntity {
   @ApiProperty()
   @ManyToOne(() => User, (user) => user.posts)
   @JoinTable()
-  author: User;
+  user: User;
 }

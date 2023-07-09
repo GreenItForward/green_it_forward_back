@@ -35,6 +35,10 @@ export class Community extends BaseEntity {
   user: User;
 
   @ApiProperty()
+  @OneToMany(() => Community, (community) => community.user)
+  communities: Community[];
+
+  @ApiProperty()
   @ManyToMany(() => User)
   @JoinTable()
   followers: User[];

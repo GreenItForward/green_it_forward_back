@@ -31,9 +31,18 @@ export class Post extends BaseEntity {
   community: Promise<Community>;
 
   @ApiProperty()
+  @OneToMany(() => Post, (post) => post.user)
+  posts: Post[];
+
+
+  @ApiProperty()
+  @OneToMany(() => Post, (post) => post.community)
+  communityPosts: Post[];
+
+  @ApiProperty()
   @ManyToOne(() => User, (user) => user.posts)
-  @JoinColumn() 
-  author: User;
+  @JoinColumn()
+  user: User;
 
 
   @ApiProperty()

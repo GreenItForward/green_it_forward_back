@@ -10,6 +10,7 @@ import { RoleModule } from "./user/role/role.module";
 import {CommunityModule} from "@/api/community/community.module";
 import {PostModule} from "@/api/post/post.module";
 import {MessageModule} from "@/api/message/message.module";
+import {UploadModule} from "@/api/upload/upload.module";
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import {MessageModule} from "@/api/message/message.module";
     StripeModule,
     PostModule,
     MessageModule,
+    UploadModule,
     MailModule,
     InvoiceModule,
     ProjectModule,
