@@ -30,8 +30,10 @@ export class MailService {
     async sendUserConfirmation(user) {
         const token = `${user.id}-${Date.now()}`;
         const url = `${this.configService.get<string>("FRONT_URL")}/auth/confirm?token=${token}`;
-  
-        this.userRepository.update(user.id, { confirmationToken: token });
+
+        console.log(url)
+
+        await this.userRepository.update(user.id, {confirmationToken: token});
         await this.mailerService.sendMail({
           to: user.email,
           from: `Welcome Team - GreenItForward <${this.configService.get<string>("EMAIL_FROM")}>`,
@@ -52,7 +54,7 @@ export class MailService {
         to: user.email,
         from: `Password Reset - GreenItForward <${this.configService.get<string>("EMAIL_FROM")}>`,
         subject: 'Reset your password',
-        template: './reset-password', 
+        template: './reset-password',
         context: {
           ourMailAdress,
           url,

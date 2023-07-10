@@ -8,11 +8,10 @@ import {
 } from 'typeorm';
 import { User } from '../user/user.entity';
 import {ApiProperty} from "@nestjs/swagger";
-import {Post} from "@/api/post/post.entity";
-import {ResponseEntity} from "@/api/response/response.entity";
+import {Message} from "@/api/message/message.entity";
 
 @Entity()
-export class Message extends BaseEntity {
+export class ResponseEntity extends BaseEntity {
   @ApiProperty()
   @PrimaryGeneratedColumn()
   id: number;
@@ -26,17 +25,12 @@ export class Message extends BaseEntity {
   public creationDate: Date | null;
 
   @ApiProperty()
-  @ManyToOne(() => Post, (post) => post.messages)
+  @ManyToOne(() => Message, (message) => message.responses)
   @JoinColumn()
-  post: Promise<Post>;
+  message: Promise<Message>;
 
   @ApiProperty()
   @ManyToOne(() => User, (user) => user.posts)
   @JoinTable()
   user: User;
-
-  @ApiProperty()
-  @OneToMany(() => ResponseEntity, (response) => response.message)
-  @JoinTable()
-  responses: ResponseEntity[];
 }

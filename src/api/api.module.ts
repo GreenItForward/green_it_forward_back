@@ -11,6 +11,7 @@ import {CommunityModule} from "@/api/community/community.module";
 import {PostModule} from "@/api/post/post.module";
 import {MessageModule} from "@/api/message/message.module";
 import {UploadModule} from "@/api/upload/upload.module";
+import {ResponseModule} from "@/api/response/response.module";
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import {UploadModule} from "@/api/upload/upload.module";
     StripeModule,
     PostModule,
     MessageModule,
+    ResponseModule,
     UploadModule,
     MailModule,
     InvoiceModule,
