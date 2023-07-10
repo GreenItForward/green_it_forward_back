@@ -31,7 +31,7 @@ export class MailService {
         const token = `${user.id}-${Date.now()}`;
         const url = `${this.configService.get<string>("FRONT_URL")}/auth/confirm?token=${token}`;
   
-        this.userRepository.update(user.id, { confirmationToken: token });
+        await this.userRepository.update(user.id, { confirmationToken: token });
         await this.mailerService.sendMail({
           to: user.email,
           from: `Welcome Team - GreenItForward <${this.configService.get<string>("EMAIL_FROM")}>`,
