@@ -11,7 +11,7 @@ import {
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { User } from "./user.entity";
-import { MeDto, UpdateNameDto } from "./user.dto";
+import { MeDto, UpdateUserDto } from "./user.dto";
 import { join } from 'path';
 import { readFile } from 'fs/promises';
 
@@ -27,26 +27,32 @@ export class UserService {
   }
 
 
-  public async updateName(body: UpdateNameDto, user: User): Promise<MeDto> {
+  public async updateUser(body: UpdateUserDto, user: User): Promise<MeDto> {
     if (!user) {
       throw new ForbiddenException('User is undefined');
     }
 
-    user.firstName = body.firstName;
-    user.lastName = body.lastName;
+    user.firstName = body.firstName || user.firstName;
+    user.lastName = body.lastName || user.lastName;
+    user.email = body.email || user.email;
+    user.imageUrl = body.imageUrl || user.imageUrl;
 
     await this.repository.save(user);
-    return {
-      id: user.id,
-      email: user.email,
-      firstName: user.firstName,
-      lastName: user.lastName,
-      role: user.role,
-      lastLoginAt: user.lastLoginAt,
-      firstLoginAt: user.firstLoginAt,
-      imageUrl: user.imageUrl
-    }
+    return user;
   }
+
+  public async updateImage(user: User, file: Express.Multer.File): Promise<MeDto> {
+    console.log(user);
+    if (!user) {
+      throw new ForbiddenException('User is undefined');
+    }
+
+    user.imageUrl = file ? join("uploads", file.filename) : null;
+
+    await this.repository.save(user);
+    return user;
+  }
+
 
   public async getUser(id: number):Promise<User> {
     const user = await this.repository

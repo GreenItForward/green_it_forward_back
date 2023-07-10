@@ -1,3 +1,4 @@
+import { diskStorage } from 'multer';
 import {
   BadRequestException,
   Body,
@@ -9,34 +10,71 @@ import {
   Post,
   Put,
   Req,
+  UploadedFile,
   UseGuards,
-  UseInterceptors
+  UseInterceptors,
+  ParseFilePipe, FileTypeValidator, MaxFileSizeValidator
 } from "@nestjs/common";
 import { Request } from "express";
 import { JwtAuthGuard } from "@/api/user/auth/auth.guard";
-import { MeDto, UpdateNameDto, VerifyUserDto } from "./user.dto";
+import { MeDto, UpdateUserDto, VerifyUserDto } from "./user.dto";
 import { User } from "./user.entity";
 import { UserService } from "./user.service";
-import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
+import { ApiBadRequestResponse, ApiBearerAuth, ApiBody, ApiOkResponse, ApiTags } from "@nestjs/swagger";
 import { Roles } from "@/api/user/role/role.decorator";
 import { RoleEnum } from "@/common/enums/role.enum";
 import { RolesGuard } from "@/api/user/role/role.guard";
+import { FileInterceptor } from "@nestjs/platform-express";
+import { extname } from "path/posix";
+import { RegisterDto } from "./auth/auth.dto";
 
 @ApiTags('User')
-@Controller('user')
+@Controller('user') 
 export class UserController {
   @Inject(UserService)
   private readonly service: UserService;
  
 
-  @Put('name')
+  @Put('edit')
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(ClassSerializerInterceptor)
-  private updateName(@Body() body: UpdateNameDto, @Req() { user }: Request): Promise<MeDto> {
-    return this.service.updateName(body, <User>user);
+  private updateUser(@Body() body: UpdateUserDto, @Req() { user }: Request): Promise<MeDto> {
+    return this.service.updateUser(body, <User>user);
   }
 
+  @Put('edit-image')
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @UseInterceptors(ClassSerializerInterceptor, FileInterceptor('image', {
+    storage: diskStorage({
+      destination: './uploads', 
+      filename: (req, file, callback) => {
+        const name = `${Date.now()}${extname(file.originalname)}`;
+        callback(null, name);
+      }
+    }),
+  }))
+  @ApiBody({ type: RegisterDto })
+  @ApiOkResponse({
+    description: 'User successfully registered',
+    type: User,
+  })
+  @ApiBadRequestResponse({ description: 'Bad Request' })
+  private editWithImage(@Req() { user } : Request,    
+  @UploadedFile(
+    new ParseFilePipe({
+      validators: [
+        new FileTypeValidator({ fileType: '.(png|jpeg|jpg)' }),
+        new MaxFileSizeValidator({ maxSize: 1024 * 1024 * 4 }),
+      ],
+    }),
+  )
+  file: Express.Multer.File): Promise<MeDto> {
+    return this.service.updateImage(<User>user, file);
+  }
+
+  
   @Post('verify')
   @ApiBearerAuth()
   private async verifyUser(@Body() body: VerifyUserDto) {
@@ -58,19 +96,23 @@ export class UserController {
   @UseInterceptors(ClassSerializerInterceptor)
   private async getMe(@Req() req: Request): Promise<MeDto> {
     const user = req.user as User;
-    const base64Image = await this.service.getBase64Image(user.imageUrl);
+    let base64Image = null;
+    if (user.imageUrl !== null) {
+      base64Image = await this.service.getBase64Image(user.imageUrl);
+    }
 
-    return {
-      id: user.id,
-      email: user.email,
-      firstName: user.firstName,
-      lastName: user.lastName,
-      role: user.role,
-      lastLoginAt: user.lastLoginAt,
-      firstLoginAt: user.firstLoginAt,
-      imageUrl: base64Image
-    };
+      return {
+        id: user.id,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        role: user.role,
+        lastLoginAt: user.lastLoginAt,
+        firstLoginAt: user.firstLoginAt,
+        imageUrl: base64Image
+      };
   }
+  
 
   @Get('/:id')
   @ApiBearerAuth()
