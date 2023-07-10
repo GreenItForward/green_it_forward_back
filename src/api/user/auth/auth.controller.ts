@@ -17,7 +17,7 @@ export class AuthController {
   @Inject(AuthService) 
   private readonly service: AuthService;
 
-  @Post('register')
+  @Post('register-image')
   @UseInterceptors(ClassSerializerInterceptor, FileInterceptor('image', {
     storage: diskStorage({
       destination: './uploads', 
@@ -33,7 +33,7 @@ export class AuthController {
     type: User,
   })
   @ApiBadRequestResponse({ description: 'Bad Request' })
-  private register(@Req() { ip }: Request,    
+  private registerWithImage(@Req() { ip }: Request,    
   @UploadedFile(
     new ParseFilePipe({
       validators: [
@@ -45,6 +45,18 @@ export class AuthController {
   file: Express.Multer.File,
   @Body() body: RegisterDto): Promise<User> {
     return this.service.register(body, file, ip);
+  }
+
+  @Post('register')
+  @UseInterceptors(ClassSerializerInterceptor)
+  @ApiBody({ type: RegisterDto })
+  @ApiOkResponse({
+    description: 'User successfully registered',
+    type: User,
+  })
+  @ApiBadRequestResponse({ description: 'Bad Request' })
+  private register(@Req() { ip }: Request, @Body() body: RegisterDto): Promise<User> {
+    return this.service.register(body, null, ip);
   }
 
   @Post('login')

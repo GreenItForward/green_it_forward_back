@@ -7,6 +7,7 @@ import { AuthHelper } from './auth.helper';
 import { TokenResponse } from '@/common/types/token-response.interface';
 import { MailService } from '@/api/mailer/mail.service';
 import { Multer } from 'multer';
+import { join } from 'path';
 
 @Injectable()
 export class AuthService {
@@ -39,8 +40,8 @@ export class AuthService {
     user.email = email;
     user.password = this.helper.encodePassword(password);
     user.ipAddress = ip;
-    user.imageUrl = file.path; 
-    
+    user.imageUrl = file ? join("uploads", file.filename) : null;
+
     await this.repository.save(user);
     await this.mailService.sendUserConfirmation(user);
 
