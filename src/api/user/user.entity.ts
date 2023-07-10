@@ -1,8 +1,10 @@
 import { Exclude } from 'class-transformer';
-import { BaseEntity, Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {BaseEntity, Column, Entity, JoinTable, ManyToMany, OneToMany, PrimaryGeneratedColumn} from 'typeorm';
 import { ApiProperty } from "@nestjs/swagger";
 import { RoleEnum } from "@/common/enums/role.enum";
 import { IsEnum } from "class-validator";
+import {Community} from "@/api/community/community.entity";
+import {Post} from "@/api/post/post.entity";
 
 @Entity()
 export class User extends BaseEntity {
@@ -38,7 +40,16 @@ export class User extends BaseEntity {
   @Column({ type: 'enum', enum: RoleEnum, default: RoleEnum.MEMBRE })
   @IsEnum(RoleEnum)
   @ApiProperty()
-  public role: RoleEnum;
+  public role: RoleEnum
+
+  @ApiProperty()
+  @ManyToMany(() => Community)
+  @JoinTable()
+  communities: Community[];
+
+  @ApiProperty()
+  @OneToMany(() => Post, (post) => post.user)
+  posts: Post[];
 
   @Column({ type: 'varchar', nullable: true, default: null })
   @ApiProperty()

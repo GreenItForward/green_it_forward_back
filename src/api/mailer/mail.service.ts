@@ -52,7 +52,7 @@ export class MailService {
         to: user.email,
         from: `Password Reset - GreenItForward <${this.configService.get<string>("EMAIL_FROM")}>`,
         subject: 'Reset your password',
-        template: './reset-password', 
+        template: './reset-password',
         context: {
           ourMailAdress,
           url,
