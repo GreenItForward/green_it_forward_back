@@ -17,12 +17,6 @@ export class UpdateUserDto {
   @IsOptional()
   @ApiProperty()
   public readonly email?: string;
-
-  @IsString()
-  @IsOptional()
-  @ApiProperty()
-  public readonly imageUrl?: string;
-
 }
 
 export class ChangeRoleDto {

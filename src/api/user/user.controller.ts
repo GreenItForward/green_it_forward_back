@@ -97,7 +97,7 @@ export class UserController {
   private async getMe(@Req() req: Request): Promise<MeDto> {
     const user = req.user as User;
     let base64Image = null;
-    if (user.imageUrl !== null) {
+    if (user.imageUrl) {
       base64Image = await this.service.getBase64Image(user.imageUrl);
     }
 
