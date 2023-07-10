@@ -56,8 +56,10 @@ export class UserController {
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(ClassSerializerInterceptor)
-  private getMe(@Req() req: Request): MeDto {
+  private async getMe(@Req() req: Request): Promise<MeDto> {
     const user = req.user as User;
+    const base64Image = await this.service.getBase64Image(user.imageUrl);
+
     return {
       id: user.id,
       email: user.email,
@@ -66,8 +68,7 @@ export class UserController {
       role: user.role,
       lastLoginAt: user.lastLoginAt,
       firstLoginAt: user.firstLoginAt,
-      imageUrl: user.imageUrl
-
+      imageUrl: base64Image
     };
   }
 

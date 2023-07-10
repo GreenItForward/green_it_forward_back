@@ -1,4 +1,4 @@
-import { Body, Controller, Inject, Post, ClassSerializerInterceptor, UseInterceptors, UseGuards, Req} from '@nestjs/common';
+import { Body, Controller, Inject, Post, ClassSerializerInterceptor, UseInterceptors, UseGuards, Req, UploadedFile, ParseFilePipe, FileTypeValidator, MaxFileSizeValidator } from '@nestjs/common';
 import { RegisterDto, LoginDto } from './auth.dto';
 import { Request } from 'express';
 import { JwtAuthGuard } from './auth.guard';
@@ -6,23 +6,45 @@ import { AuthService } from './auth.service';
 import { ApiBadRequestResponse, ApiBody, ApiOkResponse, ApiTags } from "@nestjs/swagger";
 import { User } from '../user.entity';
 import { TokenResponse } from '@/common/types/token-response.interface';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
+import { extname } from 'path';
+
 
 @ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
-  @Inject(AuthService)
+  @Inject(AuthService) 
   private readonly service: AuthService;
 
   @Post('register')
-  @UseInterceptors(ClassSerializerInterceptor)
+  @UseInterceptors(ClassSerializerInterceptor, FileInterceptor('image', {
+    storage: diskStorage({
+      destination: './uploads', 
+      filename: (req, file, callback) => {
+        const name = `${Date.now()}${extname(file.originalname)}`;
+        callback(null, name);
+      }
+    }),
+  }))
   @ApiBody({ type: RegisterDto })
   @ApiOkResponse({
     description: 'User successfully registered',
     type: User,
   })
   @ApiBadRequestResponse({ description: 'Bad Request' })
-  private register(@Req() { ip }: Request, @Body() body: RegisterDto): Promise<User> {
-    return this.service.register(body, ip);
+  private register(@Req() { ip }: Request,    
+  @UploadedFile(
+    new ParseFilePipe({
+      validators: [
+        new FileTypeValidator({ fileType: '.(png|jpeg|jpg)' }),
+        new MaxFileSizeValidator({ maxSize: 1024 * 1024 * 4 }),
+      ],
+    }),
+  )
+  file: Express.Multer.File,
+  @Body() body: RegisterDto): Promise<User> {
+    return this.service.register(body, file, ip);
   }
 
   @Post('login')

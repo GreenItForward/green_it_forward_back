@@ -1,4 +1,4 @@
-import { IsDateString } from '@/common/decorators/is-date-string/is-date-string.decorator';
+import { IsDateString } from '@/common/decorators/is-date-string.decorator';
 import { ApiProperty } from '@nestjs/swagger';
 import { IsString, IsNumber, IsDate, IsUUID } from 'class-validator';
 
