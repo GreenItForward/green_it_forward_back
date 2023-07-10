@@ -10,7 +10,6 @@ import {
 } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
-import { Request } from "express";
 import { User } from "./user.entity";
 import { MeDto, UpdateNameDto } from "./user.dto";
 
@@ -22,7 +21,9 @@ export class UserService {
   constructor(
     @Inject(forwardRef(() => RoleService))
     private roleService: RoleService,
-  ) {}
+  ) {
+  }
+
 
   public async updateName(body: UpdateNameDto, user: User): Promise<MeDto> {
     if (!user) {
@@ -34,10 +35,14 @@ export class UserService {
 
     await this.repository.save(user);
     return {
+      id: user.id,
       email: user.email,
       firstName: user.firstName,
       lastName: user.lastName,
-      role: user.role
+      role: user.role,
+      lastLoginAt: user.lastLoginAt,
+      firstLoginAt: user.firstLoginAt,
+      imageUrl: user.imageUrl
     }
   }
 

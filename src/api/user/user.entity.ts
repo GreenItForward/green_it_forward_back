@@ -51,4 +51,9 @@ export class User extends BaseEntity {
   @Column({ type: 'varchar', nullable: true })
   @ApiProperty()
   public confirmationToken: string | null;
-}
+
+  @Column({ type: 'varchar', nullable: true })
+  @ApiProperty()
+  public imageUrl: string | null;
+
+} 

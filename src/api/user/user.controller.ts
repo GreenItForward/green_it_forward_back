@@ -59,10 +59,15 @@ export class UserController {
   private getMe(@Req() req: Request): MeDto {
     const user = req.user as User;
     return {
+      id: user.id,
       email: user.email,
       firstName: user.firstName,
       lastName: user.lastName,
-      role: user.role
+      role: user.role,
+      lastLoginAt: user.lastLoginAt,
+      firstLoginAt: user.firstLoginAt,
+      imageUrl: user.imageUrl
+
     };
   }
 

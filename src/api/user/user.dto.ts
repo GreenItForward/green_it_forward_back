@@ -1,4 +1,4 @@
-import { IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString, IsUUID } from "class-validator";
+import { IsDate, IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString, IsUUID } from "class-validator";
 import { ApiProperty } from "@nestjs/swagger";
 import { RoleEnum } from "@/common/enums/role.enum";
 
@@ -34,6 +34,10 @@ export class VerifyUserDto {
 }
 
 export class MeDto {
+  @IsNumber()
+  @ApiProperty( { required: false })
+  id: number;
+
   @IsNotEmpty()
   @IsString()
   @ApiProperty({ required: true })
@@ -53,4 +57,19 @@ export class MeDto {
   @IsEnum(RoleEnum)
   @ApiProperty({ required: true })
   role: RoleEnum;
+
+  @IsDate()
+  @IsOptional()
+  @ApiProperty()
+  lastLoginAt: Date | null;
+
+  @IsDate()
+  @IsOptional()
+  @ApiProperty()
+  firstLoginAt: Date | null;
+
+  @IsString()
+  @IsOptional()
+  @ApiProperty()
+  imageUrl: string | null;
 }
