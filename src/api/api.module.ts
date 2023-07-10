@@ -7,6 +7,11 @@ import { InvoiceModule } from "@/api/invoice/invoice.module";
 import { ProjectModule } from './project/project.module';
 import { StatsModule } from "./admin/stats/stats.module";
 import { RoleModule } from "./user/role/role.module";
+import {CommunityModule} from "@/api/community/community.module";
+import {PostModule} from "@/api/post/post.module";
+import {MessageModule} from "@/api/message/message.module";
+import {UploadModule} from "@/api/upload/upload.module";
+import {ResponseModule} from "@/api/response/response.module";
 
 @Module({
   imports: [
@@ -14,9 +19,14 @@ import { RoleModule } from "./user/role/role.module";
     AuthModule,
     RoleModule,
     StripeModule,
+    PostModule,
+    MessageModule,
+    ResponseModule,
+    UploadModule,
     MailModule,
     InvoiceModule,
     ProjectModule,
+    CommunityModule,
     StatsModule
   ],
   controllers: []
