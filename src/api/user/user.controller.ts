@@ -25,7 +25,7 @@ import { Roles } from "@/api/user/role/role.decorator";
 import { RoleEnum } from "@/common/enums/role.enum";
 import { RolesGuard } from "@/api/user/role/role.guard";
 import { FileInterceptor } from "@nestjs/platform-express";
-import { extname } from "path/posix";
+import path, { extname } from "path/posix";
 import { RegisterDto } from "./auth/auth.dto";
 
 @ApiTags('User')
@@ -48,7 +48,7 @@ export class UserController {
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(ClassSerializerInterceptor, FileInterceptor('image', {
     storage: diskStorage({
-      destination: './uploads', 
+      destination: path.resolve(__dirname + '/../../../../src/assets/uploads'), 
       filename: (req, file, callback) => {
         const name = `${Date.now()}${extname(file.originalname)}`;
         callback(null, name);

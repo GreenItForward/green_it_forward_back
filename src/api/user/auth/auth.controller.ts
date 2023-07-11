@@ -8,7 +8,7 @@ import { User } from '../user.entity';
 import { TokenResponse } from '@/common/types/token-response.interface';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
-import { extname } from 'path';
+import path, { extname } from 'path';
 
 
 @ApiTags('Auth')
@@ -20,7 +20,7 @@ export class AuthController {
   @Post('register-image')
   @UseInterceptors(ClassSerializerInterceptor, FileInterceptor('image', {
     storage: diskStorage({
-      destination: './uploads', 
+      destination: path.resolve(__dirname + '/../../../../src/assets/uploads'),  
       filename: (req, file, callback) => {
         const name = `${Date.now()}${extname(file.originalname)}`;
         callback(null, name);
