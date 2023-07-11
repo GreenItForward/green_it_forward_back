@@ -1,9 +1,10 @@
-import { Controller, Get, Param, Post, Body, UseGuards, UseInterceptors, ClassSerializerInterceptor, ParseUUIDPipe, HttpException } from '@nestjs/common';
+import { Controller, Get, Param, Post, Body, UseGuards, UseInterceptors, ClassSerializerInterceptor, ParseUUIDPipe, HttpException, Req } from '@nestjs/common';
 import { ProjectService } from './project.service';
 import { CreateProjectDto } from './project.dto';
 import { ApiBearerAuth, ApiBody, ApiTags } from '@nestjs/swagger';
 import { Project } from './project.entity';
 import { JwtAuthGuard } from '../user/auth/auth.guard';
+import { User } from '../user/user.entity';
 
 @Controller('project')
 @ApiTags('Project')
@@ -31,8 +32,8 @@ export class ProjectController {
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(ClassSerializerInterceptor)
   @ApiBody({ type: CreateProjectDto })
-  async createProject(@Body() createProjectDto: CreateProjectDto): Promise<Project> {
-    return await this.projectService.createProject(createProjectDto);
+  async createProject(@Req() req, @Body() createProjectDto: CreateProjectDto): Promise<Project> {
+    return await this.projectService.createProject(<User>req.user, createProjectDto);
   }
 
   @Get('random/:count')

@@ -1,4 +1,5 @@
 import { IsDateString } from '@/common/decorators/is-date-string.decorator';
+import { Optional } from '@nestjs/common';
 import { ApiProperty } from '@nestjs/swagger';
 import { IsString, IsNumber, IsDate, IsUUID } from 'class-validator';
 
@@ -30,10 +31,6 @@ export class CreateProjectDto {
   @IsDateString()
   @ApiProperty()
   readonly endDate: string;
-
-  @IsString()
-  @ApiProperty()
-  readonly createdBy: string;
 }
 
 export class GetProjectById {
@@ -41,4 +38,4 @@ export class GetProjectById {
     @ApiProperty()
     @IsUUID()
     readonly id: string;
-    }
+}
