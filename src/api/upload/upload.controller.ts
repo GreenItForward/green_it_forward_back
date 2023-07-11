@@ -33,7 +33,6 @@ export class UploadController {
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(FileInterceptor('image'))
   private async upload(@UploadedFile() image: any): Promise<UploadResponse> {
-    console.log(image)
     return this.service.upload(image);
   }
 }

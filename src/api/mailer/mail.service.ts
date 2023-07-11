@@ -60,7 +60,21 @@ export class MailService {
       });
 
       res.status(200).json({ message: 'Email sent' });
+    }
 
+    async sendPasswordChanged(user: User) {
+      const ourMailAdress = this.configService.get<string>("EMAIL_ADDRESS");
+      await this.mailerService.sendMail({
+        to: user.email,
+        from: `Password Changed - GreenItForward <${this.configService.get<string>("EMAIL_FROM")}>`,
+        subject: 'Your password has been changed',
+        template: './password-changed',
+        context: {
+          firstName: user.firstName,
+          lastName: user.lastName,
+          ourMailAdress,
+        },
+      });
     }
 }
  

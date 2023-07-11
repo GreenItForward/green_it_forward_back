@@ -40,13 +40,11 @@ export class UserService {
   }
 
   public async updateImage(user: User, file: Express.Multer.File): Promise<MeDto> {
-    console.log(user);
     if (!user) {
       throw new ForbiddenException('User is undefined');
     }
 
     user.imageUrl = file ? join("uploads", file.filename) : null;
-
     await this.repository.save(user);
     return user;
   }
