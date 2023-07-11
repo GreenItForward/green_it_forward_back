@@ -35,8 +35,6 @@ export class UserService {
     user.firstName = body.firstName || user.firstName;
     user.lastName = body.lastName || user.lastName;
     user.email = body.email || user.email;
-    user.imageUrl = body.imageUrl || user.imageUrl;
-
     await this.repository.save(user);
     return user;
   }
@@ -53,7 +51,7 @@ export class UserService {
     return user;
   }
 
-
+ 
   public async getUser(id: number):Promise<User> {
     const user = await this.repository
       .createQueryBuilder('user')
@@ -62,10 +60,10 @@ export class UserService {
 
     if (!user) {
       throw new NotFoundException('Aucun utilisateur trouvé.');
-    }
+    } 
 
     return user;
-  }
+  } 
 
   async verifyUserByToken(token: string): Promise<User | null> {
     const user = await this.repository.findOne({ where: { confirmationToken: token } });
