@@ -1,4 +1,4 @@
-import {Injectable, NotFoundException} from '@nestjs/common';
+import {ConflictException, Injectable, NotFoundException} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
 import {Repository} from 'typeorm';
 import {Community} from './community.entity';
@@ -48,7 +48,7 @@ export class CommunityService {
       followers.push(user)
     }
     else{
-      console.log("L'utilisateur suit déjà cette communauté")
+      throw new ConflictException('User already follow this community');
     }
 
     community.followers = followers
@@ -132,4 +132,12 @@ export class CommunityService {
 
     return community;
   }
+
+  async getCommunitiesJoinedByUser(userId: number): Promise<Community[]> {
+    return this.repository.find({
+      where: { followers: { id: userId } },
+      relations: ['followers'],
+    });
+  }
+  
 }
