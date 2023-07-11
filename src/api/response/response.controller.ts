@@ -21,7 +21,7 @@ import {CreateResponseDto} from "@/api/response/response.dto";
 @Controller('response')
 export class ResponseController {
   @Inject(ResponseService)
-  private readonly service: ResponseService;
+  private readonly service: ResponseService; 
 
   @Get('user')
   @ApiBearerAuth()

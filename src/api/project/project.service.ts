@@ -43,8 +43,6 @@ export class ProjectService {
   }
 
   async createProject(user: User, project: CreateProjectDto): Promise<Project> {
-    const correctDate = convertToDate(project.startDate);
-
     const userEntity = await this.userRepository.findOneBy({ id: user.id });
     if (!userEntity) {
       throw new HttpException('User not found', HttpStatus.NOT_FOUND);
@@ -52,7 +50,6 @@ export class ProjectService {
 
     const newProject = this.projectRepository.create({
       ...project,
-      startDate: correctDate,
       createdBy: user,
     });
   
