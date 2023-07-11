@@ -1,9 +1,10 @@
 import {Injectable, NotFoundException} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
-import {Repository} from 'typeorm';
+import {Brackets, Repository} from 'typeorm';
 import {Community} from './community.entity';
 import {User} from "@/api/user/user.entity";
 import {CreateCommunityDto} from "@/api/community/community.dto";
+import {Post} from "@/api/post/post.entity";
 
 @Injectable()
 export class CommunityService {
@@ -132,4 +133,15 @@ export class CommunityService {
 
     return community;
   }
+
+  public async searchCommunities(searchString: string): Promise<Community[]> {
+    return await this.repository
+        .createQueryBuilder('community')
+        .where('LOWER(community.name) LIKE LOWER(:searchString)', {searchString: `%${searchString}%`})
+        .orWhere('LOWER(community.description) LIKE LOWER(:searchString)', {searchString: `%${searchString}%`})
+        .getMany();
+  }
+
+
+
 }

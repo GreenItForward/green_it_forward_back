@@ -66,4 +66,13 @@ export class PostController {
   ): Promise<PostEntity> {
     return this.service.create(body, <User>user);
   }
+
+  @Post('search/:searchstring')
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @UseInterceptors(ClassSerializerInterceptor)
+  private async searchPostsInCommunity(@Param('searchstring') searchString:string, @Body() body): Promise<PostEntity[]> {
+    return this.service.searchPostsInCommunity(body.communityId, searchString)
+  }
+
 }

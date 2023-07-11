@@ -1,6 +1,6 @@
 import {Injectable, NotFoundException} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
-import {Repository} from 'typeorm';
+import {Brackets, Repository} from 'typeorm';
 import {User} from "@/api/user/user.entity";
 import {Post} from "@/api/post/post.entity";
 import {CreatePostDto} from "@/api/post/post.dto";
@@ -11,7 +11,9 @@ export class PostService {
   private readonly repository: Repository<Post>;
 
   public async getAll(): Promise<Post[]> {
-    return this.repository.find();
+    return this.repository.find({
+      relations: ['user'],
+    });
   }
 
   public async create(
@@ -66,5 +68,20 @@ export class PostService {
     }
 
     return posts;
+  }
+
+  public async searchPostsInCommunity(communityId: number, searchString: string): Promise<Post[]> {
+    return await this.repository
+        .createQueryBuilder('post')
+        .leftJoin('post.community', 'community')
+        .leftJoinAndSelect('post.user', 'user')
+        .where('community.id = :communityId', {communityId})
+        .andWhere(
+            new Brackets(qb => {
+              qb.where('LOWER(post.subject) LIKE LOWER(:searchString)', {searchString: `%${searchString}%`})
+                  .orWhere('LOWER(post.text) LIKE LOWER(:searchString)', {searchString: `%${searchString}%`});
+            }),
+        )
+        .getMany();
   }
 }

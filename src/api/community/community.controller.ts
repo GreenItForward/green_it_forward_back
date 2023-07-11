@@ -70,6 +70,14 @@ export class CommunityController {
     return this.service.getUsersByCommunityId(parseInt(id));
   }
 
+  @Get('search/:searchstring')
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @UseInterceptors(ClassSerializerInterceptor)
+  public async searchCommunities(@Param('searchstring') searchString: string): Promise<Community[]> {
+    return this.service.searchCommunities(searchString);
+  }
+
   @Get('all')
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
