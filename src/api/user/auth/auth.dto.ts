@@ -29,7 +29,13 @@ export class LoginDto {
   @IsEmail()
   @ApiProperty()
   public readonly email: string;
+ 
+  @IsString()
+  @ApiProperty()
+  public readonly password: string;
+}
 
+export class ChangePasswordDto {
   @IsString()
   @ApiProperty()
   public readonly password: string;

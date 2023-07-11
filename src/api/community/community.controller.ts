@@ -89,4 +89,13 @@ export class CommunityController {
   ): Promise<Community> {
     return this.service.create(body, <User>user);
   }
+
+  @Get('user/:id/communities')
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @UseInterceptors(ClassSerializerInterceptor)
+  public async getCommunitiesJoinedByUser(@Param('id') id: string): Promise<Community[]> {
+    return this.service.getCommunitiesJoinedByUser(parseInt(id));
+  }
+
 }

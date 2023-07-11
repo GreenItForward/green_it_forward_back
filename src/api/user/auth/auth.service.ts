@@ -2,10 +2,12 @@ import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '@/api/user/user.entity';
 import { Repository } from 'typeorm';
-import { RegisterDto, LoginDto } from './auth.dto';
+import { RegisterDto, LoginDto, ChangePasswordDto } from './auth.dto';
 import { AuthHelper } from './auth.helper';
 import { TokenResponse } from '@/common/types/token-response.interface';
 import { MailService } from '@/api/mailer/mail.service';
+import { Multer } from 'multer';
+import { join } from 'path';
 
 @Injectable()
 export class AuthService {
@@ -19,7 +21,7 @@ export class AuthService {
     private readonly mailService: MailService,
   ) {}
 
-  public async register(body: RegisterDto, ip: string): Promise<User> {
+  public async register(body: RegisterDto, file: Express.Multer.File, ip: string): Promise<User> {
     if(await this.helper.isUserBanIp(ip)) {
       throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
     }
@@ -38,11 +40,9 @@ export class AuthService {
     user.email = email;
     user.password = this.helper.encodePassword(password);
     user.ipAddress = ip;
+    user.imageUrl = file ? join("uploads", file.filename) : null;
 
     await this.repository.save(user);
-
-
-
     await this.mailService.sendUserConfirmation(user);
 
     return user;
@@ -87,5 +87,12 @@ export class AuthService {
     await this.repository.update(user.id, { lastLoginAt: new Date() });
 
     return this.helper.generateToken(user);
+  }
+
+  public async changePassword(user: User, userChanged: ChangePasswordDto): Promise<User> {
+    user.password = this.helper.encodePassword(userChanged.password);
+    await this.repository.save(user);
+    await this.mailService.sendPasswordChanged(user);
+    return user;
   }
 }

@@ -33,7 +33,6 @@ export class Community extends BaseEntity {
   @ApiProperty()
   public creationDate: Date | null;
 
-
   @ApiProperty()
   @ManyToOne(() => User, (user) => user.communities)
   @JoinTable()
