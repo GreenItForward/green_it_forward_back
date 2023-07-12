@@ -41,7 +41,8 @@ export class StripeService {
  
   async getPaymentIntent(id: string): Promise<PaymentIntentDto> {
     const paymentIntent = await this.stripe.paymentIntents.retrieve(id);
-    const amount = paymentIntent.amount;
+    const amount = paymentIntent.amount / 100;
+
     const currency = paymentIntent.currency;
     const status = paymentIntent.status;
     const userId = parseInt(paymentIntent.metadata.userId);
@@ -94,5 +95,26 @@ async getPaymentsIntentByUser(id: number) : Promise<PaymentIntentDto[]> {
     return { clientSecret: paymentIntent.client_secret };
   
   }
+
+  async getTotalDonations(){
+    const monthOrder = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre","novembre", "décembre"];
+    const payments = await this.paymentReposiory.createQueryBuilder('payment')
+      .getMany();
   
+    const paymentsIntentsPromises = payments.map(payment => this.getPaymentIntent(payment.paymentIntentId));
+    const paymentsIntents = await Promise.all(paymentsIntentsPromises);
+    const totalDonations = new Array(12).fill(0);
+  
+    paymentsIntents.forEach(payment => {
+      const date = new Date(payment.date);
+      totalDonations[date.getMonth()] += payment.amount;
+    });
+  
+    let totalDonationsPerMonth = {};
+    monthOrder.forEach((month, index) => {
+      totalDonationsPerMonth[month] = totalDonations[index];
+    });
+  
+    return totalDonationsPerMonth;
+  }
 }
