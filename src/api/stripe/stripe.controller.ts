@@ -13,16 +13,9 @@ import { StripeService } from './stripe.config';
 import { ApiBody, ApiTags } from "@nestjs/swagger";
 import { JwtAuthGuard } from "@/api/user/auth/auth.guard";
 import { CreatePaymentDto, PaymentIntentDto, PaymentMethodDto } from "@/api/stripe/stripe.dto";
-import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
-import { Payment } from "./stripe.entity";
-
 @ApiTags('Payments')
 @Controller('payments') 
 export class StripeController {
-  @InjectRepository(Payment)
-  private readonly paymentReposiory: Repository<Payment>;
-  
   constructor(private readonly stripeService: StripeService) {}
 
   @Post('create-payment-intent')
@@ -30,22 +23,7 @@ export class StripeController {
   @UseInterceptors(ClassSerializerInterceptor)
   @ApiBody({ type: CreatePaymentDto })
   async createPaymentIntent(@Body() body: CreatePaymentDto, @Req() req) {
-    const stripe = this.stripeService.getStripeInstance();
-    const convertedAmount = Math.round(body.amount * 100);
-
-    const paymentIntent = await stripe.paymentIntents.create({
-      amount: convertedAmount,
-      currency: 'eur',
-      metadata: { userId: req.user.id, projectId: body.projectId },
-    });
-
-
-    await this.paymentReposiory.save({
-      paymentIntentId: paymentIntent.id,
-      user: req.user,
-    });
-
-    return { clientSecret: paymentIntent.client_secret };
+    return await this.stripeService.createPaymentIntent(body, req.user);
   }
 
   @Get('payment-method/:id')

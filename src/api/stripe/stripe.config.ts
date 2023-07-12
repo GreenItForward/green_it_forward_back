@@ -2,16 +2,19 @@ import { UserModule } from './../user/user.module';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Stripe } from 'stripe';
-import { PaymentIntentDto, PaymentMethodDto } from "@/api/stripe/stripe.dto";
+import { CreatePaymentDto, PaymentIntentDto, PaymentMethodDto } from "@/api/stripe/stripe.dto";
 import { FindOptionsWhere, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../user/user.entity';
 import { Payment } from './stripe.entity';
+import { Project } from '../project/project.entity';
 
 @Injectable()
 export class StripeService {
   @InjectRepository(Payment)
   private readonly paymentReposiory: Repository<Payment>;
+  @InjectRepository(Project)
+  private readonly projectReposiory: Repository<Project>;
 
   private stripe: Stripe;
   
@@ -64,6 +67,33 @@ export class StripeService {
     });
 
     return paymentIntents;
+  }
+
+
+
+  async createPaymentIntent(body: CreatePaymentDto, user: User) {
+    const stripe = this.getStripeInstance();
+    const convertedAmount = Math.round(body.amount * 100);
+
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount: convertedAmount,
+      currency: 'eur',
+      metadata: { userId: user.id, projectId: body.projectId },
+    });
+
+    await this.paymentReposiory.save({
+      paymentIntentId: paymentIntent.id,
+      user: user,
+      metadata: { userId: user.id, projectId: body.projectId },
+    });
+
+    const project = await this.projectReposiory.findOneBy({ id: body.projectId });
+    project.amountRaised =  Number(project.amountRaised) + Number(body.amount);
+
+    await this.projectReposiory.save(project);
+
+    return { clientSecret: paymentIntent.client_secret };
+  
   }
   
 }

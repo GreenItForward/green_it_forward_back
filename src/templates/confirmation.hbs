@@ -2,9 +2,11 @@
     <p style="color: #333;">Hey {{ name }},</p>
     <p style="color: #333;">Please click below to confirm your email</p>
     <div style="text-align: center;">
-    cliquez sur ce lien : {{ url }}
     <a href={{ url }} style="background-color: #1f5300; color: #fff; padding: 10px 20px; text-decoration: none; border-radius: 5px; margin: 20px auto; display: inline-block;">Confirm</a>
-    <a href="localhost:4200/auth/confirm?token=39-1688979125844" style="background-color: #1f5300; color: #fff; padding: 10px 20px; text-decoration: none; border-radius: 5px; margin: 20px auto; display: inline-block;">Confirm</a>
     </div>
-    <p style="color: #333;">If you did not request this email, you can safely ignore it.</p>
+    <br/>
+    <p style="color: #333;">Si vous ne pouvez pas cliquer sur le bouton ci-dessus, copiez et collez l'URL ci-dessous dans votre navigateur.</p>
+    <p style="color: #333;">{{ url }}</p>
+    <br/>
+    <div style="color: #333;">Si vous n'avez pas demandé cet email, vous pouvez l'ignorer en toute sécurité.</p>
 </div>
