@@ -24,9 +24,7 @@ import { ApiBadRequestResponse, ApiBearerAuth, ApiBody, ApiOkResponse, ApiTags }
 import { Roles } from "@/api/user/role/role.decorator";
 import { RoleEnum } from "@/common/enums/role.enum";
 import { RolesGuard } from "@/api/user/role/role.guard";
-import { FileInterceptor } from "@nestjs/platform-express";
-import path, { extname } from "path/posix";
-import { RegisterDto } from "./auth/auth.dto";
+import { RegisterDto, UpdateImageDto } from "./auth/auth.dto";
 
 @ApiTags('User')
 @Controller('user') 
@@ -46,32 +44,14 @@ export class UserController {
   @Put('edit-image')
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
-  @UseInterceptors(ClassSerializerInterceptor, FileInterceptor('image', {
-    storage: diskStorage({
-      destination: path.resolve(__dirname + '/../../../../src/assets/uploads'), 
-      filename: (req, file, callback) => {
-        const name = `${Date.now()}${extname(file.originalname)}`;
-        callback(null, name);
-      }
-    }),
-  }))
   @ApiBody({ type: RegisterDto })
   @ApiOkResponse({
     description: 'User successfully registered',
     type: User,
   })
   @ApiBadRequestResponse({ description: 'Bad Request' })
-  private editWithImage(@Req() { user } : Request,    
-  @UploadedFile(
-    new ParseFilePipe({
-      validators: [
-        new FileTypeValidator({ fileType: '.(png|jpeg|jpg)' }),
-        new MaxFileSizeValidator({ maxSize: 1024 * 1024 * 4 }),
-      ],
-    }),
-  )
-  file: Express.Multer.File): Promise<MeDto> {
-    return this.service.updateImage(<User>user, file);
+  private editWithImage(@Req() { user } : Request, @Body() body: UpdateImageDto) { 
+    return this.service.updateImage(<User>user, body.imageUrl);
   }
 
   
@@ -95,12 +75,7 @@ export class UserController {
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(ClassSerializerInterceptor)
   private async getMe(@Req() req: Request): Promise<MeDto> {
-    const user = req.user as User;
-    let base64Image = null;
-    if (user.imageUrl) {
-      base64Image = await this.service.getBase64Image(user.imageUrl);
-    }
-
+      const user = req.user as User;
       return {
         id: user.id,
         email: user.email,
@@ -109,7 +84,7 @@ export class UserController {
         role: user.role,
         lastLoginAt: user.lastLoginAt,
         firstLoginAt: user.firstLoginAt,
-        imageUrl: base64Image
+        imageUrl: user.imageUrl,
       };
   }
   

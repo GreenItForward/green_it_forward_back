@@ -40,3 +40,9 @@ export class ChangePasswordDto {
   @ApiProperty()
   public readonly password: string;
 }
+
+export class UpdateImageDto {
+  @IsString()
+  @ApiProperty()
+  public readonly imageUrl: string;
+}

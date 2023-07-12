@@ -14,6 +14,7 @@ import { User } from "./user.entity";
 import { MeDto, UpdateUserDto } from "./user.dto";
 import { join } from 'path';
 import { readFile } from 'fs/promises';
+import { UpdateImageDto } from './auth/auth.dto';
 
 @Injectable()
 export class UserService {
@@ -39,12 +40,12 @@ export class UserService {
     return user;
   }
 
-  public async updateImage(user: User, file: Express.Multer.File): Promise<MeDto> {
+  public async updateImage(user: User, imageUrl:string): Promise<MeDto> {
     if (!user) {
       throw new ForbiddenException('User is undefined');
     }
 
-    user.imageUrl = file ? join("uploads", file.filename) : null;
+    user.imageUrl = imageUrl;
     await this.repository.save(user);
     return user;
   }
