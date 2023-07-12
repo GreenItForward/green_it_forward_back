@@ -1,3 +1,3 @@
-export interface TokenResponse {
+export class TokenResponse {
     token: string;
 }

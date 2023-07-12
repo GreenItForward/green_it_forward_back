@@ -29,14 +29,9 @@
       font-size: 12px;
       color: #999;
     }
-    .btn {
-      background-color: #007BFF; 
-      color: #fff; 
-      padding: 10px 20px; 
-      text-decoration: none; 
-      border-radius: 5px; 
-      margin: 20px auto; 
-      display: inline-block;
+    .logo {
+      max-width: 150px;
+      height: auto;
     }
   </style>
 </head>
@@ -44,26 +39,23 @@
   <div class="email-container">
     <div class="header">
       <img src="{{logo}}" alt="Logo de GreenItForward" class="logo"/>
-      <h1>Réinitialisation de votre mot de passe</h1>
+      <h1>Merci pour votre don, {{name}} !</h1>
     </div>
     <div class="content">
       <p>
-        Nous avons reçu une demande de réinitialisation de votre mot de passe pour GreenItForward. Si vous n'avez pas fait cette demande, veuillez ignorer cet e-mail.
+        Nous sommes ravis de vous annoncer que votre don au projet "{{projectName}}" a été traité avec succès.
       </p>
       <p>
-        Si vous avez fait cette demande, veuillez cliquer sur le bouton ci-dessous pour réinitialiser votre mot de passe :
+        Votre générosité nous aide à poursuivre notre mission et nous sommes reconnaissants de votre soutien.
       </p>
-      <div style="text-align: center;">
-        <a href={{url}} class="btn">Réinitialiser le mot de passe</a>
-      </div>
       <p>
-        Ce lien de réinitialisation expirera dans 30 minutes.
+        Merci encore pour votre générosité.
       </p>
     </div>
     <div class="footer">
-      <p>Si vous rencontrez des problèmes, veuillez nous contacter à {{ourMailAdress}}.</p>
-      <p>Merci,</p>
+      <p>Meilleures salutations,</p>
       <p>Équipe GreenItForward</p>
+      <p>{{ourMailAdress}}</p>
     </div>
   </div>
 </body>

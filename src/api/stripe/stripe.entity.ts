@@ -19,5 +19,9 @@ import {
     @ManyToOne(() => User, (user: User) => user.id, { eager: true })
     @JoinColumn({ name: 'userId' })
     user: User;
+
+    @Column('timestamp')
+    date: Date;
+
   }
   

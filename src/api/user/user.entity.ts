@@ -5,6 +5,7 @@ import { RoleEnum } from "@/common/enums/role.enum";
 import { IsEnum } from "class-validator";
 import {Community} from "@/api/community/community.entity";
 import {Post} from "@/api/post/post.entity";
+import { Project } from '../project/project.entity';
 
 @Entity()
 export class User extends BaseEntity {
@@ -66,5 +67,8 @@ export class User extends BaseEntity {
   @Column({ type: 'varchar', nullable: true })
   @ApiProperty()
   public imageUrl: string | null;
+
+  @OneToMany(() => Project, project => project.createdBy)
+  projects: Project[];
 
 } 
