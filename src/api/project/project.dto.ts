@@ -16,15 +16,7 @@ export class CreateProjectDto {
 
   @IsNumber()
   @ApiProperty()
-  readonly amountRaised: number;
-
-  @IsNumber()
-  @ApiProperty()
   readonly totalAmount: number;
-
-  @IsDateString()
-  @ApiProperty()
-  readonly startDate: string;
 
   @IsDateString()
   @ApiProperty()
