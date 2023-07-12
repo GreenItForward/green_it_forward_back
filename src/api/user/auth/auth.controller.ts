@@ -1,5 +1,5 @@
 import { Body, Controller, Inject, Post, ClassSerializerInterceptor, UseInterceptors, UseGuards, Req, UploadedFile, ParseFilePipe, FileTypeValidator, MaxFileSizeValidator } from '@nestjs/common';
-import { RegisterDto, LoginDto, ChangePasswordDto } from './auth.dto';
+import { RegisterDto, LoginDto, ChangePasswordDto, TokenResponseDto } from './auth.dto';
 import { Request } from 'express';
 import { JwtAuthGuard } from './auth.guard';
 import { AuthService } from './auth.service';
@@ -34,7 +34,7 @@ export class AuthController {
   @ApiBody({ type: LoginDto })
   @ApiOkResponse({
     description: 'User successfully logged in',
-    type: User,
+    type: TokenResponseDto,
   })
   @ApiBadRequestResponse({ description: 'Bad Request' })
   private login(@Req() { ip }: Request, @Body() body: LoginDto): Promise<TokenResponse | never> {
@@ -50,6 +50,11 @@ export class AuthController {
   @Post('change-password')
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(ClassSerializerInterceptor)
+  @ApiBody({ type: ChangePasswordDto })
+  @ApiOkResponse({
+    description: 'Password successfully changed',
+    type: User,
+  })
   private changePassword(@Req() { user }: Request, @Body() body: ChangePasswordDto): Promise<User> {
     return this.service.changePassword(<User>user, body);
   }

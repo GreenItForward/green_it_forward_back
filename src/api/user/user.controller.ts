@@ -37,6 +37,11 @@ export class UserController {
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(ClassSerializerInterceptor)
+  @ApiBody({ type: UpdateUserDto })
+  @ApiOkResponse({
+    description: 'User successfully updated',
+    type: MeDto,
+  })
   private updateUser(@Body() body: UpdateUserDto, @Req() { user }: Request): Promise<MeDto> {
     return this.service.updateUser(body, <User>user);
   }
@@ -45,10 +50,10 @@ export class UserController {
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(ClassSerializerInterceptor)
-  @ApiBody({ type: RegisterDto })
+  @ApiBody({ type: UpdateImageDto })
   @ApiOkResponse({
-    description: 'User successfully registered',
-    type: User,
+    description: 'User successfully updated',
+    type: MeDto,
   })
   @ApiBadRequestResponse({ description: 'Bad Request' })
   private editWithImage(@Req() { user } : Request, @Body() body: UpdateImageDto) { 
@@ -67,6 +72,10 @@ export class UserController {
   @Roles(RoleEnum.ADMINISTRATEUR)
   @UseGuards(JwtAuthGuard, RolesGuard)
   @UseInterceptors(ClassSerializerInterceptor)
+  @ApiOkResponse({
+    description: 'List of users',
+    type: User,
+  })
   private async admin(): Promise<User[]> {
     return await this.service.admin();
   }
@@ -75,6 +84,10 @@ export class UserController {
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(ClassSerializerInterceptor)
+  @ApiOkResponse({
+    description: 'User information',
+    type: MeDto,
+  })
   private async getMe(@Req() req: Request): Promise<MeDto> {
       const user = req.user as User;
       return {
@@ -94,6 +107,10 @@ export class UserController {
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(ClassSerializerInterceptor)
+  @ApiOkResponse({
+    description: 'User information',
+    type: User,
+  })
   private async getUser(@Param('id') userId:number): Promise<User | never> {
     const id =  Number(userId);
     if (isNaN(id)) {

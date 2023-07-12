@@ -1,3 +1,4 @@
+import { TokenResponse } from '@/common/types/token-response.interface';
 import { Trim } from 'class-sanitizer';
 import { IsEmail, IsOptional, IsString, MinLength } from 'class-validator';
 import { ApiProperty } from "@nestjs/swagger";
@@ -50,4 +51,9 @@ export class UpdateImageDto {
   @IsString()
   @ApiProperty()
   public readonly imageUrl: string;
+}
+
+export class TokenResponseDto implements TokenResponse {
+  @ApiProperty()
+  public readonly token: string;
 }

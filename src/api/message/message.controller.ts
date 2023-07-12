@@ -12,13 +12,14 @@ import {
 } from '@nestjs/common';
 import { Request } from 'express';
 import { MessageService } from './message.service';
-import {ApiBearerAuth, ApiBody} from "@nestjs/swagger";
+import {ApiBearerAuth, ApiBody, ApiTags} from "@nestjs/swagger";
 import {JwtAuthGuard} from "@/api/user/auth/auth.guard";
 import {User} from "@/api/user/user.entity";
 import {Message} from "@/api/message/message.entity";
 import {CreateMessageDto} from "@/api/message/message.dto";
 
 @Controller('message')
+@ApiTags('Message')
 export class MessageController {
   @Inject(MessageService)
   private readonly service: MessageService;

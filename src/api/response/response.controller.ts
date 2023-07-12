@@ -12,13 +12,14 @@ import {
 } from '@nestjs/common';
 import { Request } from 'express';
 import { ResponseService } from './response.service';
-import {ApiBearerAuth, ApiBody} from "@nestjs/swagger";
+import {ApiBearerAuth, ApiBody, ApiTags} from "@nestjs/swagger";
 import {JwtAuthGuard} from "@/api/user/auth/auth.guard";
 import {User} from "@/api/user/user.entity";
 import {ResponseEntity} from "@/api/response/response.entity";
 import {CreateResponseDto} from "@/api/response/response.dto";
 
 @Controller('response')
+@ApiTags('Response')
 export class ResponseController {
   @Inject(ResponseService)
   private readonly service: ResponseService; 
