@@ -21,10 +21,10 @@ export class Project {
   @Column('decimal')
   totalAmount: number;
 
-  @Column('date')
+  @Column('timestamp')
   startDate: Date;
   
-  @Column('date')
+  @Column('timestamp')
   endDate: Date;
   
   @ManyToOne(() => User, user => user.projects)

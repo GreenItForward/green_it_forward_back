@@ -50,6 +50,8 @@ export class ProjectService {
 
     const newProject = this.projectRepository.create({
       ...project,
+      amountRaised: 0,
+      startDate: new Date(),
       createdBy: user,
     });
   
