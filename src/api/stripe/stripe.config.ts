@@ -38,7 +38,7 @@ export class StripeService {
   
     return { last4, name, address, brand };
   }
-
+ 
   async getPaymentIntent(id: string): Promise<PaymentIntentDto> {
     const paymentIntent = await this.stripe.paymentIntents.retrieve(id);
     const amount = paymentIntent.amount;
@@ -46,31 +46,26 @@ export class StripeService {
     const status = paymentIntent.status;
     const userId = parseInt(paymentIntent.metadata.userId);
     const projectId = paymentIntent.metadata.projectId;
+    const date = new Date(paymentIntent.created * 1000).toISOString();
     
-    return {userId, projectId, amount, currency, status };
+    return {userId, projectId, amount, currency, status, date};
   }
 
   async getPaymentsByUser(id: number) : Promise<Payment[]> {
-    const payments = await this.paymentReposiory.createQueryBuilder('user')
-    .where('id = :id', { id: id })
-    .getMany();
+    const payments = await this.paymentReposiory.createQueryBuilder('payment')
+      .where('payment.userId = :id', { id: id })
+      .getMany();
 
     return payments;
-  }
+}
 
+async getPaymentsIntentByUser(id: number) : Promise<PaymentIntentDto[]> {
+  const payments = await this.getPaymentsByUser(id);
+  const paymentIntentsPromises = payments.map(payment => this.getPaymentIntent(payment.paymentIntentId));
+  const paymentIntents = await Promise.all(paymentIntentsPromises);
 
-  async getPaymentsIntentByUser(id: number) : Promise<PaymentIntentDto[]> {
-    const payments = await this.getPaymentsByUser(id);
-    const paymentIntents : PaymentIntentDto[] = [];
-    payments.forEach(async (payment) => {
-      const paymentIntent = await this.getPaymentIntent(payment.paymentIntentId);
-      paymentIntents.push(paymentIntent); 
-    });
-
-    return paymentIntents;
-  }
-
-
+  return paymentIntents;
+}
 
   async createPaymentIntent(body: CreatePaymentDto, user: User) {
     const stripe = this.getStripeInstance();
@@ -85,6 +80,7 @@ export class StripeService {
     await this.paymentReposiory.save({
       paymentIntentId: paymentIntent.id,
       user: user,
+      date: new Date(),
       metadata: { userId: user.id, projectId: body.projectId },
     });
 

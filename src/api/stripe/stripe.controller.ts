@@ -10,7 +10,7 @@ import {
   Req
 } from "@nestjs/common";
 import { StripeService } from './stripe.config';
-import { ApiBody, ApiTags } from "@nestjs/swagger";
+import { ApiBody, ApiOkResponse, ApiTags } from "@nestjs/swagger";
 import { JwtAuthGuard } from "@/api/user/auth/auth.guard";
 import { CreatePaymentDto, PaymentIntentDto, PaymentMethodDto } from "@/api/stripe/stripe.dto";
 @ApiTags('Payments')
@@ -43,6 +43,7 @@ export class StripeController {
   @Get('user')
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(ClassSerializerInterceptor)
+  @ApiOkResponse({ type: [PaymentIntentDto] })
   async getPaymentsIntentByUser(@Req() req) : Promise<PaymentIntentDto[]> {
     return await this.stripeService.getPaymentsIntentByUser(req.user.id);
   }
