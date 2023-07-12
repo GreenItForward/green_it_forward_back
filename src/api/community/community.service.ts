@@ -1,15 +1,26 @@
 import {Injectable, NotFoundException} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
-import {Brackets, Repository} from 'typeorm';
+import {Repository} from 'typeorm';
 import {Community} from './community.entity';
 import {User} from "@/api/user/user.entity";
 import {CreateCommunityDto} from "@/api/community/community.dto";
 import {Post} from "@/api/post/post.entity";
+import {ResponseEntity} from "@/api/response/response.entity";
+import {Message} from "@/api/message/message.entity";
 
 @Injectable()
 export class CommunityService {
   @InjectRepository(Community)
   private readonly repository: Repository<Community>;
+
+  @InjectRepository(Post)
+  private postRepository: Repository<Post>;
+
+  @InjectRepository(Message)
+  private messageRepository: Repository<Message>;
+
+  @InjectRepository(ResponseEntity)
+  private responseRepository: Repository<ResponseEntity>;
 
   public async getAll(): Promise<Community[]> {
     return this.repository.find();
@@ -29,6 +40,24 @@ export class CommunityService {
       community.followers = await User.findByIds(followerIds);
     }
     community.user = user;
+
+    return this.repository.save(community);
+  }
+
+  public async update(communityId: number, body: CreateCommunityDto): Promise<Community> {
+    const community = await this.getCommunityById(communityId);
+
+    if (!community) {
+      throw new NotFoundException('La communauté demandé est introuvable.');
+    }
+
+    community.name = body.name;
+    community.description = body.description;
+    community.imgUrl = body.imgUrl;
+    if (body.followers && body.followers.length > 0) {
+      const followerIds = body.followers;
+      community.followers = await User.findByIds(followerIds);
+    }
 
     return this.repository.save(community);
   }
@@ -142,6 +171,35 @@ export class CommunityService {
         .getMany();
   }
 
+  async deleteCommunity(id: number): Promise<void> {
+    const posts = await this.postRepository.find({ where: { community: {id: id} } });
+    console.log(posts)
+    for(let i = 0; i<posts.length; i++){
+      const messages = await this.messageRepository.find({ where: { post: {id: posts[i].id} } });
+      console.log(messages)
+      for(let y = 0; y<messages.length; y++){
+        const responses = await this.responseRepository.find({ where: { message: {id: messages[y].id} } });
+        console.log(responses)
+        await this.responseRepository.remove(responses);
+      }
+      await this.messageRepository.remove(messages);
+    }
+    await this.postRepository.remove(posts);
 
+    await this.repository.delete(id);
+  }
+
+  async removeFollowerFromCommunity(userId: number, communityId: number): Promise<Community> {
+    const community = await this.getCommunityById(communityId);
+    const followers = await this.getUsersByCommunityId(communityId);
+
+    if (!community || !followers) {
+      throw new NotFoundException('La communauté ou les followers sont introuvables.');
+    }
+
+    community.followers = followers.filter((follower) => follower.id !== userId);
+
+    return await this.repository.save(community);
+  }
 
 }

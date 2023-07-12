@@ -4,11 +4,19 @@ import {Brackets, Repository} from 'typeorm';
 import {User} from "@/api/user/user.entity";
 import {Post} from "@/api/post/post.entity";
 import {CreatePostDto} from "@/api/post/post.dto";
+import {Message} from "@/api/message/message.entity";
+import {ResponseEntity} from "@/api/response/response.entity";
 
 @Injectable()
 export class PostService {
   @InjectRepository(Post)
   private readonly repository: Repository<Post>;
+
+  @InjectRepository(Message)
+  private messageRepository: Repository<Message>;
+
+  @InjectRepository(ResponseEntity)
+  private responseRepository: Repository<ResponseEntity>;
 
   public async getAll(): Promise<Post[]> {
     return this.repository.find({
@@ -83,5 +91,18 @@ export class PostService {
             }),
         )
         .getMany();
+  }
+
+  async deletePost(id: number): Promise<void> {
+    const messages = await this.messageRepository.find({ where: { post: {id: id} } });
+    console.log(messages)
+    for(let y = 0; y<messages.length; y++){
+      const responses = await this.responseRepository.find({ where: { message: {id: messages[y].id} } });
+      console.log(responses)
+      await this.responseRepository.remove(responses);
+    }
+    await this.messageRepository.remove(messages);
+
+    await this.repository.delete(id);
   }
 }
