@@ -6,9 +6,11 @@ import { SendResetPasswordDto } from './mail.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../user/user.entity';
 import { Repository } from 'typeorm';
+import { Project } from '../project/project.entity';
 
 @Injectable()
 export class MailService {
+
     private configService: ConfigService;
     constructor(private mailerService: MailerService, configService: ConfigService,
       @InjectRepository(User) private readonly userRepository: Repository<User>) {
@@ -76,5 +78,22 @@ export class MailService {
         },
       });
     }
-}
+
+    async sendPaymentConfirmation(user: User, project: Project, amount: number) {
+      const ourMailAdress = this.configService.get<string>("EMAIL_ADDRESS");
+      await this.mailerService.sendMail({
+        to: user.email,
+        from: `Payment Confirmation - GreenItForward <${this.configService.get<string>("EMAIL_FROM")}>`,
+        subject: 'Your payment has been confirmed',
+        template: './payment-confirmation',
+        context: {
+          logo: this.configService.get<string>("LOGO_URL"),
+          name: user.firstName + ' ' + user.lastName,
+          ourMailAdress,
+          projectName: project.name,
+          amount,
+        },
+      });
+    }
+} 
  

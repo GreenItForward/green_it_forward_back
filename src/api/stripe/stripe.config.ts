@@ -3,11 +3,12 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Stripe } from 'stripe';
 import { CreatePaymentDto, PaymentIntentDto, PaymentMethodDto } from "@/api/stripe/stripe.dto";
-import { FindOptionsWhere, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../user/user.entity';
 import { Payment } from './stripe.entity';
 import { Project } from '../project/project.entity';
+import { MailService } from '../mailer/mail.service';
 
 @Injectable()
 export class StripeService {
@@ -18,7 +19,7 @@ export class StripeService {
 
   private stripe: Stripe;
   
-  constructor(private readonly configService: ConfigService) {
+  constructor(private readonly configService: ConfigService, protected mailService: MailService) {
     this.stripe = new Stripe(this.configService.get<string>('STRIPE_SECRET_KEY'), {
       apiVersion: '2022-11-15',
     });
@@ -91,6 +92,8 @@ export class StripeService {
     project.amountRaised =  Number(project.amountRaised) + Number(body.amount);
 
     await this.projectReposiory.save(project);
+
+    this.mailService.sendPaymentConfirmation(user, project, body.amount);
 
     return { clientSecret: paymentIntent.client_secret };
   
