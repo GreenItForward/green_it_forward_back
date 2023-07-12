@@ -21,7 +21,7 @@ export class MailService {
         await this.mailerService.sendMail({
             to: user.email,
             from: `No Reply - GreenItForward <${this.configService.get<string>("EMAIL_FROM")}>`,
-            subject: 'Greeting from GreenItForward',
+            subject: 'Message de la part de GreenItForward',
             template: 'email', 
             context: {
                 name: user.name,
@@ -32,15 +32,18 @@ export class MailService {
     async sendUserConfirmation(user) {
         const token = `${user.id}-${Date.now()}`;
         const url = `${this.configService.get<string>("FRONT_URL")}/auth/confirm?token=${token}`;
-  
+        const ourMailAdress = this.configService.get<string>("EMAIL_ADDRESS");
+
         await this.userRepository.update(user.id, { confirmationToken: token });
         await this.mailerService.sendMail({
           to: user.email,
           from: `Welcome Team - GreenItForward <${this.configService.get<string>("EMAIL_FROM")}>`,
-          subject: 'Welcome to GreenItForward ! Confirm your Email',
+          subject: 'Bienvenue sur GreenItForward - Confirmez votre adresse email',
           template: './confirmation', 
           context: {
+            logo : this.configService.get<string>("LOGO_URL"),
             name: user.name, 
+            ourMailAdress,
             url,
           },
         });
@@ -52,11 +55,12 @@ export class MailService {
         const url = `${this.configService.get<string>("FRONT_URL")}/auth/reset-password?token=${token}`;
         await this.mailerService.sendMail({
         to: user.email,
-        from: `Password Reset - GreenItForward <${this.configService.get<string>("EMAIL_FROM")}>`,
-        subject: 'Reset your password',
+        from: `Réinitialisation de mot de passe - GreenItForward <${this.configService.get<string>("EMAIL_FROM")}>`,
+        subject: 'Réinitialisation de mot de passe',
         template: './reset-password',
         context: {
           ourMailAdress,
+          logo : this.configService.get<string>("LOGO_URL"),
           url,
         },
       });
@@ -68,12 +72,13 @@ export class MailService {
       const ourMailAdress = this.configService.get<string>("EMAIL_ADDRESS");
       await this.mailerService.sendMail({
         to: user.email,
-        from: `Password Changed - GreenItForward <${this.configService.get<string>("EMAIL_FROM")}>`,
-        subject: 'Your password has been changed',
+        from: `Mot de passe changé- GreenItForward <${this.configService.get<string>("EMAIL_FROM")}>`,
+        subject: 'Votre mot de passe a été changé',
         template: './password-changed',
         context: {
           firstName: user.firstName,
           lastName: user.lastName,
+          logo : this.configService.get<string>("LOGO_URL"),
           ourMailAdress,
         },
       });
@@ -83,8 +88,8 @@ export class MailService {
       const ourMailAdress = this.configService.get<string>("EMAIL_ADDRESS");
       await this.mailerService.sendMail({
         to: user.email,
-        from: `Payment Confirmation - GreenItForward <${this.configService.get<string>("EMAIL_FROM")}>`,
-        subject: 'Your payment has been confirmed',
+        from: `Confirmation de paiement - GreenItForward <${this.configService.get<string>("EMAIL_FROM")}>`,
+        subject: 'Votre paiement a été effectué',
         template: './payment-confirmation',
         context: {
           logo: this.configService.get<string>("LOGO_URL"),
