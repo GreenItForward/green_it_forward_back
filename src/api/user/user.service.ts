@@ -90,15 +90,4 @@ export class UserService {
     return this.repository.find();
   }
 
-  async getBase64Image(imagePath: string): Promise<string | null> {
-    try {
-      const absolutePath = join(process.cwd(), imagePath);
-      const file = await readFile(absolutePath);
-      const base64Image = file.toString('base64');
-      return base64Image;
-    } catch (error) {
-      console.error('Failed to convert image to base64', error);
-      return null;
-    }
-  }
 }

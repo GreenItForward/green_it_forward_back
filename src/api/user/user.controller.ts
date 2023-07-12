@@ -44,6 +44,7 @@ export class UserController {
   @Put('edit-image')
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
+  @UseInterceptors(ClassSerializerInterceptor)
   @ApiBody({ type: RegisterDto })
   @ApiOkResponse({
     description: 'User successfully registered',

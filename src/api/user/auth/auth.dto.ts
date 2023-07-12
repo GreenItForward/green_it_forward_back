@@ -22,6 +22,11 @@ export class RegisterDto {
   @IsOptional()
   @ApiProperty()
   public readonly lastName?: string;
+
+  @IsString()
+  @IsOptional()
+  @ApiProperty()
+  public readonly imageUrl?: string;
 }
 
 export class LoginDto {
