@@ -1,7 +1,7 @@
 import {
   Body,
   ClassSerializerInterceptor,
-  Controller,
+  Controller, Delete,
   Get,
   Inject,
   Param,
@@ -17,6 +17,7 @@ import {CreatePostDto} from './post.dto';
 import {ApiBearerAuth, ApiBody, ApiTags} from "@nestjs/swagger";
 import {JwtAuthGuard} from "@/api/user/auth/auth.guard";
 import {User} from "@/api/user/user.entity";
+import {UpdateCommunityDto} from "@/api/community/community.dto";
 
 @Controller('post')
 @ApiTags('Post')
@@ -66,5 +67,23 @@ export class PostController {
     @Req() { user }: Request,
   ): Promise<PostEntity> {
     return this.service.create(body, <User>user);
+  }
+
+  @Post('search/:searchstring')
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @UseInterceptors(ClassSerializerInterceptor)
+  private async searchPostsInCommunity(@Param('searchstring') searchString:string, @Body() body): Promise<PostEntity[]> {
+    return this.service.searchPostsInCommunity(body.communityId, searchString)
+  }
+
+  @Delete('delete/:id')
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @UseInterceptors(ClassSerializerInterceptor)
+  private async deletePost(
+      @Param('id') id: string
+  ): Promise<void> {
+    return this.service.deletePost(parseInt(id));
   }
 }

@@ -25,9 +25,9 @@ export class Post extends BaseEntity {
   @Column()
   text: string;
 
-  @Column({ type: 'timestamp', nullable: true, default: null })
+  @Column()
   @ApiProperty()
-  public creationDate: Date | null;
+  public creationDate: Date;
 
 
   @ApiProperty()

@@ -1,10 +1,10 @@
 import {
   Body,
   ClassSerializerInterceptor,
-  Controller,
+  Controller, Delete,
   Get,
   Inject,
-  Param,
+  Param, Patch,
   Post,
   Req,
   UseGuards,
@@ -14,8 +14,8 @@ import { Request } from 'express';
 import { CommunityService } from './community.service';
 import { UserService } from '../user/user.service';
 import { Community } from './community.entity';
-import { CreateCommunityDto } from './community.dto';
-import {ApiBearerAuth, ApiBody, ApiTags} from "@nestjs/swagger";
+import {CreateCommunityDto, UpdateCommunityDto} from './community.dto';
+import {ApiBearerAuth, ApiBody} from "@nestjs/swagger";
 import {JwtAuthGuard} from "@/api/user/auth/auth.guard";
 import {User} from "@/api/user/user.entity";
 
@@ -71,6 +71,14 @@ export class CommunityController {
     return this.service.getUsersByCommunityId(parseInt(id));
   }
 
+  @Get('search/:searchstring')
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @UseInterceptors(ClassSerializerInterceptor)
+  public async searchCommunities(@Param('searchstring') searchString: string): Promise<Community[]> {
+    return this.service.searchCommunities(searchString);
+  }
+
   @Get('all')
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
@@ -91,12 +99,37 @@ export class CommunityController {
     return this.service.create(body, <User>user);
   }
 
-  @Get('user/:id/communities')
+  @Patch('community/:id')
+  @ApiBearerAuth()
+  @ApiBody({ type: UpdateCommunityDto })
+  @UseGuards(JwtAuthGuard)
+  @UseInterceptors(ClassSerializerInterceptor)
+  private async update(
+      @Body() body: UpdateCommunityDto,
+      @Param('id') id: string
+  ): Promise<Community> {
+    return this.service.update(parseInt(id),body);
+  }
+
+  @Patch('removefollower')
+  @ApiBearerAuth()
+  @ApiBody({ type: UpdateCommunityDto })
+  @UseGuards(JwtAuthGuard)
+  @UseInterceptors(ClassSerializerInterceptor)
+  private async removeFollowerFromCommunity(
+      @Body() body: any,
+  ): Promise<Community> {
+    return this.service.removeFollowerFromCommunity(body.userId, body.communityId);
+  }
+
+  @Delete('delete/:id')
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(ClassSerializerInterceptor)
-  public async getCommunitiesJoinedByUser(@Param('id') id: string): Promise<Community[]> {
-    return this.service.getCommunitiesJoinedByUser(parseInt(id));
+  private async deleteCommunity(
+      @Param('id') id: string
+  ): Promise<void> {
+    return this.service.deleteCommunity(parseInt(id));
   }
 
 }
