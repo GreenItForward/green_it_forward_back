@@ -95,10 +95,9 @@ export class PostService {
 
   async deletePost(id: number): Promise<void> {
     const messages = await this.messageRepository.find({ where: { post: {id: id} } });
-    console.log(messages)
+
     for(let y = 0; y<messages.length; y++){
       const responses = await this.responseRepository.find({ where: { message: {id: messages[y].id} } });
-      console.log(responses)
       await this.responseRepository.remove(responses);
     }
     await this.messageRepository.remove(messages);

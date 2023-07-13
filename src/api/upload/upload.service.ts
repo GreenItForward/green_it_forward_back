@@ -24,8 +24,6 @@ export class UploadService {
 
     fs.writeFileSync(filePath, file.buffer);
 
-    console.log('Upload success');
-
     return {filename: newFileName};
   }
 

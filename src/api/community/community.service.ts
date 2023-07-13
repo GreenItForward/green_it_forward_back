@@ -77,9 +77,6 @@ export class CommunityService {
     if (!isUserAlreadyFollowed) {
       followers.push(user)
     }
-    else{
-      console.log("L'utilisateur suit déjà cette communauté")
-    }
 
     community.followers = followers
 
@@ -100,9 +97,6 @@ export class CommunityService {
     const isUserAlreadyFollowed = followers.some((follower) => follower.id === user.id);
     if (isUserAlreadyFollowed) {
       community.followers = followers.filter((follower) => follower.id !== user.id);
-    }
-    else{
-      console.log("L'utilisateur ne suis pas cette communauté")
     }
 
     return this.repository.save(community);
@@ -173,13 +167,10 @@ export class CommunityService {
 
   async deleteCommunity(id: number): Promise<void> {
     const posts = await this.postRepository.find({ where: { community: {id: id} } });
-    console.log(posts)
     for(let i = 0; i<posts.length; i++){
       const messages = await this.messageRepository.find({ where: { post: {id: posts[i].id} } });
-      console.log(messages)
       for(let y = 0; y<messages.length; y++){
         const responses = await this.responseRepository.find({ where: { message: {id: messages[y].id} } });
-        console.log(responses)
         await this.responseRepository.remove(responses);
       }
       await this.messageRepository.remove(messages);
