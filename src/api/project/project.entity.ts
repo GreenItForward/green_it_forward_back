@@ -1,4 +1,5 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, ManyToOne, JoinColumn } from 'typeorm';
+import { User } from '../user/user.entity';
 
 @Entity()
 export class Project {
@@ -20,12 +21,13 @@ export class Project {
   @Column('decimal')
   totalAmount: number;
 
-  @Column('date')
+  @Column('timestamp')
   startDate: Date;
   
-  @Column('date')
+  @Column('timestamp')
   endDate: Date;
   
-  @Column()
-  createdBy: string;
+  @ManyToOne(() => User, user => user.projects)
+  @JoinColumn({ name: "createdBy" })
+  createdBy: User;
 }

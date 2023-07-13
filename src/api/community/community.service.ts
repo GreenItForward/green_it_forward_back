@@ -1,4 +1,4 @@
-import {Injectable, NotFoundException} from '@nestjs/common';
+import {ConflictException, Injectable, NotFoundException} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
 import {Repository} from 'typeorm';
 import {Community} from './community.entity';
@@ -156,6 +156,14 @@ export class CommunityService {
 
     return community;
   }
+
+  async getCommunitiesJoinedByUser(userId: number): Promise<Community[]> {
+    return this.repository.find({
+      where: { followers: { id: userId } },
+      relations: ['followers'],
+    });
+  }
+  
 
   public async searchCommunities(searchString: string): Promise<Community[]> {
     return await this.repository

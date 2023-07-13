@@ -1,3 +1,4 @@
+import { diskStorage } from 'multer';
 import {
   BadRequestException,
   Body,
@@ -9,34 +10,57 @@ import {
   Post,
   Put,
   Req,
+  UploadedFile,
   UseGuards,
-  UseInterceptors
+  UseInterceptors,
+  ParseFilePipe, FileTypeValidator, MaxFileSizeValidator
 } from "@nestjs/common";
 import { Request } from "express";
 import { JwtAuthGuard } from "@/api/user/auth/auth.guard";
-import { MeDto, UpdateNameDto, VerifyUserDto } from "./user.dto";
+import { MeDto, UpdateUserDto, VerifyUserDto } from "./user.dto";
 import { User } from "./user.entity";
 import { UserService } from "./user.service";
-import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
+import { ApiBadRequestResponse, ApiBearerAuth, ApiBody, ApiOkResponse, ApiTags } from "@nestjs/swagger";
 import { Roles } from "@/api/user/role/role.decorator";
 import { RoleEnum } from "@/common/enums/role.enum";
 import { RolesGuard } from "@/api/user/role/role.guard";
+import { RegisterDto, UpdateImageDto } from "./auth/auth.dto";
 
 @ApiTags('User')
-@Controller('user')
+@Controller('user') 
 export class UserController {
   @Inject(UserService)
   private readonly service: UserService;
  
 
-  @Put('name')
+  @Put('edit')
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(ClassSerializerInterceptor)
-  private updateName(@Body() body: UpdateNameDto, @Req() { user }: Request): Promise<MeDto> {
-    return this.service.updateName(body, <User>user);
+  @ApiBody({ type: UpdateUserDto })
+  @ApiOkResponse({
+    description: 'User successfully updated',
+    type: MeDto,
+  })
+  private updateUser(@Body() body: UpdateUserDto, @Req() { user }: Request): Promise<MeDto> {
+    return this.service.updateUser(body, <User>user);
   }
 
+  @Put('edit-image')
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @UseInterceptors(ClassSerializerInterceptor)
+  @ApiBody({ type: UpdateImageDto })
+  @ApiOkResponse({
+    description: 'User successfully updated',
+    type: MeDto,
+  })
+  @ApiBadRequestResponse({ description: 'Bad Request' })
+  private editWithImage(@Req() { user } : Request, @Body() body: UpdateImageDto) { 
+    return this.service.updateImage(<User>user, body.imageUrl);
+  }
+
+  
   @Post('verify')
   @ApiBearerAuth()
   private async verifyUser(@Body() body: VerifyUserDto) {
@@ -48,6 +72,10 @@ export class UserController {
   @Roles(RoleEnum.ADMINISTRATEUR)
   @UseGuards(JwtAuthGuard, RolesGuard)
   @UseInterceptors(ClassSerializerInterceptor)
+  @ApiOkResponse({
+    description: 'List of users',
+    type: User,
+  })
   private async admin(): Promise<User[]> {
     return await this.service.admin();
   }
@@ -56,20 +84,33 @@ export class UserController {
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(ClassSerializerInterceptor)
-  private getMe(@Req() req: Request): MeDto {
-    const user = req.user as User;
-    return {
-      email: user.email,
-      firstName: user.firstName,
-      lastName: user.lastName,
-      role: user.role
-    };
+  @ApiOkResponse({
+    description: 'User information',
+    type: MeDto,
+  })
+  private async getMe(@Req() req: Request): Promise<MeDto> {
+      const user = req.user as User;
+      return {
+        id: user.id,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        role: user.role,
+        lastLoginAt: user.lastLoginAt,
+        firstLoginAt: user.firstLoginAt,
+        imageUrl: user.imageUrl,
+      };
   }
+  
 
   @Get('/:id')
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(ClassSerializerInterceptor)
+  @ApiOkResponse({
+    description: 'User information',
+    type: User,
+  })
   private async getUser(@Param('id') userId:number): Promise<User | never> {
     const id =  Number(userId);
     if (isNaN(id)) {

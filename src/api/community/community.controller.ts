@@ -20,6 +20,7 @@ import {JwtAuthGuard} from "@/api/user/auth/auth.guard";
 import {User} from "@/api/user/user.entity";
 
 @Controller('communities')
+@ApiTags('Community')
 export class CommunityController {
   @Inject(CommunityService)
   private readonly service: CommunityService;

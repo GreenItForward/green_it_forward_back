@@ -12,6 +12,9 @@ import {InjectRepository} from "@nestjs/typeorm";
 import {Brackets, Repository} from "typeorm";
 import {User} from "./user.entity";
 import {MeDto, UpdateNameDto} from "./user.dto";
+import { join } from 'path';
+import { readFile } from 'fs/promises';
+import { UpdateImageDto } from './auth/auth.dto';
 
 @Injectable()
 export class UserService {
@@ -21,25 +24,33 @@ export class UserService {
   constructor(
     @Inject(forwardRef(() => RoleService))
     private roleService: RoleService,
-  ) {}
+  ) {
+  }
 
-  public async updateName(body: UpdateNameDto, user: User): Promise<MeDto> {
+
+  public async updateUser(body: UpdateUserDto, user: User): Promise<MeDto> {
     if (!user) {
       throw new ForbiddenException('User is undefined');
     }
 
-    user.firstName = body.firstName;
-    user.lastName = body.lastName;
-
+    user.firstName = body.firstName || user.firstName;
+    user.lastName = body.lastName || user.lastName;
+    user.email = body.email || user.email;
     await this.repository.save(user);
-    return {
-      email: user.email,
-      firstName: user.firstName,
-      lastName: user.lastName,
-      role: user.role
-    }
+    return user;
   }
 
+  public async updateImage(user: User, imageUrl:string): Promise<MeDto> {
+    if (!user) {
+      throw new ForbiddenException('User is undefined');
+    }
+
+    user.imageUrl = imageUrl;
+    await this.repository.save(user);
+    return user;
+  }
+
+ 
   public async getUser(id: number):Promise<User> {
     const user = await this.repository
       .createQueryBuilder('user')
@@ -48,10 +59,10 @@ export class UserService {
 
     if (!user) {
       throw new NotFoundException('Aucun utilisateur trouvé.');
-    }
+    } 
 
     return user;
-  }
+  } 
 
   async verifyUserByToken(token: string): Promise<User | null> {
     const user = await this.repository.findOne({ where: { confirmationToken: token } });
@@ -78,4 +89,5 @@ export class UserService {
   admin(): Promise<User[]> {
     return this.repository.find();
   }
+
 }

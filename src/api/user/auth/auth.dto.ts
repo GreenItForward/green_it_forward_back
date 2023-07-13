@@ -1,3 +1,4 @@
+import { TokenResponse } from '@/common/types/token-response.interface';
 import { Trim } from 'class-sanitizer';
 import { IsEmail, IsOptional, IsString, MinLength } from 'class-validator';
 import { ApiProperty } from "@nestjs/swagger";
@@ -22,6 +23,11 @@ export class RegisterDto {
   @IsOptional()
   @ApiProperty()
   public readonly lastName?: string;
+
+  @IsString()
+  @IsOptional()
+  @ApiProperty()
+  public readonly imageUrl?: string;
 }
 
 export class LoginDto {
@@ -29,8 +35,25 @@ export class LoginDto {
   @IsEmail()
   @ApiProperty()
   public readonly email: string;
-
+ 
   @IsString()
   @ApiProperty()
   public readonly password: string;
+}
+
+export class ChangePasswordDto {
+  @IsString()
+  @ApiProperty()
+  public readonly password: string;
+}
+
+export class UpdateImageDto {
+  @IsString()
+  @ApiProperty()
+  public readonly imageUrl: string;
+}
+
+export class TokenResponseDto implements TokenResponse {
+  @ApiProperty()
+  public readonly token: string;
 }

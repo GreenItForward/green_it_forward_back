@@ -6,13 +6,14 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { UploadService } from './upload.service';
-import {ApiBearerAuth} from "@nestjs/swagger";
+import {ApiBearerAuth, ApiTags} from "@nestjs/swagger";
 import {JwtAuthGuard} from "@/api/user/auth/auth.guard";
 import {FileInterceptor} from "@nestjs/platform-express";
 import { Response } from 'express';
 import {UploadResponse} from "@/api/upload/upload-response.entity";
 
 @Controller('upload')
+@ApiTags('Upload')
 export class UploadController {
   @Inject(UploadService)
   private readonly service: UploadService;
