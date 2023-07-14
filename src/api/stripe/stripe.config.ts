@@ -1,5 +1,5 @@
 import { UserModule } from './../user/user.module';
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Stripe } from 'stripe';
 import { CreatePaymentDto, PaymentIntentDto, PaymentMethodDto } from "@/api/stripe/stripe.dto";
@@ -70,6 +70,19 @@ async getPaymentsIntentByUser(id: number) : Promise<PaymentIntentDto[]> {
   async createPaymentIntent(body: CreatePaymentDto, user: User) {
     const stripe = this.getStripeInstance();
     const convertedAmount = Math.round(body.amount * 100);
+    const project = await this.projectReposiory.findOneBy({ id: body.projectId });
+    const now = new Date();
+    const startDate = new Date(project.startDate);
+
+    if (startDate < now) {
+      project.startDate = now;
+    }
+
+    const endDate = new Date(project.endDate);
+    
+    if (endDate < now) {
+      throw new HttpException('Project is already finished', HttpStatus.BAD_REQUEST);
+    }
 
     const paymentIntent = await stripe.paymentIntents.create({
       amount: convertedAmount,
@@ -84,7 +97,6 @@ async getPaymentsIntentByUser(id: number) : Promise<PaymentIntentDto[]> {
       metadata: { userId: user.id, projectId: body.projectId },
     });
 
-    const project = await this.projectReposiory.findOneBy({ id: body.projectId });
     project.amountRaised =  Number(project.amountRaised) + Number(body.amount);
 
     await this.projectReposiory.save(project);
