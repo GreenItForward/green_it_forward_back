@@ -17,8 +17,14 @@ export class ProjectService {
   ) {}
 
   getAllProjects(): Promise<Project[]> {
-    return this.projectRepository.find( { relations: ['createdBy'] });
+    return this.projectRepository.find({ 
+      relations: ['createdBy'],
+      order: {
+        startDate: 'DESC',
+      },
+    });
   }
+  
 
   async getProjectById(id: string): Promise<Project> {
     const project = await this.projectRepository.findOne({ 
