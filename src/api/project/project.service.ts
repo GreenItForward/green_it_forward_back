@@ -5,6 +5,7 @@ import { Repository } from 'typeorm';
 import { Project } from './project.entity';
 import { CreateProjectDto } from './project.dto';
 import { convertToDate } from '@/common/helper/date.helper';
+import moment from 'moment';
 
 @Injectable()
 export class ProjectService {
@@ -52,6 +53,10 @@ export class ProjectService {
     const userEntity = await this.userRepository.findOneBy({ id: user.id });
     if (!userEntity) {
       throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+    }
+
+    if (moment(project.endDate).isBefore(moment())) {
+      throw new HttpException('La date de fin doit être supérieure à la date du jour', HttpStatus.BAD_REQUEST);
     }
 
     const newProject = this.projectRepository.create({
