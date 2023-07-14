@@ -25,10 +25,9 @@ export class Post extends BaseEntity {
   @Column()
   text: string;
 
-  @Column()
+  @Column({ type: 'timestamp', nullable: true, default: null })
   @ApiProperty()
   public creationDate: Date;
-
 
   @ApiProperty()
   @ManyToOne(() => Community, (community) => community.posts)

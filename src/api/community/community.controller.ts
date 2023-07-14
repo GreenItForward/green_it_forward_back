@@ -15,7 +15,7 @@ import { CommunityService } from './community.service';
 import { UserService } from '../user/user.service';
 import { Community } from './community.entity';
 import {CreateCommunityDto, UpdateCommunityDto} from './community.dto';
-import {ApiBearerAuth, ApiBody} from "@nestjs/swagger";
+import {ApiBearerAuth, ApiBody, ApiTags} from "@nestjs/swagger";
 import {JwtAuthGuard} from "@/api/user/auth/auth.guard";
 import {User} from "@/api/user/user.entity";
 
@@ -130,6 +130,14 @@ export class CommunityController {
       @Param('id') id: string
   ): Promise<void> {
     return this.service.deleteCommunity(parseInt(id));
+  }
+
+  @Get('user/:id/communities')
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @UseInterceptors(ClassSerializerInterceptor)
+  private async getCommunitiesByUser( @Param('id') id: string): Promise<Community[]> {
+    return this.service.getCommunitiesJoinedByUser(parseInt(id));
   }
 
 }

@@ -11,7 +11,7 @@ import {
 import {InjectRepository} from "@nestjs/typeorm";
 import {Brackets, Repository} from "typeorm";
 import {User} from "./user.entity";
-import {MeDto, UpdateNameDto} from "./user.dto";
+import {MeDto, UpdateUserDto} from "./user.dto";
 import { join } from 'path';
 import { readFile } from 'fs/promises';
 import { UpdateImageDto } from './auth/auth.dto';
