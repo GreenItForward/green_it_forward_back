@@ -68,5 +68,13 @@ export class ProjectService {
   
     return await this.projectRepository.save(newProject);
   }
+
+  public async searchProjects(searchString: string): Promise<Project[]> {
+    return await this.projectRepository
+        .createQueryBuilder('project')
+        .where('LOWER(project.name) LIKE LOWER(:searchString)', {searchString: `%${searchString}%`})
+        .orWhere('LOWER(project.description) LIKE LOWER(:searchString)', {searchString: `%${searchString}%`})
+        .getMany();
+  }
   
 }

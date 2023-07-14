@@ -43,5 +43,14 @@ export class ProjectController {
   async getRandomProjects(@Param('count') count: number): Promise<Project[]> {
      return await this.projectService.getRandomProjects(count);
   }
+
+  
+  @Get('search/:searchstring')
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @UseInterceptors(ClassSerializerInterceptor)
+  public async searchProjects(@Param('searchstring') searchString: string): Promise<Project[]> {
+    return this.projectService.searchProjects(searchString);
+  }
 }
    
