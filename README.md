@@ -1,98 +1,71 @@
-# GreenItForward Backend
+# green_it_forward_back
 
-![version](https://img.shields.io/badge/version-1.0.1-blue)
+## Description
 
-This repository contains the backend for the GreenItForward project. It is built with NestJS and other various dependencies. This backend serves as the API for the [GreenItForward frontend](https://github.com/GreenItForward/green_it_forward_front).
+Ce projet est le backend de l'application Green It Forward. 
 
-## Contributors
+Il fournit une API pour gérer les fonctionnalités de l'application.
 
-- [James ABIB](https://github.com/jabibamman)
-- [Ronan KIELT](https://github.com/chikatetsu)
-- [Charles CRETOIS](https://github.com/carlito0605)
+## Installation
 
-## Getting Started
+Assurez-vous d'avoir [Node.js](https://nodejs.org) installé.
 
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes.
+Installez les dépendances en exécutant la commande suivante :
 
-### Prerequisites
-
-You need to have the following installed:
-- Node.js
-- Docker (for Docker Compose)
-- PostgreSQL
-
-### Installation
-
-1. Clone the repository
-
-    ```
-    git clone https://github.com/GreenItForward/green_it_forward_back.git
-    ```
-
-2. Navigate into the project directory
-
-    ```
-    cd green_it_forward_back
-    ```
-
-3. Install the dependencies
-
-    ```
-    npm install
-    ```
-
-4. Copy the .env.example file to .env and fill in the required variables
-
-    ```
-    cp .env.example .env
-    ```
-
-## Running the App
-
-- To run the app in the development mode, use the command:
-
-    ```
-    npm run start:dev
-    ```
-
-- To build the app for production, use the command:
-
-    ```
-    npm run build
-    ```
-
-## Testing
-
-Run the tests using the following command:
-
-```
-npm run test
+```sh
+npm install
 ```
 
+## Configuration
+Avant de lancer l'application, vous devez configurer les variables d'environnement.
 
-## Docker Compose
+Créez un fichier .env à la racine du projet et définissez les valeurs suivantes :
 
-The project also includes a Docker Compose configuration for running a PostgreSQL database in a Docker container. You'll need to have Docker installed to use this.
+```sh
+PGDATABASE=postgres
+PGUSER=postgres
+PGPASSWORD=postgres
+PGHOST=localhost
+PGPORT=5432
+STRIPE_SECRET_KEY=sk_*your_secret_key*
 
-1. Run Docker Compose:
+EMAIL_ADDRESS=*your_email_address*
+EMAIL_PASSWORD=*your_email_password*
+EMAIL_FROM=*your_email_address*
+EMAIL_HOST=smtp.*your_email_provider*.com 
+EMAIL_SECURE=true
+EMAIL_FROM=*your_email_address*
 
-    ```
-    docker-compose up
-    ```
+JWT_KEY=*your_jwt_key*
+JWT_EXPIRES=1d
 
-This will start a PostgreSQL database accessible at the port specified in your .env file.
+LOGO_URL=https://cdn.discordapp.com/attachments/1029381239246954548/1128644644650110976/logo.png
+FRONT_URL=*your_website_url*
+```
 
-## Built With
+## Scripts
+Les scripts suivants sont disponibles :
 
-- NestJS
-- TypeORM
-- Passport
-- And other various packages...
+- `npm run build` : Compile les fichiers TypeScript en JavaScript dans le dossier dist.
 
-## Versioning
+- `npm run format` : Formate le code à l'aide de Prettier.
+- `npm start` : Lance l'application en utilisant Node.js.
+- `npm run start:dev` : Lance l'application en mode développement avec rechargement à chaud.
+- `npm run start:debug` : Lance l'application en mode débogage avec rechargement à chaud.
+- `npm run start:prod` : Lance l'application en mode production.
+- `npm run start:docker` : Lance l'application dans un conteneur Docker en utilisant Docker Compose.
+- `npm run start:docker:dev` : Lance l'application dans un conteneur Docker en mode développement avec rechargement à chaud.
+`npm run start:docker:debug` : Lance l'application dans un conteneur Docker en mode débogage avec rechargement à chaud.
+- `npm run docker:compose` : Démarre les conteneurs Docker nécessaires à l'application.
+- `npm run lint` : Vérifie le code à l'aide d'ESLint et apporte des corrections automatiques si possible.
+- `npm test` : Exécute les tests à l'aide de Jest.
+- `npm run test:watch` : Exécute les tests en mode surveillance.
+- `npm run test:cov` : Exécute les tests avec une couverture de code.
+- `npm run test:debug` : Exécute les tests en mode débogage.
+- `npm run test:e2e` : Exécute les tests d'end-to-end.
 
-We use [SemVer](http://semver.org/) for versioning. For the versions available, see the [tags on this repository](https://github.com/GreenItForward/green_it_forward_back/tags).
+## Auteurs
 
-## License
-
-This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md) file for details.
+- James ABIB
+- Ronan KIELT
+- Charles CRETOIS
