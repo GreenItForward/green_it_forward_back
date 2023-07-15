@@ -6,7 +6,6 @@ import { RegisterDto, LoginDto, ChangePasswordDto } from './auth.dto';
 import { AuthHelper } from './auth.helper';
 import { TokenResponse } from '@/common/types/token-response.interface';
 import { MailService } from '@/api/mailer/mail.service';
-import { join } from 'path';
 
 @Injectable()
 export class AuthService {
@@ -22,14 +21,14 @@ export class AuthService {
 
   public async register(body: RegisterDto, ip: string): Promise<User> {
     if(await this.helper.isUserBanIp(ip)) {
-      throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
+      throw new HttpException('Vous êtes bannis :/', HttpStatus.FORBIDDEN);
     }
 
     const { firstName, lastName, email, password }: RegisterDto = body;
     let user: User = await this.repository.findOneBy({ email });
 
     if (user) {
-      throw new HttpException('Conflict', HttpStatus.CONFLICT);
+      throw new HttpException('Cet email est déjà utilisé', HttpStatus.CONFLICT);
     }
 
     user = new User();
@@ -47,26 +46,26 @@ export class AuthService {
     return user;
   }
 
-  public async login(body: LoginDto, ip: string): Promise<TokenResponse> {;
+  public async login(body: LoginDto, ip: string): Promise<TokenResponse> {
     if(await this.helper.isUserBanIp(ip)) {
-      throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
+      throw new HttpException('Vous êtes bannis :/', HttpStatus.FORBIDDEN);
     }
 
     const { email, password }: LoginDto = body;
     const user: User = await this.repository.findOneBy({ email });
  
     if (!user) {
-      throw new HttpException('That email/username and password combination didn\'t work', HttpStatus.NOT_FOUND);
+      throw new HttpException('Le mot de passe est incorrect', HttpStatus.NOT_FOUND);
     }
 
     const isPasswordValid: boolean = this.helper.isPasswordValid(password, user.password);
 
     if (!isPasswordValid) {
-      throw new HttpException('That email/username and password combination didn\'t work', HttpStatus.NOT_FOUND);
+      throw new HttpException('Le mot de passe est incorrect', HttpStatus.NOT_FOUND);
     }
 
     if (!user.isVerified) {
-      throw new HttpException('Please confirm your email address', HttpStatus.FORBIDDEN);
+      throw new HttpException('Veuillez confirmer votre adresse email', HttpStatus.FORBIDDEN);
     }
 
     if (user.firstLoginAt === null) {
@@ -80,7 +79,7 @@ export class AuthService {
 
   public async refresh(user: User, ip: string): Promise<string> {
     if(await this.helper.isUserBanIp(ip)) {
-      throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
+      throw new HttpException('Vous êtes bannis :/', HttpStatus.FORBIDDEN);
     }
 
     await this.repository.update(user.id, { lastLoginAt: new Date() });

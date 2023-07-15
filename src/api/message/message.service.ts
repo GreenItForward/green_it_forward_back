@@ -2,8 +2,6 @@ import {Injectable, NotFoundException} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
 import {Repository} from 'typeorm';
 import {User} from "@/api/user/user.entity";
-import {Post} from "@/api/post/post.entity";
-import {CreatePostDto} from "@/api/post/post.dto";
 import {Message} from "@/api/message/message.entity";
 import {CreateMessageDto} from "@/api/message/message.dto";
 
@@ -67,5 +65,9 @@ export class MessageService {
     }
 
     return messages;
+  }
+
+  public async delete(id: number): Promise<void> {
+    await this.repository.delete(id);
   }
 }
