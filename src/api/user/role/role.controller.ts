@@ -24,7 +24,7 @@ export class RoleController {
 
     @Get('user/:userId')
     @ApiBearerAuth()
-    @Roles(RoleEnum.ADMINISTRATEUR, RoleEnum.MODERATEUR)
+    @Roles(RoleEnum.ADMINISTRATEUR)
     @UseGuards(JwtAuthGuard, RolesGuard)
     @UseInterceptors(ClassSerializerInterceptor)
     private async getRole(@Param('userId') userId: number): Promise<{role: RoleEnum} | never> {
@@ -34,7 +34,7 @@ export class RoleController {
     @Put('change-role')
     @ApiBody({ type: ChangeRoleDto })
     @ApiBearerAuth()
-    @Roles(RoleEnum.ADMINISTRATEUR, RoleEnum.MODERATEUR)
+    @Roles(RoleEnum.ADMINISTRATEUR)
     @UseGuards(JwtAuthGuard, RolesGuard)
     @UseInterceptors(ClassSerializerInterceptor)
     private async changeRole(@Body() body:ChangeRoleDto, @Req() { user }: Request): Promise<{role: RoleEnum} | never> {
