@@ -1,15 +1,15 @@
 import {
   Body,
   ClassSerializerInterceptor,
-  Controller,
+  Controller, Delete,
   Get,
   Inject,
   Param,
   Post,
   Req,
   UseGuards,
-  UseInterceptors,
-} from '@nestjs/common';
+  UseInterceptors
+} from "@nestjs/common";
 import { Request } from 'express';
 import { MessageService } from './message.service';
 import {ApiBearerAuth, ApiBody, ApiTags} from "@nestjs/swagger";
@@ -71,7 +71,7 @@ export class MessageController {
     return this.service.create(body, <User>user);
   }
 
-  @Post('delete/:id')
+  @Delete(':id')
   @ApiBearerAuth()
   @Roles(RoleEnum.ADMINISTRATEUR)
   @UseGuards(JwtAuthGuard, RolesGuard)
