@@ -51,6 +51,13 @@ export class ChangePasswordDto {
   public readonly password: string;
 }
 
+export class ForgotPasswordDto {
+  @Trim()
+  @IsEmail()
+  @ApiProperty()
+  public readonly email: string;
+}
+
 export class UpdateImageDto {
   @IsString()
   @ApiProperty()
