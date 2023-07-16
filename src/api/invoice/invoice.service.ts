@@ -1,7 +1,8 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import * as fs from 'fs';
 import imageSize from 'image-size';
 import * as path from 'path';
+import { Project } from '../project/project.entity';
 
 const PDFDocument = require('pdfkit-table');
 @Injectable()
@@ -20,19 +21,19 @@ export class InvoiceService {
     });
   } 
 
-  async generatePdf(name, amount, date, last4, brandCard, project) {
+  async generatePdf(name, amount, date, last4, brandCard, project:Project) {
+
     if (!name || !amount || !date || !last4 || !brandCard || !project) {
       throw new Error('Missing parameters');
     }
+
   
     const doc = new PDFDocument();
-  
     const stream = doc.pipe(fs.createWriteStream('output.pdf'));
   
-    doc.text(`N° Attestation du don : ${Math.floor(Math.random() * 100000) + 1}`, { align: 'left' })
-      .text(project.toUpperCase(), { align: 'right' })
-      .moveDown();
-  
+    doc.text(`N° Attestation du don : ${project.id}-${new Date().getTime()}`, { align: 'left' })
+      .moveDown(2);
+    
     const logoImagePath = path.join(process.cwd(), 'src', 'assets', 'logo.png');
 
     const logoDimensions = imageSize(logoImagePath);
@@ -45,13 +46,22 @@ export class InvoiceService {
     
     const x = (pageWidth / 2) - (imageWidth / 2);
     
-    doc.image(logoImagePath, x, 50, { width: imageWidth, height: imageHeight })
-      .moveDown(6);
+    doc.image(logoImagePath, x, 70, { width: imageWidth, height: imageHeight }).moveDown(8);
   
     doc.fontSize(20)
-      .text(`Merci pour votre don à l\'association ${project} !`, { align: 'center', underline: true })
+      .text(`Merci pour votre don à l\'association ${project.name} !`, { align: 'center', underline: true })
       .moveDown();
-  
+
+      if (project.totalAmount > project.amountRaised) {
+      doc.fontSize(18)
+      .text(`Il reste ${project.totalAmount - project.amountRaised} € à récolter pour atteindre l'objectif de ${project.totalAmount} €`, { align: 'center' })
+      .moveDown();
+    }else{
+      doc.fontSize(18)
+      .text(`L'objectif de ${project.totalAmount} € a été atteint merci à vous !`, { align: 'center' })
+      .moveDown();
+    }
+
     doc.fontSize(18)
       .text('Récapitulatif de paiement', { underline: true })
       .moveDown();

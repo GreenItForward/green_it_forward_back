@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import {IsArray, IsNotEmpty, IsNumber, IsOptional, IsString} from 'class-validator';
+import {IsArray, IsNotEmpty, IsNumber, IsOptional, IsString, MaxLength, MinLength} from 'class-validator';
 import {Community} from "@/api/community/community.entity";
 import {Message} from "@/api/message/message.entity";
 

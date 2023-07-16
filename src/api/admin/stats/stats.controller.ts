@@ -38,19 +38,7 @@ import { RolesGuard } from "@/api/user/role/role.guard";
             throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
-    @Get('total-donations')
-    @UseGuards(JwtAuthGuard)
-    @UseInterceptors(ClassSerializerInterceptor)
-    async getTotalDonations(): Promise<number> {
-        try {
-            throw new HttpException("Not implemented yet", HttpStatus.INTERNAL_SERVER_ERROR)
-            //return await this.statsService.getTotalDonations();
-        } catch (error) {
-            throw new HttpException(error.message, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
+    
     @Get('users-per-month/:year')
     @ApiBearerAuth()
     @Roles(RoleEnum.ADMINISTRATEUR)

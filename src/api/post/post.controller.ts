@@ -14,10 +14,10 @@ import { Request } from 'express';
 import { PostService } from './post.service';
 import { Post as PostEntity } from './post.entity';
 import {CreatePostDto} from './post.dto';
-import {ApiBearerAuth, ApiBody, ApiTags} from "@nestjs/swagger";
+import {ApiBearerAuth, ApiBody, ApiOkResponse, ApiTags} from "@nestjs/swagger";
 import {JwtAuthGuard} from "@/api/user/auth/auth.guard";
 import {User} from "@/api/user/user.entity";
-import {UpdateCommunityDto} from "@/api/community/community.dto";
+import {Message} from "@/api/message/message.entity";
 
 @Controller('post')
 @ApiTags('Post')

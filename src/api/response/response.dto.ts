@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import {IsNotEmpty, IsString} from 'class-validator';
+import {IsNotEmpty, IsString, MaxLength, MinLength} from 'class-validator';
 import {Message} from "@/api/message/message.entity";
 
 export class CreateResponseDto {

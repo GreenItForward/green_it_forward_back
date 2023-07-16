@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { MailerService } from '@nestjs-modules/mailer';
 import { ConfigService } from '@nestjs/config';
 import { Response } from 'express';
@@ -49,10 +49,17 @@ export class MailService {
         });
       }  
 
-    async sendResetPasswordEmail(user:SendResetPasswordDto, token: string, res:Response) {
-        token = Math.random().toString(36).slice(-8); // TODO: remove this and replace it by a common service func
+    async sendResetPasswordEmail(body:SendResetPasswordDto, res: Response) {
+        const user = await this.userRepository.findOneBy({ email: body.email });
+        if (!user) {
+          throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+        }
+      
+        const token = `${user.id}-${Date.now()}`;
+        await this.userRepository.update(user.id, { confirmationToken: token });
+
         const ourMailAdress = this.configService.get<string>("EMAIL_ADDRESS");
-        const url = `${this.configService.get<string>("FRONT_URL")}/auth/reset-password?token=${token}`;
+        const url = `${this.configService.get<string>("FRONT_URL")}/auth/reset-password/confirm?token=${token}`;
         await this.mailerService.sendMail({
         to: user.email,
         from: `Réinitialisation de mot de passe - GreenItForward <${this.configService.get<string>("EMAIL_FROM")}>`,
@@ -64,8 +71,6 @@ export class MailService {
           url,
         },
       });
-
-      res.status(200).json({ message: 'Email sent' });
     }
 
     async sendPasswordChanged(user: User) {

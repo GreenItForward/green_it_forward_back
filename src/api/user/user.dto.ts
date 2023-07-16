@@ -1,15 +1,18 @@
-import { IsDate, IsEmail, IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString, IsUUID } from "class-validator";
+import { IsBoolean, IsDate, IsEmail, IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString, IsUUID, MaxLength } from "class-validator";
 import { ApiProperty } from "@nestjs/swagger";
 import { RoleEnum } from "@/common/enums/role.enum";
 
 export class UpdateUserDto {
   @IsString()
+
   @IsOptional()
+  @MaxLength(30)
   @ApiProperty()
   public readonly firstName?: string;
 
   @IsString()
   @IsOptional()
+  @MaxLength(30)
   @ApiProperty()
   public readonly lastName?: string;
 
@@ -49,11 +52,13 @@ export class MeDto {
   email: string;
 
   @IsString()
+  @MaxLength(30)
   @IsOptional()
   @ApiProperty()
   firstName: string | null;
 
   @IsString()
+  @MaxLength(30)
   @IsOptional()
   @ApiProperty()
   lastName: string | null;

@@ -15,7 +15,7 @@ import { CommunityService } from './community.service';
 import { UserService } from '../user/user.service';
 import { Community } from './community.entity';
 import {CreateCommunityDto, UpdateCommunityDto} from './community.dto';
-import {ApiBearerAuth, ApiBody, ApiTags} from "@nestjs/swagger";
+import {ApiBearerAuth, ApiBody, ApiOkResponse, ApiTags} from "@nestjs/swagger";
 import {JwtAuthGuard} from "@/api/user/auth/auth.guard";
 import {User} from "@/api/user/user.entity";
 
