@@ -1,15 +1,15 @@
 import {
   Body,
   ClassSerializerInterceptor,
-  Controller,
+  Controller, Delete,
   Get,
   Inject,
   Param,
   Post,
   Req,
   UseGuards,
-  UseInterceptors,
-} from '@nestjs/common';
+  UseInterceptors
+} from "@nestjs/common";
 import { Request } from 'express';
 import { ResponseService } from './response.service';
 import {ApiBearerAuth, ApiBody, ApiTags} from "@nestjs/swagger";
@@ -17,6 +17,9 @@ import {JwtAuthGuard} from "@/api/user/auth/auth.guard";
 import {User} from "@/api/user/user.entity";
 import {ResponseEntity} from "@/api/response/response.entity";
 import {CreateResponseDto} from "@/api/response/response.dto";
+import { Roles } from "@/api/user/role/role.decorator";
+import { RoleEnum } from "@/common/enums/role.enum";
+import { RolesGuard } from "@/api/user/role/role.guard";
 
 @Controller('response')
 @ApiTags('Response')
@@ -66,5 +69,14 @@ export class ResponseController {
     @Req() { user }: Request,
   ): Promise<ResponseEntity> {
     return this.service.create(body, <User>user);
+  }
+
+  @Delete(':id')
+  @ApiBearerAuth()
+  @Roles(RoleEnum.ADMINISTRATEUR)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @UseInterceptors(ClassSerializerInterceptor)
+  private async delete(@Param('id') id: number): Promise<void> {
+    await this.service.delete(id);
   }
 }

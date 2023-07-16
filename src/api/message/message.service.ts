@@ -4,11 +4,14 @@ import {Repository} from 'typeorm';
 import {User} from "@/api/user/user.entity";
 import {Message} from "@/api/message/message.entity";
 import {CreateMessageDto} from "@/api/message/message.dto";
+import { ResponseService } from "@/api/response/response.service";
 
 @Injectable()
 export class MessageService {
   @InjectRepository(Message)
   private readonly repository: Repository<Message>;
+
+  constructor(private responseService: ResponseService) { }
 
   public async getAll(): Promise<Message[]> {
     return this.repository.find();
@@ -68,6 +71,10 @@ export class MessageService {
   }
 
   public async delete(id: number): Promise<void> {
+    const responses = await this.responseService.getAllByMessage(id);
+    for (const response of responses) {
+      await this.responseService.delete(response.id);
+    }
     await this.repository.delete(id);
   }
 }

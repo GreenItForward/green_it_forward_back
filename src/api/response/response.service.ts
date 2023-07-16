@@ -66,4 +66,8 @@ export class ResponseService {
 
     return responses;
   }
+
+  public async delete(id: number): Promise<void> {
+    await this.repository.delete(id);
+  }
 }

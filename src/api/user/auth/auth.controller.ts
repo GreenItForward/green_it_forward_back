@@ -6,9 +6,6 @@ import { AuthService } from './auth.service';
 import { ApiBadRequestResponse, ApiBody, ApiOkResponse, ApiTags } from "@nestjs/swagger";
 import { User } from '../user.entity';
 import { TokenResponse } from '@/common/types/token-response.interface';
-import { FileInterceptor } from '@nestjs/platform-express';
-import { diskStorage } from 'multer';
-import path, { extname } from 'path';
 
 
 @ApiTags('Auth')
@@ -39,7 +36,7 @@ export class AuthController {
   @ApiBadRequestResponse({ description: 'Bad Request' })
   private login(@Req() { ip }: Request, @Body() body: LoginDto): Promise<TokenResponse | never> {
     return this.service.login(body, ip);
-  } 
+  }
 
   @Post('refresh')
   @UseGuards(JwtAuthGuard)

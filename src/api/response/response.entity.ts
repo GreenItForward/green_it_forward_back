@@ -3,8 +3,7 @@ import {
   Column,
   Entity, JoinColumn, JoinTable,
   ManyToOne,
-  OneToMany,
-  PrimaryGeneratedColumn, Unique,
+  PrimaryGeneratedColumn
 } from 'typeorm';
 import { User } from '../user/user.entity';
 import {ApiProperty} from "@nestjs/swagger";
