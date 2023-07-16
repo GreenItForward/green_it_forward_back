@@ -73,8 +73,7 @@ export class ResponseController {
 
   @Delete(':id')
   @ApiBearerAuth()
-  @Roles(RoleEnum.ADMINISTRATEUR)
-  @UseGuards(JwtAuthGuard, RolesGuard)
+  @UseGuards(JwtAuthGuard)
   @UseInterceptors(ClassSerializerInterceptor)
   private async delete(@Param('id') id: number): Promise<void> {
     await this.service.delete(id);

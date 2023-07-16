@@ -73,8 +73,7 @@ export class MessageController {
 
   @Delete(':id')
   @ApiBearerAuth()
-  @Roles(RoleEnum.ADMINISTRATEUR)
-  @UseGuards(JwtAuthGuard, RolesGuard)
+  @UseGuards(JwtAuthGuard)
   @UseInterceptors(ClassSerializerInterceptor)
   private async delete(@Param('id') id: string): Promise<void> {
     return this.service.delete(parseInt(id));
