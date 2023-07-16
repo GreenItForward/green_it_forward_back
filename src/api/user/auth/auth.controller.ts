@@ -1,5 +1,5 @@
 import { Body, Controller, Inject, Post, ClassSerializerInterceptor, UseInterceptors, UseGuards, Req, UploadedFile, ParseFilePipe, FileTypeValidator, MaxFileSizeValidator, Get } from '@nestjs/common';
-import { RegisterDto, LoginDto, ChangePasswordDto, TokenResponseDto, ForgotPasswordDto } from './auth.dto';
+import { RegisterDto, LoginDto, ChangePasswordDto, TokenResponseDto, ForgotPasswordDto, ForgotChangePasswordDto } from './auth.dto';
 import { Request } from 'express';
 import { JwtAuthGuard } from './auth.guard';
 import { AuthService } from './auth.service';
@@ -67,9 +67,30 @@ export class AuthController {
     return this.service.forgotPassword(body, res, ip);
   }
 
+
+  @Post('reset-forgot-password')
+  @ApiBody({ type: ForgotPasswordDto })
+  @ApiOkResponse({
+    description: 'Password successfully changed',
+    type: User,
+  })
+  private resetForgotPassword(@Req() { ip }: Request, @Body() body: ForgotChangePasswordDto, res: Response): Promise<User> {
+    return this.service.resetForgotPassword(body, ip);
+  }
+
   @Get('login-token')
   private loginToken(@Body() body: User): Promise<TokenResponse | never> {
     return this.service.getLoginToken(<User>body);
+  }
+  
+  @Post('email-from-token')
+  @ApiBody({ type: ForgotPasswordDto })
+  @ApiOkResponse({
+    description: 'Email successfully retrieved',
+    type: User,
+  })
+  private emailFromToken(@Body() body: TokenResponseDto): Promise<ForgotPasswordDto> {
+    return this.service.getEmailFromToken(body);
   }
   
 } 

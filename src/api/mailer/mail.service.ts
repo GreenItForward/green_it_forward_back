@@ -31,7 +31,7 @@ export class MailService {
 
     async sendUserConfirmation(user) {
         const token = `${user.id}-${Date.now()}`;
-        const url = `${this.configService.get<string>("FRONT_URL")}/auth/reset-pwd/confirm?token=${token}`;
+        const url = `${this.configService.get<string>("FRONT_URL")}/auth/confirm?token=${token}`;
         const ourMailAdress = this.configService.get<string>("EMAIL_ADDRESS");
 
         await this.userRepository.update(user.id, { confirmationToken: token });
