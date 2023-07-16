@@ -1,4 +1,6 @@
+import { StripeService } from './../../stripe/stripe.config';
 import { Project } from "@/api/project/project.entity";
+import { Payment } from "@/api/stripe/stripe.entity";
 import { User } from "@/api/user/user.entity";
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
@@ -6,12 +8,12 @@ import { Repository } from "typeorm";
 
 @Injectable()
 export class StatsService {
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>;
+    @InjectRepository(Project)
+    private readonly projectRepository: Repository<Project>;
 
     constructor(
-        @InjectRepository(User)
-        private userRepository: Repository<User>,
-        @InjectRepository(Project)
-        private projectRepository: Repository<Project>,
     ) { }
 
     async getTotalUsers(): Promise<number> {
@@ -23,8 +25,14 @@ export class StatsService {
     }
 
     async getTotalDonations() {
-        // TODO : implement this method
-        return 0;
+        const projects = await this.projectRepository.find();
+        let totalDonations = 0;
+
+        projects.forEach(project => {
+            totalDonations += project.amountRaised;
+        });
+
+        return totalDonations;
     }
 
     async getUsersPerMonth(year: number): Promise<{[key: string]: number}> {

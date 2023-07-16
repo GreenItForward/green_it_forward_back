@@ -140,6 +140,11 @@ async createPaymentIntent(body: CreatePaymentDto, user: User) {
   
   }
 
+  async getTotalDonations(){
+    const monthOrder = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre","novembre", "décembre"];
+    const payments = await this.paymentReposiory.createQueryBuilder('payment')
+      .getMany();
+
   async postPaymentMethod(paymentMethodDto: PaymentMethodTotalDto): Promise<PaymentMethodTotalDto> {
     let payment = await this.paymentReposiory.findOneBy({ paymentIntentId: paymentMethodDto.paymentIntent });
 
@@ -166,4 +171,20 @@ async createPaymentIntent(body: CreatePaymentDto, user: User) {
     return paymentMethodDto;
   }
   
+    const paymentsIntentsPromises = payments.map(payment => this.getPaymentIntent(payment.paymentIntentId));
+    const paymentsIntents = await Promise.all(paymentsIntentsPromises);
+    const totalDonations = new Array(12).fill(0);
+  
+    paymentsIntents.forEach(payment => {
+      const date = new Date(payment.date);
+      totalDonations[date.getMonth()] += payment.amount;
+    });
+  
+    let totalDonationsPerMonth = {};
+    monthOrder.forEach((month, index) => {
+      totalDonationsPerMonth[month] = totalDonations[index];
+    });
+  
+    return totalDonationsPerMonth;
+  }
 }
