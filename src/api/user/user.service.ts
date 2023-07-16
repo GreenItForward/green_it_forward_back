@@ -1,10 +1,20 @@
-import { RoleService } from './role/role.service';
-import {HttpException, HttpStatus, Inject, Injectable, NotFoundException, forwardRef } from "@nestjs/common";
-import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
-import { Request } from "express";
-import { User } from "./user.entity";
-import { UpdateNameDto } from './user.dto';
+import {RoleService} from './role/role.service';
+import {
+  ForbiddenException,
+  forwardRef,
+  HttpException,
+  HttpStatus,
+  Inject,
+  Injectable,
+  NotFoundException
+} from "@nestjs/common";
+import {InjectRepository} from "@nestjs/typeorm";
+import {Brackets, Repository} from "typeorm";
+import {User} from "./user.entity";
+import {MeDto, UpdateUserDto} from "./user.dto";
+import { join } from 'path';
+import { readFile } from 'fs/promises';
+import { UpdateImageDto } from './auth/auth.dto';
 
 @Injectable()
 export class UserService {
@@ -14,16 +24,33 @@ export class UserService {
   constructor(
     @Inject(forwardRef(() => RoleService))
     private roleService: RoleService,
-  ) {}
-
-  public async updateName(body: UpdateNameDto, req: Request): Promise<User> {
-    const user: User = <User>req.user;
-
-    user.firstName = body.firstName;
-
-    return this.repository.save(user);
+  ) {
   }
 
+
+  public async updateUser(body: UpdateUserDto, user: User): Promise<MeDto> {
+    if (!user) {
+      throw new ForbiddenException('User is undefined');
+    }
+
+    user.firstName = body.firstName || user.firstName;
+    user.lastName = body.lastName || user.lastName;
+    user.email = body.email || user.email;
+    await this.repository.save(user);
+    return user;
+  }
+
+  public async updateImage(user: User, imageUrl:string): Promise<MeDto> {
+    if (!user) {
+      throw new ForbiddenException('User is undefined');
+    }
+
+    user.imageUrl = imageUrl;
+    await this.repository.save(user);
+    return user;
+  }
+
+ 
   public async getUser(id: number):Promise<User> {
     const user = await this.repository
       .createQueryBuilder('user')
@@ -31,11 +58,11 @@ export class UserService {
       .getOne();
 
     if (!user) {
-      throw new NotFoundException('Aucun rôle trouvé.');
-    }
+      throw new NotFoundException('Aucun utilisateur trouvé.');
+    } 
 
     return user;
-  }
+  } 
 
   async verifyUserByToken(token: string): Promise<User | null> {
     const user = await this.repository.findOne({ where: { confirmationToken: token } });
@@ -57,6 +84,10 @@ export class UserService {
     await this.repository.save(user);
 
     return { status: 'success', message: 'User verified successfully' };
+  }
+
+  admin(): Promise<User[]> {
+    return this.repository.find();
   }
 
 }

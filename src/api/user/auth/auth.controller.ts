@@ -1,16 +1,18 @@
-import { Body, Controller, Inject, Post, ClassSerializerInterceptor, UseInterceptors, UseGuards, Req} from '@nestjs/common';
-import { RegisterDto, LoginDto } from './auth.dto';
+import { Body, Controller, Inject, Post, ClassSerializerInterceptor, UseInterceptors, UseGuards, Req, UploadedFile, ParseFilePipe, FileTypeValidator, MaxFileSizeValidator, Get } from '@nestjs/common';
+import { RegisterDto, LoginDto, ChangePasswordDto, TokenResponseDto, ForgotPasswordDto, ForgotChangePasswordDto } from './auth.dto';
 import { Request } from 'express';
 import { JwtAuthGuard } from './auth.guard';
 import { AuthService } from './auth.service';
 import { ApiBadRequestResponse, ApiBody, ApiOkResponse, ApiTags } from "@nestjs/swagger";
 import { User } from '../user.entity';
 import { TokenResponse } from '@/common/types/token-response.interface';
+import { Response } from 'express';
+
 
 @ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
-  @Inject(AuthService)
+  @Inject(AuthService) 
   private readonly service: AuthService;
 
   @Post('register')
@@ -21,25 +23,74 @@ export class AuthController {
     type: User,
   })
   @ApiBadRequestResponse({ description: 'Bad Request' })
-  private register(@Body() body: RegisterDto): Promise<User> {
-    return this.service.register(body);
+  private register(@Req() { ip }: Request,
+  @Body() body: RegisterDto): Promise<User> {
+    return this.service.register(body, ip);
   }
 
   @Post('login')
   @ApiBody({ type: LoginDto })
   @ApiOkResponse({
     description: 'User successfully logged in',
-    type: User,
+    type: TokenResponseDto,
   })
   @ApiBadRequestResponse({ description: 'Bad Request' })
-  private login(@Body() body: LoginDto): Promise<TokenResponse | never> {
-    return this.service.login(body);
+  private login(@Req() { ip }: Request, @Body() body: LoginDto): Promise<TokenResponse | never> {
+    return this.service.login(body, ip);
   } 
 
   @Post('refresh')
   @UseGuards(JwtAuthGuard)
-  private refresh(@Req() { user }: Request): Promise<string | never> {
-    return this.service.refresh(<User>user);
+  private refresh(@Req() req: Request): Promise<string | never> {
+    return this.service.refresh(<User>req.user, req.ip);
+  }
+
+  @Post('change-password')
+  @UseGuards(JwtAuthGuard)
+  @UseInterceptors(ClassSerializerInterceptor)
+  @ApiBody({ type: ChangePasswordDto })
+  @ApiOkResponse({
+    description: 'Password successfully changed',
+    type: User,
+  })
+  private changePassword(@Req() { user }: Request, @Body() body: ChangePasswordDto): Promise<User> {
+    return this.service.changePassword(<User>user, body);
+  } 
+
+  @Post('forgot-password')
+  @ApiBody({ type: ForgotPasswordDto })
+  @ApiOkResponse({
+    description: 'Password successfully changed',
+    type: User,
+  })
+  private forgotPassword(@Req() { ip }: Request, @Body() body: ForgotPasswordDto, res: Response): Promise<void> {
+    return this.service.forgotPassword(body, res, ip);
+  }
+
+
+  @Post('reset-forgot-password')
+  @ApiBody({ type: ForgotPasswordDto })
+  @ApiOkResponse({
+    description: 'Password successfully changed',
+    type: User,
+  })
+  private resetForgotPassword(@Req() { ip }: Request, @Body() body: ForgotChangePasswordDto, res: Response): Promise<User> {
+    return this.service.resetForgotPassword(body, ip);
+  }
+
+  @Get('login-token')
+  private loginToken(@Body() body: User): Promise<TokenResponse | never> {
+    return this.service.getLoginToken(<User>body);
   }
   
-}
+  @Post('email-from-token')
+  @ApiBody({ type: ForgotPasswordDto })
+  @ApiOkResponse({
+    description: 'Email successfully retrieved',
+    type: User,
+  })
+  private emailFromToken(@Body() body: TokenResponseDto): Promise<ForgotPasswordDto> {
+    return this.service.getEmailFromToken(body);
+  }
+  
+} 

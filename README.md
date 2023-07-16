@@ -1,73 +1,71 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
-</p>
-
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
-
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+# green_it_forward_back
 
 ## Description
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+Ce projet est le backend de l'application Green It Forward. 
+
+Il fournit une API pour gérer les fonctionnalités de l'application.
 
 ## Installation
 
-```bash
-$ npm install
+Assurez-vous d'avoir [Node.js](https://nodejs.org) installé.
+
+Installez les dépendances en exécutant la commande suivante :
+
+```sh
+npm install
 ```
 
-## Running the app
+## Configuration
+Avant de lancer l'application, vous devez configurer les variables d'environnement.
 
-```bash
-# development
-$ npm run start
+Créez un fichier .env à la racine du projet et définissez les valeurs suivantes :
 
-# watch mode
-$ npm run start:dev
+```sh
+PGDATABASE=postgres
+PGUSER=postgres
+PGPASSWORD=postgres
+PGHOST=localhost
+PGPORT=5432
+STRIPE_SECRET_KEY=sk_*your_secret_key*
 
-# production mode
-$ npm run start:prod
+EMAIL_ADDRESS=*your_email_address*
+EMAIL_PASSWORD=*your_email_password*
+EMAIL_FROM=*your_email_address*
+EMAIL_HOST=smtp.*your_email_provider*.com 
+EMAIL_SECURE=true
+EMAIL_FROM=*your_email_address*
+
+JWT_KEY=*your_jwt_key*
+JWT_EXPIRES=1d
+
+LOGO_URL=https://cdn.discordapp.com/attachments/1029381239246954548/1128644644650110976/logo.png
+FRONT_URL=*your_website_url*
 ```
 
-## Test
+## Scripts
+Les scripts suivants sont disponibles :
 
-```bash
-# unit tests
-$ npm run test
+- `npm run build` : Compile les fichiers TypeScript en JavaScript dans le dossier dist.
 
-# e2e tests
-$ npm run test:e2e
+- `npm run format` : Formate le code à l'aide de Prettier.
+- `npm start` : Lance l'application en utilisant Node.js.
+- `npm run start:dev` : Lance l'application en mode développement avec rechargement à chaud.
+- `npm run start:debug` : Lance l'application en mode débogage avec rechargement à chaud.
+- `npm run start:prod` : Lance l'application en mode production.
+- `npm run start:docker` : Lance l'application dans un conteneur Docker en utilisant Docker Compose.
+- `npm run start:docker:dev` : Lance l'application dans un conteneur Docker en mode développement avec rechargement à chaud.
+`npm run start:docker:debug` : Lance l'application dans un conteneur Docker en mode débogage avec rechargement à chaud.
+- `npm run docker:compose` : Démarre les conteneurs Docker nécessaires à l'application.
+- `npm run lint` : Vérifie le code à l'aide d'ESLint et apporte des corrections automatiques si possible.
+- `npm test` : Exécute les tests à l'aide de Jest.
+- `npm run test:watch` : Exécute les tests en mode surveillance.
+- `npm run test:cov` : Exécute les tests avec une couverture de code.
+- `npm run test:debug` : Exécute les tests en mode débogage.
+- `npm run test:e2e` : Exécute les tests d'end-to-end.
 
-# test coverage
-$ npm run test:cov
-```
+## Auteurs
 
-## Support
-
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
-
-## Stay in touch
-
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](LICENSE).
+- James ABIB
+- Ronan KIELT
+- Charles CRETOIS

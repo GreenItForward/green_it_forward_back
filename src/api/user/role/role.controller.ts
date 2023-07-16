@@ -19,7 +19,7 @@ export class RoleController {
     @UseGuards(JwtAuthGuard)
     @UseInterceptors(ClassSerializerInterceptor)
     private async getUserRole(@Req() req: Request): Promise<{role: RoleEnum} | never> {
-    return { role: await this.service.getUserRole(req) };
+        return { role: await this.service.getUserRole(req) };
     }
 
     @Get('user/:userId')
@@ -27,8 +27,8 @@ export class RoleController {
     @Roles(RoleEnum.ADMINISTRATEUR, RoleEnum.MODERATEUR)
     @UseGuards(JwtAuthGuard, RolesGuard)
     @UseInterceptors(ClassSerializerInterceptor)
-    private async getRole(@Param('userId') userId: number): Promise<RoleEnum | never> {
-    return this.service.getRole(userId);
+    private async getRole(@Param('userId') userId: number): Promise<{role: RoleEnum} | never> {
+        return { role: await this.service.getRole(userId) };
     }
 
     @Put('change-role')
@@ -37,8 +37,8 @@ export class RoleController {
     @Roles(RoleEnum.ADMINISTRATEUR, RoleEnum.MODERATEUR)
     @UseGuards(JwtAuthGuard, RolesGuard)
     @UseInterceptors(ClassSerializerInterceptor)
-    private async changeRole(@Body() body:ChangeRoleDto, @Req() { user }: Request): Promise<RoleEnum | never> {
-    return this.service.changeRole(body, <User>user);
+    private async changeRole(@Body() body:ChangeRoleDto, @Req() { user }: Request): Promise<{role: RoleEnum} | never> {
+        return { role: await this.service.changeRole(body, <User>user) };
     }
 
     @Get('all')
@@ -46,6 +46,6 @@ export class RoleController {
     @UseGuards(JwtAuthGuard, RolesGuard)
     @UseInterceptors(ClassSerializerInterceptor)
     private getAllRoles(): Promise<RoleEnum[] | never> {
-    return this.service.getAllRoles();
+        return this.service.getAllRoles();
     }
 }

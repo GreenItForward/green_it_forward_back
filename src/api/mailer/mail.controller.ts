@@ -5,6 +5,7 @@ import { ApiBearerAuth, ApiBody, ApiTags } from "@nestjs/swagger";
 import { JwtAuthGuard } from "@/api/user/auth/auth.guard";
 import { EmailDto } from "@/api/mailer/email.dto";
 import { User } from "../user/user.entity";
+import { SendResetPasswordDto } from "./mail.dto";
 
 @ApiTags('Mailer')
 @Controller('mail')
@@ -25,8 +26,8 @@ export class MailController {
     @UseGuards(JwtAuthGuard)
     @UseInterceptors(ClassSerializerInterceptor)
     @ApiBody({ type: EmailDto })
-    async sendResetPasswordEmail(@Body() body: EmailDto, @Req() req: Request, res: Response) {
-        return await this.mailService.sendResetPasswordEmail(body, req.headers.authorization, res);
+    async sendResetPasswordEmail(@Body() body: SendResetPasswordDto, @Req() req: Request, res: Response) {
+        return await this.mailService.sendResetPasswordEmail(body, res);
     }
 
     @Post('send/confirmation')
