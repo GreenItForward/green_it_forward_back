@@ -37,7 +37,7 @@ export class AuthController {
   @ApiBadRequestResponse({ description: 'Bad Request' })
   private login(@Req() { ip }: Request, @Body() body: LoginDto): Promise<TokenResponse | never> {
     return this.service.login(body, ip);
-  } 
+  }
 
   @Post('refresh')
   @UseGuards(JwtAuthGuard)

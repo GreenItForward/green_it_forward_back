@@ -2,15 +2,16 @@ import {Injectable, NotFoundException} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
 import {Repository} from 'typeorm';
 import {User} from "@/api/user/user.entity";
-import {Post} from "@/api/post/post.entity";
-import {CreatePostDto} from "@/api/post/post.dto";
 import {Message} from "@/api/message/message.entity";
 import {CreateMessageDto} from "@/api/message/message.dto";
+import { ResponseService } from "@/api/response/response.service";
 
 @Injectable()
 export class MessageService {
   @InjectRepository(Message)
   private readonly repository: Repository<Message>;
+
+  constructor(private responseService: ResponseService) { }
 
   public async getAll(): Promise<Message[]> {
     return this.repository.find();
@@ -23,7 +24,7 @@ export class MessageService {
     const message = new Message();
     message.post = body.post;
     message.text = body.text;
-    message.user = user;
+    message.authorId = user.id;
     message.creationDate = new Date()
     return this.repository.save(message);
   }
@@ -45,8 +46,7 @@ export class MessageService {
   public async getAllByUser(user: User): Promise<Message[]> {
     const userId = user.id;
     const messages = await this.repository.find({
-      where: { user: { id: userId } },
-      relations: ['user'],
+      where: { authorId: userId },
     });
 
     if (!messages || messages.length === 0) {
@@ -56,7 +56,7 @@ export class MessageService {
     return messages;
   }
 
-  public async getAllByPost(postId: number): Promise<Message[]> {
+  public async getAllByPost(postId: number, currentUser: User): Promise<Message[]> {
     const messages = await this.repository.find({
       where: { post: { id: postId } },
       relations: ['post'],
@@ -66,6 +66,25 @@ export class MessageService {
       return []
     }
 
-    return messages;
+    const messagesNotBlocked:Message[] = [];
+    for(const message of messages) {
+      if(!currentUser.idsBlocked.includes(message.authorId)) {
+        messagesNotBlocked.push(message);
+      }
+    }
+
+    if (!messagesNotBlocked || messagesNotBlocked.length === 0) {
+      return []
+    }
+
+    return messagesNotBlocked;
+  }
+
+  public async delete(id: number, currentUser: User): Promise<void> {
+    const responses = await this.responseService.getAllByMessage(id, currentUser);
+    for (const response of responses) {
+      await this.responseService.delete(response.id);
+    }
+    await this.repository.delete(id);
   }
 }
