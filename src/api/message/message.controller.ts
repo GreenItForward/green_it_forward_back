@@ -12,11 +12,12 @@ import {
 } from '@nestjs/common';
 import { Request } from 'express';
 import { MessageService } from './message.service';
-import {ApiBearerAuth, ApiBody, ApiTags} from "@nestjs/swagger";
+import {ApiBearerAuth, ApiBody, ApiOkResponse, ApiTags} from "@nestjs/swagger";
 import {JwtAuthGuard} from "@/api/user/auth/auth.guard";
 import {User} from "@/api/user/user.entity";
 import {Message} from "@/api/message/message.entity";
 import {CreateMessageDto} from "@/api/message/message.dto";
+import {Community} from "@/api/community/community.entity";
 
 @Controller('message')
 @ApiTags('Message')
@@ -26,6 +27,10 @@ export class MessageController {
 
   @Get('user')
   @ApiBearerAuth()
+  @ApiOkResponse({
+    description: 'Messages from User successfully retrieve',
+    type: Message,
+  })
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(ClassSerializerInterceptor)
   public async getAllByUser(@Req() { user }: Request): Promise<Message[]> {
@@ -34,6 +39,10 @@ export class MessageController {
 
   @Get('post/:id')
   @ApiBearerAuth()
+  @ApiOkResponse({
+    description: 'Messages successfully retrieve',
+    type: Message,
+  })
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(ClassSerializerInterceptor)
   public async getAllByPost(@Param('id') communityId: string): Promise<Message[]> {
@@ -42,6 +51,10 @@ export class MessageController {
 
   @Get('getone/:id')
   @ApiBearerAuth()
+  @ApiOkResponse({
+    description: 'Message successfully retrieve',
+    type: Message,
+  })
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(ClassSerializerInterceptor)
   public async getMessageById(@Param('id') id: string): Promise<Message> {
@@ -51,6 +64,10 @@ export class MessageController {
   @Get('all')
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
+  @ApiOkResponse({
+    description: 'Messages successfully retrieve',
+    type: Message,
+  })
   @UseInterceptors(ClassSerializerInterceptor)
   public async getAll(): Promise<Message[]> {
     return this.service.getAll();
@@ -58,6 +75,10 @@ export class MessageController {
 
   @Post()
   @ApiBearerAuth()
+  @ApiOkResponse({
+    description: 'Messages successfully created',
+    type: Message,
+  })
   @ApiBody({ type: CreateMessageDto })
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(ClassSerializerInterceptor)

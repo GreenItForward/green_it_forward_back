@@ -1,14 +1,17 @@
 import { ApiProperty } from '@nestjs/swagger';
-import {IsArray, IsNotEmpty, IsNumber, IsOptional, IsString} from 'class-validator';
+import {IsArray, IsNotEmpty, IsNumber, IsOptional, IsString, MaxLength, MinLength} from 'class-validator';
 
 export class CreateCommunityDto {
   @IsString()
   @IsNotEmpty()
   @ApiProperty()
+  @MinLength(1)
+  @MaxLength(50)
   public readonly name: string;
 
   @IsString()
   @ApiProperty()
+  @MaxLength(300)
   public readonly description: string;
 
   @IsString()
@@ -25,11 +28,14 @@ export class UpdateCommunityDto {
   @IsString()
   @IsOptional()
   @ApiProperty()
+  @MinLength(1)
+  @MaxLength(50)
   public readonly name: string;
 
   @IsString()
   @IsOptional()
   @ApiProperty()
+  @MaxLength(300)
   public readonly description: string;
 
   @IsString()
