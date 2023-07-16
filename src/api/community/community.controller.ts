@@ -1,10 +1,10 @@
 import {
   Body,
   ClassSerializerInterceptor,
-  Controller,
+  Controller, Delete,
   Get,
   Inject,
-  Param,
+  Param, Patch,
   Post,
   Req,
   UseGuards,
@@ -14,8 +14,8 @@ import { Request } from 'express';
 import { CommunityService } from './community.service';
 import { UserService } from '../user/user.service';
 import { Community } from './community.entity';
-import { CreateCommunityDto } from './community.dto';
-import {ApiBearerAuth, ApiBody, ApiTags} from "@nestjs/swagger";
+import {CreateCommunityDto, UpdateCommunityDto} from './community.dto';
+import {ApiBearerAuth, ApiBody, ApiOkResponse, ApiTags} from "@nestjs/swagger";
 import {JwtAuthGuard} from "@/api/user/auth/auth.guard";
 import {User} from "@/api/user/user.entity";
 
@@ -29,6 +29,10 @@ export class CommunityController {
 
   @Get('user')
   @ApiBearerAuth()
+  @ApiOkResponse({
+    description: 'Communities successfully retrieve',
+    type: Community,
+  })
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(ClassSerializerInterceptor)
   public async getAllByUser(@Req() { user }: Request): Promise<Community[]> {
@@ -38,6 +42,10 @@ export class CommunityController {
   @Get('community/:id')
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
+  @ApiOkResponse({
+    description: 'Community successfully retrieve',
+    type: Community,
+  })
   @UseInterceptors(ClassSerializerInterceptor)
   public async getCommunityById(@Param('id') id: string): Promise<Community> {
     return this.service.getCommunityById(parseInt(id));
@@ -46,6 +54,10 @@ export class CommunityController {
   @Post('community/:id/follow')
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
+  @ApiOkResponse({
+    description: 'Communities successfully followed',
+    type: Community,
+  })
   @UseInterceptors(ClassSerializerInterceptor)
   private async followCommunity(
       @Req() { user }: Request, @Param('id') id: string
@@ -56,6 +68,10 @@ export class CommunityController {
   @Post('community/:id/unfollow')
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
+  @ApiOkResponse({
+    description: 'Communities successfully unfollow',
+    type: Community,
+  })
   @UseInterceptors(ClassSerializerInterceptor)
   private async unFollowCommunity(
       @Req() { user }: Request, @Param('id') id: string
@@ -66,13 +82,33 @@ export class CommunityController {
   @Get('community/:id/users')
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
+  @ApiOkResponse({
+    description: 'Users successfully retrieve from community',
+    type: User,
+  })
   @UseInterceptors(ClassSerializerInterceptor)
   public async getCommunityUsers(@Param('id') id: string): Promise<User[]> {
     return this.service.getUsersByCommunityId(parseInt(id));
   }
 
+  @Get('search/:searchstring')
+  @ApiBearerAuth()
+  @ApiOkResponse({
+    description: 'Searched Communities successfully retrieve',
+    type: Community,
+  })
+  @UseGuards(JwtAuthGuard)
+  @UseInterceptors(ClassSerializerInterceptor)
+  public async searchCommunities(@Param('searchstring') searchString: string): Promise<Community[]> {
+    return this.service.searchCommunities(searchString);
+  }
+
   @Get('all')
   @ApiBearerAuth()
+  @ApiOkResponse({
+    description: 'Communities successfully retrieve',
+    type: Community,
+  })
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(ClassSerializerInterceptor)
   public async getAll(): Promise<Community[]> {
@@ -81,6 +117,10 @@ export class CommunityController {
 
   @Post()
   @ApiBearerAuth()
+  @ApiOkResponse({
+    description: 'Community successfully created',
+    type: Community,
+  })
   @ApiBody({ type: CreateCommunityDto })
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(ClassSerializerInterceptor)
@@ -91,11 +131,56 @@ export class CommunityController {
     return this.service.create(body, <User>user);
   }
 
-  @Get('user/:id/communities')
+  @Patch('community/:id')
+  @ApiBearerAuth()
+  @ApiOkResponse({
+    description: 'Community successfully updated',
+    type: Community,
+  })
+  @ApiBody({ type: UpdateCommunityDto })
+  @UseGuards(JwtAuthGuard)
+  @UseInterceptors(ClassSerializerInterceptor)
+  private async update(
+      @Body() body: UpdateCommunityDto,
+      @Param('id') id: string
+  ): Promise<Community> {
+    return this.service.update(parseInt(id),body);
+  }
+
+  @Patch('removefollower')
+  @ApiBearerAuth()
+  @ApiOkResponse({
+    description: 'Follower successfully removed',
+    type: Community,
+  })
+  @ApiBody({ type: UpdateCommunityDto })
+  @UseGuards(JwtAuthGuard)
+  @UseInterceptors(ClassSerializerInterceptor)
+  private async removeFollowerFromCommunity(
+      @Body() body: any,
+  ): Promise<Community> {
+    return this.service.removeFollowerFromCommunity(body.userId, body.communityId);
+  }
+
+  @Delete('delete/:id')
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(ClassSerializerInterceptor)
-  public async getCommunitiesJoinedByUser(@Param('id') id: string): Promise<Community[]> {
+  private async deleteCommunity(
+      @Param('id') id: string
+  ): Promise<void> {
+    return this.service.deleteCommunity(parseInt(id));
+  }
+
+  @Get('user/:id/communities')
+  @ApiBearerAuth()
+  @ApiOkResponse({
+    description: 'User Communities successfully retrieve',
+    type: Community,
+  })
+  @UseGuards(JwtAuthGuard)
+  @UseInterceptors(ClassSerializerInterceptor)
+  private async getCommunitiesByUser( @Param('id') id: string): Promise<Community[]> {
     return this.service.getCommunitiesJoinedByUser(parseInt(id));
   }
 

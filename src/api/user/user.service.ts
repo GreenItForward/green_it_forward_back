@@ -1,17 +1,17 @@
-import { RoleService } from './role/role.service';
+import {RoleService} from './role/role.service';
 import {
+  ForbiddenException,
+  forwardRef,
   HttpException,
   HttpStatus,
   Inject,
   Injectable,
-  NotFoundException,
-  forwardRef,
-  ForbiddenException
+  NotFoundException
 } from "@nestjs/common";
-import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
-import { User } from "./user.entity";
-import { MeDto, UpdateUserDto } from "./user.dto";
+import {InjectRepository} from "@nestjs/typeorm";
+import {Brackets, Repository} from "typeorm";
+import {User} from "./user.entity";
+import {MeDto, UpdateUserDto} from "./user.dto";
 import { join } from 'path';
 import { readFile } from 'fs/promises';
 import { UpdateImageDto } from './auth/auth.dto';

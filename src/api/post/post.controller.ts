@@ -1,7 +1,7 @@
 import {
   Body,
   ClassSerializerInterceptor,
-  Controller,
+  Controller, Delete,
   Get,
   Inject,
   Param,
@@ -14,9 +14,10 @@ import { Request } from 'express';
 import { PostService } from './post.service';
 import { Post as PostEntity } from './post.entity';
 import {CreatePostDto} from './post.dto';
-import {ApiBearerAuth, ApiBody, ApiTags} from "@nestjs/swagger";
+import {ApiBearerAuth, ApiBody, ApiOkResponse, ApiTags} from "@nestjs/swagger";
 import {JwtAuthGuard} from "@/api/user/auth/auth.guard";
 import {User} from "@/api/user/user.entity";
+import {Message} from "@/api/message/message.entity";
 
 @Controller('post')
 @ApiTags('Post')
@@ -26,6 +27,10 @@ export class PostController {
 
   @Get('user')
   @ApiBearerAuth()
+  @ApiOkResponse({
+    description: 'Posts from User successfully retrieve',
+    type: PostEntity,
+  })
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(ClassSerializerInterceptor)
   public async getAllByUser(@Req() { user }: Request): Promise<PostEntity[]> {
@@ -34,6 +39,10 @@ export class PostController {
 
   @Get('community/:id')
   @ApiBearerAuth()
+  @ApiOkResponse({
+    description: 'Posts from community successfully retrieve',
+    type: PostEntity,
+  })
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(ClassSerializerInterceptor)
   public async getAllByCommunity(@Param('id') communityId: string): Promise<PostEntity[]> {
@@ -42,6 +51,10 @@ export class PostController {
 
   @Get('getone/:id')
   @ApiBearerAuth()
+  @ApiOkResponse({
+    description: 'Post successfully retrieve',
+    type: PostEntity,
+  })
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(ClassSerializerInterceptor)
   public async getPostById(@Param('id') id: string): Promise<PostEntity> {
@@ -50,6 +63,10 @@ export class PostController {
 
   @Get('all')
   @ApiBearerAuth()
+  @ApiOkResponse({
+    description: 'Posts successfully retrieve',
+    type: PostEntity,
+  })
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(ClassSerializerInterceptor)
   public async getAll(): Promise<PostEntity[]> {
@@ -58,6 +75,10 @@ export class PostController {
 
   @Post()
   @ApiBearerAuth()
+  @ApiOkResponse({
+    description: 'Post successfully created',
+    type: PostEntity,
+  })
   @ApiBody({ type: CreatePostDto })
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(ClassSerializerInterceptor)
@@ -66,5 +87,27 @@ export class PostController {
     @Req() { user }: Request,
   ): Promise<PostEntity> {
     return this.service.create(body, <User>user);
+  }
+
+  @Post('search/:searchstring')
+  @ApiBearerAuth()
+  @ApiOkResponse({
+    description: 'Searched Posts successfully retrieve',
+    type: PostEntity,
+  })
+  @UseGuards(JwtAuthGuard)
+  @UseInterceptors(ClassSerializerInterceptor)
+  private async searchPostsInCommunity(@Param('searchstring') searchString:string, @Body() body): Promise<PostEntity[]> {
+    return this.service.searchPostsInCommunity(body.communityId, searchString)
+  }
+
+  @Delete('delete/:id')
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @UseInterceptors(ClassSerializerInterceptor)
+  private async deletePost(
+      @Param('id') id: string
+  ): Promise<void> {
+    return this.service.deletePost(parseInt(id));
   }
 }

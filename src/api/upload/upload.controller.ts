@@ -30,8 +30,6 @@ export class UploadController {
   }
 
   @Post()
-  @ApiBearerAuth()
-  @UseGuards(JwtAuthGuard)
   @UseInterceptors(FileInterceptor('image'))
   private async upload(@UploadedFile() image: any): Promise<UploadResponse> {
     return this.service.upload(image);

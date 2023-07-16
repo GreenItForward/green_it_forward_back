@@ -2,11 +2,12 @@ import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '@/api/user/user.entity';
 import { Repository } from 'typeorm';
-import { RegisterDto, LoginDto, ChangePasswordDto } from './auth.dto';
+import { RegisterDto, LoginDto, ChangePasswordDto, ForgotPasswordDto, ForgotChangePasswordDto, TokenResponseDto } from './auth.dto';
 import { AuthHelper } from './auth.helper';
 import { TokenResponse } from '@/common/types/token-response.interface';
 import { MailService } from '@/api/mailer/mail.service';
-import { join } from 'path';
+import { SendResetPasswordDto } from '@/api/mailer/mail.dto';
+import { Response } from 'express';
 
 @Injectable()
 export class AuthService {
@@ -78,6 +79,10 @@ export class AuthService {
     return {token: this.helper.generateToken(user)};
   }
 
+  async getLoginToken(user: User): Promise<TokenResponse> {
+    return {token: this.helper.generateToken(user)};
+  }
+
   public async refresh(user: User, ip: string): Promise<string> {
     if(await this.helper.isUserBanIp(ip)) {
       throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
@@ -94,4 +99,48 @@ export class AuthService {
     await this.mailService.sendPasswordChanged(user);
     return user;
   }
+
+ public async forgotPassword(body: SendResetPasswordDto, res: Response, ip: string): Promise<void> {
+    if(await this.helper.isUserBanIp(ip)) {
+      throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
+    }
+
+    const { email }: ForgotPasswordDto = body;
+    const user: User = await this.repository.findOneBy({ email });
+
+    if (!user) {
+      throw new HttpException('That email/username and password combination didn\'t work', HttpStatus.NOT_FOUND);
+    }
+
+    await this.mailService.sendResetPasswordEmail(body, res);
+  }
+
+  public async resetForgotPassword(body: ForgotChangePasswordDto,ip: string): Promise<User> {
+    if(await this.helper.isUserBanIp(ip)) {
+      throw new HttpException('Forbidden', HttpStatus.FORBIDDEN);
+    }
+
+    const { email, token, password }: ForgotChangePasswordDto = body;
+    const user: User = await this.repository.findOneBy({ email });
+
+    if (!user) {
+      throw new HttpException('Votre email n\'est pas valide', HttpStatus.NOT_FOUND);
+    }
+
+    if (user.confirmationToken !== token) {
+      throw new HttpException('Votre token n\'est pas valide', HttpStatus.NOT_FOUND);
+    }
+
+    user.password = this.helper.encodePassword(password);
+    user.confirmationToken = null;
+    await this.repository.save(user);
+    await this.mailService.sendPasswordChanged(user);
+    return user;
+  }
+
+  public async getEmailFromToken(body: TokenResponseDto): Promise<ForgotPasswordDto> {
+      return await this.repository.findOneBy({ confirmationToken: body.token });    
+  }
+
+
 }

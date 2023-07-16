@@ -1,17 +1,27 @@
 import {Injectable, NotFoundException} from '@nestjs/common';
 import {InjectRepository} from '@nestjs/typeorm';
-import {Repository} from 'typeorm';
+import {Brackets, Repository} from 'typeorm';
 import {User} from "@/api/user/user.entity";
 import {Post} from "@/api/post/post.entity";
 import {CreatePostDto} from "@/api/post/post.dto";
+import {Message} from "@/api/message/message.entity";
+import {ResponseEntity} from "@/api/response/response.entity";
 
 @Injectable()
 export class PostService {
   @InjectRepository(Post)
   private readonly repository: Repository<Post>;
 
+  @InjectRepository(Message)
+  private messageRepository: Repository<Message>;
+
+  @InjectRepository(ResponseEntity)
+  private responseRepository: Repository<ResponseEntity>;
+
   public async getAll(): Promise<Post[]> {
-    return this.repository.find();
+    return this.repository.find({
+      relations: ['user'],
+    });
   }
 
   public async create(
@@ -66,5 +76,32 @@ export class PostService {
     }
 
     return posts;
+  }
+
+  public async searchPostsInCommunity(communityId: number, searchString: string): Promise<Post[]> {
+    return await this.repository
+        .createQueryBuilder('post')
+        .leftJoin('post.community', 'community')
+        .leftJoinAndSelect('post.user', 'user')
+        .where('community.id = :communityId', {communityId})
+        .andWhere(
+            new Brackets(qb => {
+              qb.where('LOWER(post.subject) LIKE LOWER(:searchString)', {searchString: `%${searchString}%`})
+                  .orWhere('LOWER(post.text) LIKE LOWER(:searchString)', {searchString: `%${searchString}%`});
+            }),
+        )
+        .getMany();
+  }
+
+  async deletePost(id: number): Promise<void> {
+    const messages = await this.messageRepository.find({ where: { post: {id: id} } });
+
+    for(let y = 0; y<messages.length; y++){
+      const responses = await this.responseRepository.find({ where: { message: {id: messages[y].id} } });
+      await this.responseRepository.remove(responses);
+    }
+    await this.messageRepository.remove(messages);
+
+    await this.repository.delete(id);
   }
 }
