@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsNumber, IsString, IsDateString, IsUUID } from "class-validator";
+import { IsNumber, IsString, IsDateString, IsUUID, Max } from "class-validator";
 import { Address } from "@stripe/stripe-js";
 
 export class CreatePaymentDto {
@@ -39,6 +39,7 @@ export class PaymentIntentDto {
   public readonly projectId: string;
   
   @IsNumber()
+  @Max(1000000000)
   @ApiProperty()
   public readonly amount: number;
 
