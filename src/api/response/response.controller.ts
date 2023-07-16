@@ -27,10 +27,6 @@ export class ResponseController {
 
   @Get('user')
   @ApiBearerAuth()
-  @ApiOkResponse({
-    description: 'Searched Posts successfully retrieve',
-    type: PostEntity,
-  })
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(ClassSerializerInterceptor)
   public async getAllByUser(@Req() { user }: Request): Promise<ResponseEntity[]> {

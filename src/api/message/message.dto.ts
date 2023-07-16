@@ -5,8 +5,6 @@ import {Post} from "@/api/post/post.entity";
 export class CreateMessageDto {
   @IsString()
   @IsNotEmpty()
-  @MinLength(1)
-  @MaxLength(300)
   @ApiProperty()
   public readonly text: string;
 

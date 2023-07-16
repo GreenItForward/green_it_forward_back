@@ -5,13 +5,10 @@ export class CreateCommunityDto {
   @IsString()
   @IsNotEmpty()
   @ApiProperty()
-  @MinLength(1)
-  @MaxLength(50)
   public readonly name: string;
 
   @IsString()
   @ApiProperty()
-  @MaxLength(300)
   public readonly description: string;
 
   @IsString()
@@ -28,14 +25,11 @@ export class UpdateCommunityDto {
   @IsString()
   @IsOptional()
   @ApiProperty()
-  @MinLength(1)
-  @MaxLength(50)
   public readonly name: string;
 
   @IsString()
   @IsOptional()
   @ApiProperty()
-  @MaxLength(300)
   public readonly description: string;
 
   @IsString()

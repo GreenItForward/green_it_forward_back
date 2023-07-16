@@ -6,14 +6,10 @@ import {Message} from "@/api/message/message.entity";
 export class CreatePostDto {
   @IsString()
   @IsNotEmpty()
-  @MinLength(1)
-  @MaxLength(50)
   @ApiProperty()
   public readonly subject: string;
 
   @IsString()
-  @MinLength(1)
-  @MaxLength(300)
   @ApiProperty()
   public readonly text: string;
 

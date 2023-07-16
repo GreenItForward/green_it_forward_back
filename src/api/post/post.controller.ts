@@ -27,10 +27,6 @@ export class PostController {
 
   @Get('user')
   @ApiBearerAuth()
-  @ApiOkResponse({
-    description: 'Posts from User successfully retrieve',
-    type: PostEntity,
-  })
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(ClassSerializerInterceptor)
   public async getAllByUser(@Req() { user }: Request): Promise<PostEntity[]> {
@@ -39,10 +35,6 @@ export class PostController {
 
   @Get('community/:id')
   @ApiBearerAuth()
-  @ApiOkResponse({
-    description: 'Posts from community successfully retrieve',
-    type: PostEntity,
-  })
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(ClassSerializerInterceptor)
   public async getAllByCommunity(@Param('id') communityId: string): Promise<PostEntity[]> {
@@ -51,10 +43,6 @@ export class PostController {
 
   @Get('getone/:id')
   @ApiBearerAuth()
-  @ApiOkResponse({
-    description: 'Post successfully retrieve',
-    type: PostEntity,
-  })
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(ClassSerializerInterceptor)
   public async getPostById(@Param('id') id: string): Promise<PostEntity> {
@@ -63,10 +51,6 @@ export class PostController {
 
   @Get('all')
   @ApiBearerAuth()
-  @ApiOkResponse({
-    description: 'Posts successfully retrieve',
-    type: PostEntity,
-  })
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(ClassSerializerInterceptor)
   public async getAll(): Promise<PostEntity[]> {
@@ -75,10 +59,6 @@ export class PostController {
 
   @Post()
   @ApiBearerAuth()
-  @ApiOkResponse({
-    description: 'Post successfully created',
-    type: PostEntity,
-  })
   @ApiBody({ type: CreatePostDto })
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(ClassSerializerInterceptor)
@@ -91,10 +71,6 @@ export class PostController {
 
   @Post('search/:searchstring')
   @ApiBearerAuth()
-  @ApiOkResponse({
-    description: 'Searched Posts successfully retrieve',
-    type: PostEntity,
-  })
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(ClassSerializerInterceptor)
   private async searchPostsInCommunity(@Param('searchstring') searchString:string, @Body() body): Promise<PostEntity[]> {
