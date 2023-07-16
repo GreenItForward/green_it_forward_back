@@ -17,9 +17,6 @@ import {JwtAuthGuard} from "@/api/user/auth/auth.guard";
 import {User} from "@/api/user/user.entity";
 import {Message} from "@/api/message/message.entity";
 import {CreateMessageDto} from "@/api/message/message.dto";
-import { Roles } from "@/api/user/role/role.decorator";
-import { RoleEnum } from "@/common/enums/role.enum";
-import { RolesGuard } from "@/api/user/role/role.guard";
 
 @Controller('message')
 @ApiTags('Message')
@@ -75,7 +72,7 @@ export class MessageController {
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(ClassSerializerInterceptor)
-  private async delete(@Param('id') id: string): Promise<void> {
-    return this.service.delete(parseInt(id));
+  private async delete(@Param('id') id: string, @Req() { user }: Request): Promise<void> {
+    return this.service.delete(parseInt(id), user as User);
   }
 }

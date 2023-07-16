@@ -14,22 +14,18 @@ export class ResponseService {
     return this.repository.find();
   }
 
-  public async create(
-    body: CreateResponseDto,
-    user: User,
-  ): Promise<ResponseEntity> {
+  public async create(body: CreateResponseDto, user: User): Promise<ResponseEntity> {
     const response = new ResponseEntity();
     response.message = body.message;
     response.text = body.text;
-    response.user = user;
+    response.authorId = user.id;
     response.creationDate = new Date()
     return this.repository.save(response);
   }
 
   public async getResponseById(id: number): Promise<ResponseEntity> {
     const response = await this.repository.findOne({
-      where: { id },
-      relations: ['user'],
+      where: { id }
     });
 
     if (!response) {
@@ -43,8 +39,7 @@ export class ResponseService {
   public async getAllByUser(user: User): Promise<ResponseEntity[]> {
     const userId = user.id;
     const responses = await this.repository.find({
-      where: { user: { id: userId } },
-      relations: ['user'],
+      where: { authorId: userId }
     });
 
     if (!responses || responses.length === 0) {
@@ -54,7 +49,7 @@ export class ResponseService {
     return responses;
   }
 
-  public async getAllByMessage(messageId: number): Promise<ResponseEntity[]> {
+  public async getAllByMessage(messageId: number, currentUser: User): Promise<ResponseEntity[]> {
     const responses = await this.repository.find({
       where: { message: { id: messageId } },
       relations: ['message'],
@@ -64,7 +59,22 @@ export class ResponseService {
       return []
     }
 
-    return responses;
+    if (!currentUser.idsBlocked) {
+      return responses;
+    }
+
+    const responsesNotBlocked:ResponseEntity[] = [];
+    for(const response of responses) {
+      if(!currentUser.idsBlocked.includes(response.authorId)) {
+        responsesNotBlocked.push(response);
+      }
+    }
+
+    if (!responsesNotBlocked || responsesNotBlocked.length === 0) {
+      return []
+    }
+
+    return responsesNotBlocked;
   }
 
   public async delete(id: number): Promise<void> {

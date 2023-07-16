@@ -1,5 +1,6 @@
 import {RoleService} from './role/role.service';
 import {
+  BadRequestException,
   ForbiddenException,
   forwardRef,
   HttpException,
@@ -9,12 +10,9 @@ import {
   NotFoundException
 } from "@nestjs/common";
 import {InjectRepository} from "@nestjs/typeorm";
-import {Brackets, Repository} from "typeorm";
+import {Repository} from "typeorm";
 import {User} from "./user.entity";
 import {MeDto, UpdateUserDto} from "./user.dto";
-import { join } from 'path';
-import { readFile } from 'fs/promises';
-import { UpdateImageDto } from './auth/auth.dto';
 
 @Injectable()
 export class UserService {
@@ -62,7 +60,7 @@ export class UserService {
     } 
 
     return user;
-  } 
+  }
 
   async verifyUserByToken(token: string): Promise<User | null> {
     const user = await this.repository.findOne({ where: { confirmationToken: token } });
@@ -90,4 +88,18 @@ export class UserService {
     return this.repository.find();
   }
 
+  async blockUser(id: number, currentUser: User): Promise<User> {
+    if(id === currentUser.id) {
+      throw new BadRequestException();
+    }
+
+    const userToBlock = await this.getUser(id);
+
+    if (!currentUser.idsBlocked) {
+      currentUser.idsBlocked = [];
+    }
+
+    currentUser.idsBlocked.push(userToBlock.id);
+    return await this.repository.save(currentUser);
+  }
 }

@@ -70,8 +70,8 @@ export class MessageService {
     return messages;
   }
 
-  public async delete(id: number): Promise<void> {
-    const responses = await this.responseService.getAllByMessage(id);
+  public async delete(id: number, currentUser: User): Promise<void> {
+    const responses = await this.responseService.getAllByMessage(id, currentUser);
     for (const response of responses) {
       await this.responseService.delete(response.id);
     }
