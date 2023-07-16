@@ -19,6 +19,23 @@ export class ProjectController {
     return await this.projectService.getAllProjects();
   }
 
+  @Get("ongoing")
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @UseInterceptors(ClassSerializerInterceptor)
+  async getOngoingProjects(): Promise<Project[]> {
+    return await this.projectService.getOngoingProjects();
+  }
+
+
+  @Get("finished")
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @UseInterceptors(ClassSerializerInterceptor)
+  async getFinishedProjects(): Promise<Project[]> {
+    return await this.projectService.getFinishedProjects();
+  }
+  
   @Get(':id')
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)

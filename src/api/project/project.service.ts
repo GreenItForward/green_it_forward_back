@@ -76,5 +76,26 @@ export class ProjectService {
         .orWhere('LOWER(project.description) LIKE LOWER(:searchString)', {searchString: `%${searchString}%`})
         .getMany();
   }
+
+
+  async getFinishedProjects(): Promise<Project[]> {
+      const projects : Promise<Project[]> = this.getAllProjects().then(projects => {
+        return projects.filter(project => {
+          return moment(project.endDate).isBefore(moment());
+        });
+      });
+
+      return projects;
+  }
+
+  async getOngoingProjects(): Promise<Project[]> {
+    const projects : Promise<Project[]> = this.getAllProjects().then(projects => {
+      return projects.filter(project => {
+        return moment(project.endDate).isAfter(moment());
+      });
+    });
+
+    return projects;
+  }
   
 }
