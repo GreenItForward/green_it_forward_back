@@ -102,4 +102,28 @@ export class UserService {
     currentUser.idsBlocked.push(userToBlock.id);
     return await this.repository.save(currentUser);
   }
+
+  async unblockUser(id: number, currentUser: User): Promise<User> {
+    if(id === currentUser.id) {
+      throw new BadRequestException();
+    }
+
+    const userToUnblock = await this.getUser(id);
+
+    if (!currentUser.idsBlocked) {
+      currentUser.idsBlocked = [];
+    }
+
+    currentUser.idsBlocked = currentUser.idsBlocked.filter(id => id !== userToUnblock.id);
+    return await this.repository.save(currentUser);
+  }
+
+  async getBlockedUsers(currentUser: User): Promise<User[]> {
+    if (!currentUser.idsBlocked) {
+      currentUser.idsBlocked = [];
+    }
+
+    const blockedUsers = await this.repository.find()
+    return blockedUsers.filter(user => currentUser.idsBlocked.includes(user.id));
+  }
 }

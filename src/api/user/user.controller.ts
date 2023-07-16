@@ -98,7 +98,42 @@ export class UserController {
         imageUrl: user.imageUrl,
       };
   }
-  
+
+  @Post('block/:id')
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @UseInterceptors(ClassSerializerInterceptor)
+  @ApiOkResponse({
+    description: 'User successfully blocked',
+    type: User,
+  })
+  private async blockUser(@Param('id') userId:string, @Req() { user }: Request): Promise<User | never> {
+    return this.service.blockUser(parseInt(userId), <User>user);
+  }
+
+  @Post('unblock/:id')
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @UseInterceptors(ClassSerializerInterceptor)
+  @ApiOkResponse({
+    description: 'User successfully unblocked',
+    type: User,
+  })
+  private async unblockUser(@Param('id') userId:string, @Req() { user }: Request): Promise<User | never> {
+    return this.service.unblockUser(parseInt(userId), <User>user);
+  }
+
+  @Get('block')
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @UseInterceptors(ClassSerializerInterceptor)
+  @ApiOkResponse({
+    description: 'List of blocked users',
+    type: Array<User>,
+  })
+  private async getBlockedUsers(@Req() { user }: Request): Promise<User[]> {
+    return this.service.getBlockedUsers(<User>user);
+  }
 
   @Get('/:id')
   @ApiBearerAuth()
@@ -114,17 +149,5 @@ export class UserController {
       throw new BadRequestException('Invalid user ID');
     }
     return this.service.getUser(id);
-  }
-
-  @Post('block/:id')
-  @ApiBearerAuth()
-  @UseGuards(JwtAuthGuard)
-  @UseInterceptors(ClassSerializerInterceptor)
-  @ApiOkResponse({
-    description: 'User successfully blocked',
-    type: User,
-  })
-  private async blockUser(@Param('id') userId:string, @Req() { user }: Request): Promise<User | never> {
-    return this.service.blockUser(parseInt(userId), <User>user);
   }
 }
