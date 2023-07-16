@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsNumber, IsUUID, IsDateString } from 'class-validator';
+import { IsString, IsNumber, IsUUID, IsDateString, IsOptional, IsNotEmpty } from 'class-validator';
 
 export class CreateProjectDto {
   @IsString()
@@ -28,4 +28,32 @@ export class GetProjectById {
     @ApiProperty()
     @IsUUID()
     readonly id: string;
+}
+
+
+export class EditProjectDto {
+  @IsString()
+  @IsNotEmpty()
+  @ApiProperty()
+  readonly name: string;
+
+  @IsString()
+  @IsNotEmpty()
+  @ApiProperty()
+  readonly description: string;
+
+  @IsString()
+  @IsNotEmpty()
+  @ApiProperty()
+  readonly imageUrl: string;
+
+  @IsNumber()
+  @IsNotEmpty()
+  @ApiProperty()
+  readonly totalAmount: number;
+
+  @IsDateString()
+  @IsNotEmpty()
+  @ApiProperty()
+  readonly endDate: string;
 }

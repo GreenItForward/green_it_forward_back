@@ -3,7 +3,7 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Project } from './project.entity';
-import { CreateProjectDto } from './project.dto';
+import { CreateProjectDto, EditProjectDto } from './project.dto';
 import { convertToDate } from '@/common/helper/date.helper';
 import moment from 'moment';
 
@@ -98,4 +98,32 @@ export class ProjectService {
     return projects;
   }
   
+
+  async editProject(user: User, id: string, editProjectDto: EditProjectDto): Promise<Project> {
+    const project = await this.getProjectById(id);
+    if (!project) {
+      throw new HttpException('Projet non trouvé', HttpStatus.NOT_FOUND);
+    }
+
+    if (project.createdBy.id !== user.id) {
+      throw new HttpException('Vous n\'êtes pas autorisé à modifier ce projet', HttpStatus.UNAUTHORIZED);
+    }
+
+    if (moment(project.endDate).isBefore(moment())) {
+      throw new HttpException('Le projet est terminé, vous ne pouvez plus le modifier', HttpStatus.BAD_REQUEST);
+    }
+
+    if (moment(editProjectDto.endDate).isBefore(moment())) {
+      throw new HttpException('La date de fin doit être supérieure à la date du jour', HttpStatus.BAD_REQUEST);
+    }
+
+
+
+    const editedProject = this.projectRepository.create({
+      ...project,
+      ...editProjectDto,
+    });
+
+    return await this.projectRepository.save(editedProject);
+  }
 }
