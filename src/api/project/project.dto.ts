@@ -1,12 +1,14 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString, IsNumber, IsUUID, IsDateString, IsOptional, IsNotEmpty } from 'class-validator';
+import { IsString, IsNumber, IsUUID, IsDateString, IsOptional, IsNotEmpty, Max, MaxLength } from 'class-validator';
 
 export class CreateProjectDto {
   @IsString()
+  @MaxLength(60)
   @ApiProperty()
   readonly name: string;
 
   @IsString()
+  @MaxLength(200)
   @ApiProperty()
   readonly description: string;
 
@@ -15,6 +17,7 @@ export class CreateProjectDto {
   readonly imageUrl: string;
 
   @IsNumber()
+  @Max(1000000000)
   @ApiProperty()
   readonly totalAmount: number;
 
@@ -34,11 +37,13 @@ export class GetProjectById {
 export class EditProjectDto {
   @IsString()
   @IsNotEmpty()
+  @MaxLength(60)
   @ApiProperty()
   readonly name: string;
 
   @IsString()
   @IsNotEmpty()
+  @MaxLength(200)
   @ApiProperty()
   readonly description: string;
 
@@ -49,6 +54,7 @@ export class EditProjectDto {
 
   @IsNumber()
   @IsNotEmpty()
+  @Max(1000000000)
   @ApiProperty()
   readonly totalAmount: number;
 
