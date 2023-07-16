@@ -1,15 +1,15 @@
 import {
   Body,
   ClassSerializerInterceptor,
-  Controller,
+  Controller, Delete,
   Get,
   Inject,
   Param,
   Post,
   Req,
   UseGuards,
-  UseInterceptors,
-} from '@nestjs/common';
+  UseInterceptors
+} from "@nestjs/common";
 import { Request } from 'express';
 import { ResponseService } from './response.service';
 import {ApiBearerAuth, ApiBody, ApiOkResponse, ApiTags} from "@nestjs/swagger";
@@ -37,8 +37,8 @@ export class ResponseController {
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(ClassSerializerInterceptor)
-  public async getAllByMessage(@Param('id') messageId: string): Promise<ResponseEntity[]> {
-    return this.service.getAllByMessage(parseInt(messageId));
+  public async getAllByMessage(@Param('id') messageId: string, @Req() { user }: Request): Promise<ResponseEntity[]> {
+    return this.service.getAllByMessage(parseInt(messageId), user as User);
   }
 
   @Get('getone/:id')
@@ -62,10 +62,15 @@ export class ResponseController {
   @ApiBody({ type: CreateResponseDto })
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(ClassSerializerInterceptor)
-  private async create(
-    @Body() body: CreateResponseDto,
-    @Req() { user }: Request,
-  ): Promise<ResponseEntity> {
+  private async create(@Body() body: CreateResponseDto, @Req() { user }: Request): Promise<ResponseEntity> {
     return this.service.create(body, <User>user);
+  }
+
+  @Delete(':id')
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @UseInterceptors(ClassSerializerInterceptor)
+  private async delete(@Param('id') id: number): Promise<void> {
+    await this.service.delete(id);
   }
 }

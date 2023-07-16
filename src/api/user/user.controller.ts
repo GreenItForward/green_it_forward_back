@@ -1,4 +1,3 @@
-import { diskStorage } from 'multer';
 import {
   BadRequestException,
   Body,
@@ -10,10 +9,8 @@ import {
   Post,
   Put,
   Req,
-  UploadedFile,
   UseGuards,
   UseInterceptors,
-  ParseFilePipe, FileTypeValidator, MaxFileSizeValidator
 } from "@nestjs/common";
 import { Request } from "express";
 import { JwtAuthGuard } from "@/api/user/auth/auth.guard";
@@ -24,7 +21,7 @@ import { ApiBadRequestResponse, ApiBearerAuth, ApiBody, ApiOkResponse, ApiTags }
 import { Roles } from "@/api/user/role/role.decorator";
 import { RoleEnum } from "@/common/enums/role.enum";
 import { RolesGuard } from "@/api/user/role/role.guard";
-import { RegisterDto, UpdateImageDto } from "./auth/auth.dto";
+import { UpdateImageDto } from "./auth/auth.dto";
 
 @ApiTags('User')
 @Controller('user') 
@@ -101,7 +98,42 @@ export class UserController {
         imageUrl: user.imageUrl,
       };
   }
-  
+
+  @Post('block/:id')
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @UseInterceptors(ClassSerializerInterceptor)
+  @ApiOkResponse({
+    description: 'User successfully blocked',
+    type: User,
+  })
+  private async blockUser(@Param('id') userId:string, @Req() { user }: Request): Promise<User | never> {
+    return this.service.blockUser(parseInt(userId), <User>user);
+  }
+
+  @Post('unblock/:id')
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @UseInterceptors(ClassSerializerInterceptor)
+  @ApiOkResponse({
+    description: 'User successfully unblocked',
+    type: User,
+  })
+  private async unblockUser(@Param('id') userId:string, @Req() { user }: Request): Promise<User | never> {
+    return this.service.unblockUser(parseInt(userId), <User>user);
+  }
+
+  @Get('block')
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @UseInterceptors(ClassSerializerInterceptor)
+  @ApiOkResponse({
+    description: 'List of blocked users',
+    type: Array<User>,
+  })
+  private async getBlockedUsers(@Req() { user }: Request): Promise<User[]> {
+    return this.service.getBlockedUsers(<User>user);
+  }
 
   @Get('/:id')
   @ApiBearerAuth()

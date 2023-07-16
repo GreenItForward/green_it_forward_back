@@ -1,15 +1,15 @@
 import {
   Body,
   ClassSerializerInterceptor,
-  Controller,
+  Controller, Delete,
   Get,
   Inject,
   Param,
   Post,
   Req,
   UseGuards,
-  UseInterceptors,
-} from '@nestjs/common';
+  UseInterceptors
+} from "@nestjs/common";
 import { Request } from 'express';
 import { MessageService } from './message.service';
 import {ApiBearerAuth, ApiBody, ApiOkResponse, ApiTags} from "@nestjs/swagger";
@@ -37,8 +37,8 @@ export class MessageController {
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(ClassSerializerInterceptor)
-  public async getAllByPost(@Param('id') communityId: string): Promise<Message[]> {
-    return this.service.getAllByPost(parseInt(communityId));
+  public async getAllByPost(@Param('id') communityId: string, @Req() { user }: Request): Promise<Message[]> {
+    return this.service.getAllByPost(parseInt(communityId), user as User);
   }
 
   @Get('getone/:id')
@@ -67,5 +67,13 @@ export class MessageController {
     @Req() { user }: Request,
   ): Promise<Message> {
     return this.service.create(body, <User>user);
+  }
+
+  @Delete(':id')
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @UseInterceptors(ClassSerializerInterceptor)
+  private async delete(@Param('id') id: string, @Req() { user }: Request): Promise<void> {
+    return this.service.delete(parseInt(id), user as User);
   }
 }

@@ -46,11 +46,11 @@ export class User extends BaseEntity {
   @ApiProperty()
   @ManyToMany(() => Community)
   @JoinTable()
-  communities: Community[];
+  public communities: Community[];
 
   @ApiProperty()
   @OneToMany(() => Post, (post) => post.user)
-  posts: Post[];
+  public posts: Post[];
 
   @Column({ type: 'varchar', nullable: true, default: null })
   @ApiProperty()
@@ -69,6 +69,9 @@ export class User extends BaseEntity {
   public imageUrl: string | null;
 
   @OneToMany(() => Project, project => project.createdBy)
-  projects: Project[];
+  public projects: Project[];
 
-} 
+  @Column({ type: 'int', array: true, default: [], nullable: false })
+  @ApiProperty()
+  public idsBlocked: number[];
+}
