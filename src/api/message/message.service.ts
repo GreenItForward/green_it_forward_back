@@ -24,7 +24,7 @@ export class MessageService {
     const message = new Message();
     message.post = body.post;
     message.text = body.text;
-    message.user = user;
+    message.authorId = user.id;
     message.creationDate = new Date()
     return this.repository.save(message);
   }
@@ -46,8 +46,7 @@ export class MessageService {
   public async getAllByUser(user: User): Promise<Message[]> {
     const userId = user.id;
     const messages = await this.repository.find({
-      where: { user: { id: userId } },
-      relations: ['user'],
+      where: { authorId: userId },
     });
 
     if (!messages || messages.length === 0) {
@@ -57,7 +56,7 @@ export class MessageService {
     return messages;
   }
 
-  public async getAllByPost(postId: number): Promise<Message[]> {
+  public async getAllByPost(postId: number, currentUser: User): Promise<Message[]> {
     const messages = await this.repository.find({
       where: { post: { id: postId } },
       relations: ['post'],
@@ -67,7 +66,18 @@ export class MessageService {
       return []
     }
 
-    return messages;
+    const messagesNotBlocked:Message[] = [];
+    for(const message of messages) {
+      if(!currentUser.idsBlocked.includes(message.authorId)) {
+        messagesNotBlocked.push(message);
+      }
+    }
+
+    if (!messagesNotBlocked || messagesNotBlocked.length === 0) {
+      return []
+    }
+
+    return messagesNotBlocked;
   }
 
   public async delete(id: number, currentUser: User): Promise<void> {

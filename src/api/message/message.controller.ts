@@ -36,8 +36,8 @@ export class MessageController {
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(ClassSerializerInterceptor)
-  public async getAllByPost(@Param('id') communityId: string): Promise<Message[]> {
-    return this.service.getAllByPost(parseInt(communityId));
+  public async getAllByPost(@Param('id') communityId: string, @Req() { user }: Request): Promise<Message[]> {
+    return this.service.getAllByPost(parseInt(communityId), user as User);
   }
 
   @Get('getone/:id')
