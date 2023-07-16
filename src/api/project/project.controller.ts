@@ -1,6 +1,6 @@
-import { Controller, Get, Param, Post, Body, UseGuards, UseInterceptors, ClassSerializerInterceptor, ParseUUIDPipe, HttpException, Req } from '@nestjs/common';
+import { Controller, Get, Param, Post, Body, UseGuards, UseInterceptors, ClassSerializerInterceptor, ParseUUIDPipe, HttpException, Req, Put } from '@nestjs/common';
 import { ProjectService } from './project.service';
-import { CreateProjectDto } from './project.dto';
+import { CreateProjectDto, EditProjectDto } from './project.dto';
 import { ApiBearerAuth, ApiBody, ApiTags } from '@nestjs/swagger';
 import { Project } from './project.entity';
 import { JwtAuthGuard } from '../user/auth/auth.guard';
@@ -35,7 +35,7 @@ export class ProjectController {
   async getFinishedProjects(): Promise<Project[]> {
     return await this.projectService.getFinishedProjects();
   }
-  
+
   @Get(':id')
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
@@ -68,6 +68,15 @@ export class ProjectController {
   @UseInterceptors(ClassSerializerInterceptor)
   public async searchProjects(@Param('searchstring') searchString: string): Promise<Project[]> {
     return this.projectService.searchProjects(searchString);
+  }
+
+
+  @Put(':id')
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @UseInterceptors(ClassSerializerInterceptor)
+  async editProject(@Req() req, @Param('id', new ParseUUIDPipe()) id: string, @Body() editProjectDto: EditProjectDto): Promise<Project> {
+    return await this.projectService.editProject(<User>req.user, id, editProjectDto);
   }
 }
    

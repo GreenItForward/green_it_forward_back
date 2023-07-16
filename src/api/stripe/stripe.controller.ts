@@ -10,9 +10,9 @@ import {
   Req
 } from "@nestjs/common";
 import { StripeService } from './stripe.config';
-import { ApiBody, ApiOkResponse, ApiTags } from "@nestjs/swagger";
+import { ApiBody, ApiCreatedResponse, ApiOkResponse, ApiTags } from "@nestjs/swagger";
 import { JwtAuthGuard } from "@/api/user/auth/auth.guard";
-import { CreatePaymentDto, PaymentIntentDto, PaymentMethodDto } from "@/api/stripe/stripe.dto";
+import { CreatePaymentDto, PaymentIntentDto, PaymentMethodDto, PaymentMethodTotalDto } from "@/api/stripe/stripe.dto";
 @ApiTags('Payments')
 @Controller('payments') 
 export class StripeController {
@@ -44,8 +44,16 @@ export class StripeController {
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(ClassSerializerInterceptor)
   @ApiOkResponse({ type: [PaymentIntentDto] })
-  async getPaymentsIntentByUser(@Req() req) : Promise<PaymentIntentDto[]> {
+  async getPaymentsIntentByUser(@Req() req) : Promise<PaymentMethodTotalDto[]> {
     return await this.stripeService.getPaymentsIntentByUser(req.user.id);
   }
 
+  @Post('payment-method')
+  @UseGuards(JwtAuthGuard)
+  @UseInterceptors(ClassSerializerInterceptor)
+  @ApiBody({ type: PaymentMethodTotalDto })
+  @ApiCreatedResponse({ type: PaymentMethodTotalDto })
+  async postPaymentMethod(@Body() body: PaymentMethodTotalDto): Promise<PaymentMethodDto> {
+    return await this.stripeService.postPaymentMethod(body);
+  }
 }
