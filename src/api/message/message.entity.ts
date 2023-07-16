@@ -4,7 +4,7 @@ import {
   Entity, JoinColumn, JoinTable,
   ManyToOne,
   OneToMany,
-  PrimaryGeneratedColumn, Unique,
+  PrimaryGeneratedColumn
 } from 'typeorm';
 import { User } from '../user/user.entity';
 import {ApiProperty} from "@nestjs/swagger";
@@ -31,9 +31,8 @@ export class Message extends BaseEntity {
   post: Promise<Post>;
 
   @ApiProperty()
-  @ManyToOne(() => User, (user) => user.posts)
-  @JoinTable()
-  user: User;
+  @Column({ type: 'int', nullable: true })
+  public authorId: number;
 
   @ApiProperty()
   @OneToMany(() => ResponseEntity, (response) => response.message)

@@ -1,12 +1,10 @@
 import {
   BaseEntity,
   Column,
-  Entity, JoinColumn, JoinTable,
+  Entity, JoinColumn,
   ManyToOne,
-  OneToMany,
-  PrimaryGeneratedColumn, Unique,
+  PrimaryGeneratedColumn
 } from 'typeorm';
-import { User } from '../user/user.entity';
 import {ApiProperty} from "@nestjs/swagger";
 import {Message} from "@/api/message/message.entity";
 
@@ -14,11 +12,11 @@ import {Message} from "@/api/message/message.entity";
 export class ResponseEntity extends BaseEntity {
   @ApiProperty()
   @PrimaryGeneratedColumn()
-  id: number;
+  public id: number;
 
   @ApiProperty()
   @Column()
-  text: string;
+  public text: string;
 
   @Column({ type: 'timestamp', nullable: true, default: null })
   @ApiProperty()
@@ -27,10 +25,9 @@ export class ResponseEntity extends BaseEntity {
   @ApiProperty()
   @ManyToOne(() => Message, (message) => message.responses)
   @JoinColumn()
-  message: Promise<Message>;
+  public message: Promise<Message>;
 
   @ApiProperty()
-  @ManyToOne(() => User, (user) => user.posts)
-  @JoinTable()
-  user: User;
+  @Column({ type: 'int', nullable: true })
+  public authorId: number;
 }
