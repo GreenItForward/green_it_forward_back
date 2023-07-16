@@ -135,9 +135,6 @@ export class AuthService {
     user.confirmationToken = null;
     await this.repository.save(user);
     await this.mailService.sendPasswordChanged(user);
-
-
-
     return user;
   }
 
