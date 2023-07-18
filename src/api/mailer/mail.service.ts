@@ -7,6 +7,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../user/user.entity';
 import { Repository } from 'typeorm';
 import { Project } from '../project/project.entity';
+import { EmailDto } from './email.dto';
 
 @Injectable()
 export class MailService {
@@ -17,14 +18,16 @@ export class MailService {
         this.configService = configService;
     }
 
-    async sendMail(user: { name: string, email: string }) {
+    async sendMail(body: EmailDto) {
         await this.mailerService.sendMail({
-            to: user.email,
+            to: body.email,
             from: `No Reply - GreenItForward <${this.configService.get<string>("EMAIL_FROM")}>`,
-            subject: 'Message de la part de GreenItForward',
+            subject: body.subject ? body.subject : 'Message de la part de GreenItForward',
             template: 'email', 
             context: {
-                name: user.name,
+                logo : this.configService.get<string>("LOGO_URL"),
+                name: body.name,
+                message: body.message,
             }
         })
     }

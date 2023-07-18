@@ -6,18 +6,21 @@ import { JwtAuthGuard } from "@/api/user/auth/auth.guard";
 import { EmailDto } from "@/api/mailer/email.dto";
 import { User } from "../user/user.entity";
 import { SendResetPasswordDto } from "./mail.dto";
+import { Roles } from "../user/role/role.decorator";
+import { RoleEnum } from "@/common/enums/role.enum";
 
 @ApiTags('Mailer')
 @Controller('mail')
 export class MailController {
     constructor(private readonly mailService: MailService) {}
 
-    @Post('send/hi')
+    @Post('send/mail')
     @ApiBearerAuth()
     @UseGuards(JwtAuthGuard)
     @UseInterceptors(ClassSerializerInterceptor)
+    @Roles(RoleEnum.ADMINISTRATEUR)
     @ApiBody({ type: EmailDto })
-    async sendHiEmail(@Body() body: EmailDto) {
+    async sendEmail(@Body() body: EmailDto) {
         return await this.mailService.sendMail(body);
     } 
     
