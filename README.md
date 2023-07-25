@@ -1,4 +1,5 @@
 # green_it_forward_back
+[![wakatime](https://wakatime.com/badge/user/e52bef9d-e298-4ffd-b606-f63f36526478/project/0ece423f-e1fc-4923-94f2-cb5da87697a5.svg)](https://wakatime.com/badge/user/e52bef9d-e298-4ffd-b606-f63f36526478/project/0ece423f-e1fc-4923-94f2-cb5da87697a5)
 
 ## Description
 
